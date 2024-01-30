@@ -11,7 +11,7 @@
           <VRow justify="end">
             <VCol>
               <span class="site">
-                <a href="//www.frontiers.co.kr">www.frontiers.co.kr</a>
+                <a href="//www.polstarin.com">www.polstarin.com</a>
               </span>
             </VCol>
             <VCol>
