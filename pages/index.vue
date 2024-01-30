@@ -6,7 +6,7 @@
         <p>We are IT experts</p>
         <p class="logo"></p>
         <p style="line-height: 1.6">
-          프런티어는 숙련된 개발자의 개발, 제조경험과
+          폴스타인는 숙련된 개발자의 개발, 제조경험과
           <br />
           노하우를 바탕으로 고객의 비지니스를 지원합니다.
           <br /><br />

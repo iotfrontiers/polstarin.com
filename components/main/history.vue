@@ -21,16 +21,16 @@
 
 <script lang="ts" setup>
 const resources = [
-  { year: '2023', content: [] },
+  { year: '2024', content: [] },
   {
-    year: '2020',
+    year: '2024',
     content: [
-      { date: '10.12 ', text: '회사 상호 변경 (트루솔루션 → 프런티어)' },
-      { date: '10.17 ', text: '연구개발전담부서 설립' },
-      { date: '10.29 ', text: '벤처기업인증' },
+      { date: '01.09 ', text: '회사 설립 (폴스타인)' },
+      { date: '03.17 ', text: '연구개발전담부서 설립' },
+      { date: '05.29 ', text: '벤처기업인증' },
     ],
   },
-  { year: '2019', content: [{ date: '12월', text: '회사 설립(자본금 200,000,000)' }] },
+  { year: '2024', content: [{ date: '01월', text: '회사 설립(자본금 200,000,000)' }] },
 ]
 </script>
 

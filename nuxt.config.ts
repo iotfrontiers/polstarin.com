@@ -121,7 +121,7 @@ export default defineNuxtConfig({
         { content: 'We are IT experts. POLSTARIN', property: 'og:description' },
         { content: '//www.polstarin.com/_nuxt/banner-top.a3296987.png', property: 'og:image' },
       ],
-      title: '(주) 프런티어',
+      title: '(주) 폴스타인',
     },
   },
   vuetify: {
