@@ -73,7 +73,7 @@
         //   text-shadow: none;
         // }
         &.logo {
-          width: 258px;
+          width: 340px;
           height: 47px;
           background-image: url('/logo/logo-white.png');
           background-repeat: no-repeat;
