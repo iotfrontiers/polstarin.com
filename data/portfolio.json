@@ -2,6 +2,22 @@
   "nextCursor": null,
   "list": [
     {
+      "title": "바닥신호등 글자표시 디스플레이",
+      "categories": [
+        "C/C++",
+        "Wifi",
+        "Linux",
+        "Serial",
+        "Python",
+        "Raspberry Pi",
+        "CM4",
+        "RS485",
+        "PLC"
+      ],
+      "id": "33af5bd6-4c6d-4c77-a569-a408e1c2563b",
+      "lastUpdateDate": "2024-02-06T05:06:00.000Z"
+    },
+    {
       "title": "기계식 주차장 디스플레이",
       "categories": [
         "C/C++",
