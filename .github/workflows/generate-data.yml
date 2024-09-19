@@ -4,7 +4,7 @@ on:
   #push:
   #  branches: ['main']
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 0 * * *'
 
 permissions:
   contents: write
@@ -39,8 +39,8 @@ jobs:
 
           if [[ `git status --porcelain` ]]; then
             git add -A
-            git config --global user.email "keymasroy@gmail.com"
-            git config --global user.name "Roy Lee"
+            git config --global user.email "iot.frontier@gmail.com"
+            git config --global user.name "jongju park"
             git commit -am "Update notion data : ${CURRENT_DATE}"
             git push
           fi
