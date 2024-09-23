@@ -45,6 +45,7 @@ jobs:
 
           # 변경 사항이 있을 때만 커밋 및 푸시 수행
           if [[ `git status --porcelain` ]]; then
+            git fetch origin
             git add -A
             git commit -am "Update notion data : ${CURRENT_DATE}"
             git push origin main
