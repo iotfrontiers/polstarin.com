@@ -39,7 +39,7 @@
       POLSTARIN <span class="ml-1 mr-1">|</span> 대표전화 : <a href="tel:010-7607-4451">010-7607-4451</a> <span class="ml-1 mr-1">|</span> 팩스 :
       <a href="fax:0504-163-4451">0504-163-4451</a> <span class="ml-1 mr-1">|</span> 이메일 :
       <a href="mailto:jongju0920@kakao.com">jongju0920@kakao.com</a> <br />
-      주소 : 경기도 성남시 중원구 광명로 377 신구대학 창업관 107호
+      주소 : 경기도 의왕시 안양판교로 82 포일어울림센터 807호
     </div>
   </VFooter>
 </template>
