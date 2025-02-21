@@ -1,13 +1,14 @@
 {
-  "id": "19ec88ac8c2981718929d86558e51739",
+  "id": "19ec88ac-8c29-8171-8929-d86558e51739",
   "title": " 제품 소개",
-  "lastUpdateDate": "2025-02-17T02:33:00.000Z",
+  "lastUpdateDate": "2025-02-18T08:00:00.000Z",
   "children": [
     {
-      "id": "19ec88ac8c298182af3dcfc860ade404",
+      "id": "19ec88ac-8c29-8182-af3d-cfc860ade404",
       "title": "투명 디지털 베너",
-      "lastUpdateDate": "2023-12-26T09:28:00.000Z",
-      "children": []
+      "lastUpdateDate": "2025-02-18T08:35:00.000Z",
+      "children": [],
+      "linkUrl": "/notion-resources/19ec88ac-8c29-8182-af3d-cfc860ade404/d06950f6739c9d0cde92a61afd8750a8.pdf"
     }
   ]
 }

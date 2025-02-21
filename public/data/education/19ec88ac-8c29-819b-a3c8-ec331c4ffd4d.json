@@ -1,0 +1,7 @@
+{
+  "id": "19ec88ac-8c29-819b-a3c8-ec331c4ffd4d",
+  "title": "SAVE_TEXT 윈도우 프로그램",
+  "content": "\n윈도우 프로그램에서 시리얼포트로 SAVE_TEXT 프레임을 전송하여 전광판의 메시지를 변경한다.\n\n\n### 윈도우 프로그램 이미지\n\n\n![led_test_program.png](/notion-resources/19ec88ac-8c29-819b-a3c8-ec331c4ffd4d/e7231337d2edb4faf8c20f66204e9e29.png)\n\n\n### 윈도우 프로그램 설명\n\n- PC에 COM 포트가 없는 경우에는 Usb to Serial Converter을 PC에 연결한다.\n- 연결된 COM번호를 클릭한 후 Connect 버튼을 누른다.\n- 표시되길 원하는 문자를 문자열1에 입력한다. 1줄로 표시된다.\n- 2줄로 표시되길 원하면 문자열2에도 입력한다\n- 문자 크기를 1 ~ 4 범위 안에서 입력한다.\n- 문자 색상을 RGB (0~255) 형태로 입력한다. ex) 255 255 255\n- 문자를 스크롤하기 원하면 방향을 선택한다.\n- 스크롤 속도를 ms 단위로 설정한다. 기본값은 50ms.\n- Send 버튼을 누르면 하단 텍스트 박스에 전송된 프로토콜이 표시되며\n\n\t 전광판에도 문자열이 표시된다.\n\n\n### 윈도우 프로그램 소스\n\n- 소스링크 uart_win_test\n\n[bookmark](https://gitlab.com/projects_collection/uart_led_matrix/uart_win_test)\n\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}

@@ -1,0 +1,7 @@
+{
+  "id": "19ec88ac-8c29-8139-a57a-ef8f3df13ae1",
+  "title": "기업형 보드 케이블 결선도",
+  "content": "\n## **보드 케이블 결선도**보드 항목 설명\n\n\n![img.jpg](https://blog.kakaocdn.net/dn/bj2j6k/btrnc3g8cSL/c2Mw987LRQdzu1MZGEhudk/img.jpg)\n\n\n## **1. Debug 포트(Usb C Type 케이블)**\n\n\nPC와 연결하여 프로그램 다운로드 및 디비깅 가능\n\n\n## **2. UART 연결 포트(터미널)**RS232 통신 연결 케이블\n\n\n## **3. 입력 전원 포트**\n\n- RS232 통신 연결\n- VCC : 6V ~ 24V\n- InputGND : 0V\n\n## **4. 출력 전원 포트(LED 전원 포트)**\n\n\n5V 출력, 파워 케이블을 통해 LED 파워 연결\n\n\n## **5. IDC 컨넥터(16P)**\n\n\nIDC 케이블을 통해서 LED와 연결한다\n\n\n---\n\n\n## **[IDC 케이블 연결(보드 to LED)]**\n\n\n![img.jpg](https://blog.kakaocdn.net/dn/bOgDAA/btrnc4f6lJe/8ZuN2wAXdRftUkRTbLB0n1/img.jpg)\n\n\n## **[POWER 케이블 연결(보드 to LED)]**\n\n\n![img.jpg](https://blog.kakaocdn.net/dn/AOSpX/btrnevYiHXr/cbG7XRJLb7YYrmcB9jeAH1/img.jpg)\n\n\n## **외부 연결 방법**\n\n\n![img.png](https://blog.kakaocdn.net/dn/M2UcY/btrnfAZlyaA/mXQ2ZQL2t7iekH2SyzKXUk/img.png)\n\n\n## \n\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}
