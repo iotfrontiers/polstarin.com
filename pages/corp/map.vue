@@ -1,7 +1,7 @@
 <template>
   <VRow class="maps-wrap" no-gutters>
     <VCol class="mb-10">
-      <span>경기도 의왕시 안양판교로 82 포일어울림센터 807호</span>
+      <span>경기도 의왕시 안양판교로 82 포일어울림센터 816호</span>
     </VCol>
     <VCol :cols="12" align="center">
       <!-- <div class="map-container"> -->
@@ -33,7 +33,7 @@ onMounted(async () => {
   const contentString = [
     '<div class="iw_inner">',
     '   <h3>(주) 폴스타인</h3>',
-    '   <p>경기도 의왕시 안양판교로 82 포일어울림센터 807호<br />',
+    '   <p>경기도 의왕시 안양판교로 82 포일어울림센터 816호<br />',
 
     '       tel: <a href="tel:010-7607-4451">010-7607-4451</a><br />',
     '       e-mail: <a href="mailto:jongju0920@kakao.com">jongju0920@kakao.com</a>',
