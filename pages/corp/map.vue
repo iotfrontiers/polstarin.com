@@ -4,97 +4,30 @@
       <span>경기도 의왕시 안양판교로 82 포일어울림센터 816호</span>
     </VCol>
     <VCol :cols="12" align="center">
-      <!-- <div class="map-container"> -->
-      <div id="map" style="width: 90%; height: 55vh"></div>
-      <!-- </div> -->
+      <div class="map-image-container">
+        <img :src="mapImageSrc" alt="오시는 길 지도" class="map-image" />
+      </div>
     </VCol>
   </VRow>
 </template>
 <script lang="ts" setup>
-const map = shallowRef()
-
-useHead({
-  script: [{ type: 'text/javascript', src: 'https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=y1fjmf6ydu' }],
-})
-
-onMounted(async () => {
-  await getObjectAsync(() => globalThis.naver)
-
-  map.value = new globalThis.naver.maps.Map('map', {
-    center: new globalThis.naver.maps.LatLng(37.3663172, 127.1066211),
-    zoom: 18,
-  })
-
-  const marker = new globalThis.naver.maps.Marker({
-    position: new globalThis.naver.maps.LatLng(37.365979, 127.1067124),
-    map: map.value,
-  })
-
-  const contentString = [
-    '<div class="iw_inner">',
-    '   <h3>(주) 폴스타인</h3>',
-    '   <p>경기도 의왕시 안양판교로 82 포일어울림센터 816호 1111<br />',
-
-    '       tel: <a href="tel:010-7607-4451">010-7607-4451</a><br />',
-    '       e-mail: <a href="mailto:jongju0920@kakao.com">jongju0920@kakao.com</a>',
-    '   </p>',
-    '</div>',
-  ].join('')
-
-  const infoWindow = new globalThis.naver.maps.InfoWindow({
-    content: contentString,
-    // maxWidth: 478,
-  })
-
-  globalThis.naver.maps.Event.addListener(marker, 'click', function (e) {
-    if (infoWindow.getMap()) {
-      infoWindow.close()
-    } else {
-      infoWindow.open(map.value, marker)
-    }
-  })
-
-  infoWindow.open(map.value, marker)
-})
-
-const getObjectAsync = (fn: () => any) => {
-  return new Promise<any>(resolve => {
-    const obj = fn()
-
-    if (obj) {
-      resolve(obj)
-      return
-    }
-
-    const findObj = () => {
-      const obj = fn()
-
-      if (obj) {
-        resolve(obj)
-        return
-      }
-
-      setTimeout(() => findObj(), 100)
-    }
-
-    setTimeout(() => findObj(), 100)
-  })
-}
+// 이미지 경로를 여기에 설정하세요
+// 예: '/img/map.jpg'
+const mapImageSrc = '/img/map.jpg'
 </script>
 
 <style lang="scss">
 .maps-wrap {
-  .iw_inner {
-    padding: 10px;
-    text-align: left;
+  .map-image-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 
-    h3 {
-      font-weight: 600;
-      margin: 40px 0 18px 0;
-    }
-
-    p {
-      margin-bottom: 20px;
+    .map-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
 }
