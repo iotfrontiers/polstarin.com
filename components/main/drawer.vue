@@ -12,10 +12,11 @@
         </template>
         <VListItem @click="movePage('/corp/introduce')" prependIcon="mdi-account-tie">인사말</VListItem>
         <VListItem @click="movePage('/corp/field')" prependIcon="mdi-office-building-marker-outline">사업영역</VListItem>
-        <VListItem @click="movePage('/corp/portfolio')" prependIcon="mdi-format-list-checkbox">포트폴리오</VListItem>
         <VListItem @click="movePage('/corp/client')" prependIcon="mdi-handshake-outline">주요고객사</VListItem>
         <VListItem @click="movePage('/corp/map')" prependIcon="mdi-map-marker-distance">오시는길</VListItem>
       </VListGroup>
+
+      <VListItem @click="movePage('/corp/portfolio')" prependIcon="mdi-format-list-checkbox">포트폴리오</VListItem>
 
       <VListGroup>
         <template v-slot:activator="{ props: prop }" value="2">

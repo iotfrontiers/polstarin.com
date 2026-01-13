@@ -9,11 +9,12 @@
         <VList class="overlay-menu">
           <VListItem @click="$router.push('/corp/introduce')">인사말</VListItem>
           <VListItem @click="$router.push('/corp/field')">사업영역</VListItem>
-          <VListItem @click="$router.push('/corp/portfolio')">포트폴리오</VListItem>
           <VListItem @click="$router.push('/corp/client')">주요고객사</VListItem>
           <VListItem @click="$router.push('/corp/map')">오시는길</VListItem>
         </VList>
       </VMenu>
+
+      <VBtn @click="$router.push('/corp/portfolio')" class="v-btn--blank gnb-menu-btn">포트폴리오</VBtn>
 
       <VMenu transition="scroll-y-transition">
         <template v-slot:activator="{ props }">
