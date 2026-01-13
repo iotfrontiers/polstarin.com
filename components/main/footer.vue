@@ -11,7 +11,7 @@
           <VRow justify="end">
             <VCol>
               <span class="site">
-                <a href="//polstarin-com.vercel.app">polstarin-com.vercel.app</a>
+                <a href="//www.polstarin.com">www.polstarin.com</a>
               </span>
             </VCol>
             <VCol>
