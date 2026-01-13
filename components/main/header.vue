@@ -99,7 +99,7 @@ function logoClick() {
     height: 100%;
     background-image: url('/logo/logo-white.png');
     background-repeat: no-repeat;
-    background-size: 7rem;
+    background-size: 14rem;
     background-position-y: center;
     cursor: pointer;
   }
