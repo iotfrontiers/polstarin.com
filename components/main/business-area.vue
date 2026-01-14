@@ -16,7 +16,7 @@
       <VRow class="portfolio-grid" dense>
         <VCol v-for="item in mainPortfolioItems" :key="item.id" cols="12" sm="6" lg="3" class="d-flex">
           <VCard class="portfolio-card flex-fill" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
-            <VImg :src="item.imgUrl" height="140" cover />
+            <VImg :src="item.imgUrl" height="180" contain />
             <VCardTitle class="portfolio-title">
               {{ item.title }}
             </VCardTitle>
