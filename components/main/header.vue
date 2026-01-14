@@ -36,7 +36,7 @@
           <VListItem @click="$router.push('/community/notice')">공지사항</VListItem>
           <VListItem @click="$router.push('/community/news')">News</VListItem>
           <VListItem @click="$router.push('/community/education')">교육자료</VListItem>
-          <VListItem @click="$router.push('/inquiry/pds')">자료실</VListItem>
+          <VListItem @click="$router.push('/community/pds')">자료실</VListItem>
         </VList>
       </VMenu>
 
