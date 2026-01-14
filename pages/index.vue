@@ -34,12 +34,6 @@
       left: min(95px, 5vw);
       margin-right: 5vw;
       max-width: 620px;
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 32px 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
       .main-title {
         font-size: min(3.5rem, 7.5vw);
@@ -47,27 +41,30 @@
         line-height: 1.3;
         margin: 0 0 24px 0;
         text-shadow: 
-          4px 4px 12px rgba(0, 0, 0, 0.9),
-          0 0 24px rgba(0, 0, 0, 0.7),
-          -3px -3px 8px rgba(0, 0, 0, 0.8),
-          0 0 40px rgba(255, 255, 255, 0.1);
+          4px 4px 15px rgba(0, 0, 0, 0.95),
+          0 0 30px rgba(0, 0, 0, 0.8),
+          -3px -3px 10px rgba(0, 0, 0, 0.9),
+          2px 2px 4px rgba(0, 0, 0, 0.9),
+          -2px -2px 4px rgba(0, 0, 0, 0.9);
         letter-spacing: -0.02em;
         color: #ffffff;
-        -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
+        -webkit-text-stroke: 1px rgba(0, 0, 0, 0.4);
       }
 
       .main-sub {
         font-size: min(1.68rem, 3.84vw);
-        font-weight: 500;
+        font-weight: 600;
         line-height: 1.8;
         margin: 0;
         text-shadow: 
-          3px 3px 10px rgba(0, 0, 0, 0.85),
-          0 0 16px rgba(0, 0, 0, 0.6),
-          -2px -2px 6px rgba(0, 0, 0, 0.75);
+          3px 3px 12px rgba(0, 0, 0, 0.9),
+          0 0 20px rgba(0, 0, 0, 0.7),
+          -2px -2px 8px rgba(0, 0, 0, 0.85),
+          2px 2px 4px rgba(0, 0, 0, 0.8),
+          -2px -2px 4px rgba(0, 0, 0, 0.8);
         color: #ffffff;
         letter-spacing: 0.01em;
-        -webkit-text-stroke: 0.3px rgba(0, 0, 0, 0.2);
+        -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
       }
     }
   }
