@@ -36,7 +36,7 @@
       max-width: 620px;
 
       .main-title {
-        font-size: min(5.25rem, 11.25vw);
+        font-size: min(3.5rem, 7.5vw);
         font-weight: 900;
         line-height: 1.3;
         margin: 0 0 24px 0;
@@ -49,7 +49,7 @@
       }
 
       .main-sub {
-        font-size: min(2.1rem, 4.8vw);
+        font-size: min(1.68rem, 3.84vw);
         font-weight: 500;
         line-height: 1.8;
         margin: 0;
