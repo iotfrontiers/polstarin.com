@@ -12,11 +12,11 @@
       <section class="stats-grid fade-in delay-1" aria-label="고객사 성과 지표">
         <div class="stat-card">
           <span class="stat-number">150+</span>
-          <span class="stat-label">프로젝트 완료</span>
+          <span class="stat-label">테크 스타트업</span>
         </div>
         <div class="stat-card">
           <span class="stat-number">80+</span>
-          <span class="stat-label">고객사</span>
+          <span class="stat-label">대기업</span>
         </div>
         <div class="stat-card">
           <span class="stat-number">250+</span>
@@ -24,7 +24,7 @@
         </div>
         <div class="stat-card">
           <span class="stat-number">15+</span>
-          <span class="stat-label">수상 경력</span>
+          <span class="stat-label">양산 연계</span>
         </div>
       </section>
 
