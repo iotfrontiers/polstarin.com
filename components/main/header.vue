@@ -52,8 +52,6 @@
           }}</VListItem>
         </VList>
       </VMenu>
-
-      <VBtn icon="mdi-menu" style="margin-right: 20px;color:#fff" @click="() => (showDrawer = !showDrawer)" class="v-btn--blank"></VBtn>
     </div>
   </div>
 </template>
