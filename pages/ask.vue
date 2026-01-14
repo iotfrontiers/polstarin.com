@@ -2,6 +2,9 @@
   <VContainer class="ask-page-container" :fluid="true">
     <VRow class="page-header-row" :style="{ backgroundImage: 'url(/img/banner-inquiry.png)' }">
       <MainHeader />
+      <div class="header-title-overlay">
+        <h1 class="page-title">기술/견적문의</h1>
+      </div>
     </VRow>
     <VRow class="content-wrap">
       <div class="section">
@@ -178,6 +181,31 @@ onMounted(() => init())
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-title-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+
+    .page-title {
+      font-size: min(4.5rem, 12vw);
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 
+        4px 4px 15px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(0, 0, 0, 0.8),
+        -3px -3px 10px rgba(0, 0, 0, 0.9);
+      margin: 0;
+      letter-spacing: -0.02em;
+      -webkit-text-stroke: 1px rgba(0, 0, 0, 0.4);
+    }
   }
 
   .content-wrap {
