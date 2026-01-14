@@ -12,7 +12,7 @@
         </template>
         <VListItem @click="movePage('/corp/introduce')" prependIcon="mdi-account-tie">인사말</VListItem>
         <VListItem @click="movePage('/corp/field')" prependIcon="mdi-office-building-marker-outline">사업영역</VListItem>
-        <VListItem @click="movePage('/corp/client')" prependIcon="mdi-handshake-outline">주요고객사</VListItem>
+        <VListItem @click="movePage('/corp/client')" prependIcon="mdi-handshake-outline">고객사</VListItem>
         <VListItem @click="movePage('/corp/map')" prependIcon="mdi-map-marker-distance">오시는길</VListItem>
       </VListGroup>
 
