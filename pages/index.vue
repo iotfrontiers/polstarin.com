@@ -22,7 +22,7 @@
 
   .v-row.main-row {
     min-height: min(1080px, max(100vw, 700px));
-    background-image: url('~/assets/img/main/banner-top.png');
+    background-image: url('~/assets/img/main/banner3.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
