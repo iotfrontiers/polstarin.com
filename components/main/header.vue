@@ -40,14 +40,7 @@
         </VList>
       </VMenu>
 
-      <VMenu transition="scroll-y-transition">
-        <template v-slot:activator="{ props }">
-          <VBtn v-bind="props" class="v-btn--blank gnb-menu-btn">문의사항</VBtn>
-        </template>
-        <VList class="overlay-menu">
-          <VListItem @click="$router.push('/inquiry/ask')">기술/견적문의</VListItem>
-        </VList>
-      </VMenu>
+      <VBtn @click="$router.push('/inquiry/ask')" class="v-btn--blank gnb-menu-btn">기술/견적문의</VBtn>
 
       <VMenu transition="scroll-y-transition" v-if="productIntroMenu.show">
         <template v-slot:activator="{ props }">
