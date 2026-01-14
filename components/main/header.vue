@@ -128,8 +128,13 @@ function logoClick() {
   }
 
   .menus {
-    // gap: 20px;
     gap: min(20px, 1vw);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 12px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 }
 

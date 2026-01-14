@@ -36,20 +36,28 @@
       max-width: 620px;
 
       .main-title {
-        font-size: min(3rem, 6.5vw);
-        font-weight: 800;
+        font-size: min(3.5rem, 7.5vw);
+        font-weight: 900;
         line-height: 1.3;
-        margin: 0 0 16px 0;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-        letter-spacing: -0.03em;
+        margin: 0 0 24px 0;
+        text-shadow: 
+          3px 3px 10px rgba(0, 0, 0, 0.8),
+          0 0 20px rgba(0, 0, 0, 0.6),
+          -2px -2px 6px rgba(0, 0, 0, 0.7);
+        letter-spacing: -0.02em;
+        color: #ffffff;
       }
 
       .main-sub {
-        font-size: min(1.1rem, 2.6vw);
-        font-weight: 400;
-        line-height: 1.7;
+        font-size: min(1.4rem, 3.2vw);
+        font-weight: 500;
+        line-height: 1.8;
         margin: 0;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.45);
+        text-shadow: 
+          2px 2px 8px rgba(0, 0, 0, 0.7),
+          0 0 12px rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+        letter-spacing: 0.01em;
       }
     }
   }
