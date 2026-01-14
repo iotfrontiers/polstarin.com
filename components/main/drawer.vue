@@ -19,16 +19,6 @@
       <VListItem @click="movePage('/portfolio')" prependIcon="mdi-format-list-checkbox">포트폴리오</VListItem>
 
       <VListGroup>
-        <template v-slot:activator="{ props: prop }" value="2">
-          <VListItem v-bind="prop" title="사업분야" density="compact" prependIcon="mdi-card-account-details-outline"></VListItem>
-        </template>
-        <VListItem @click="movePage('/field/display')" prependIcon="mdi-television">응용 LED 디스플레이</VListItem>
-        <VListItem @click="movePage('/field/smart-factory')" prependIcon="mdi-factory">스마트팩토리(빌딩 자동화), 기계식 주차장</VListItem>
-        <VListItem @click="movePage('/field/dev')" prependIcon="mdi-dev-to">개발(S/W & H/W)</VListItem>
-        <VListItem @click="movePage('/field/out-sourcing')" prependIcon="mdi-account-search-outline">인력 아웃소싱 사업</VListItem>
-      </VListGroup>
-
-      <VListGroup>
         <template v-slot:activator="{ props: prop }">
           <VListItem v-bind="prop" title="커뮤니티" density="compact" prependIcon="mdi-account-group"></VListItem>
         </template>
