@@ -34,7 +34,7 @@ import { computed, onMounted, ref } from 'vue'
 
 const display = useDisplay()
 
-const contentCols = computed(() => (display.xs.value || display.sm.value ? 12 : display.md.value ? 11 : 9))
+const contentCols = computed(() => (display.xs.value || display.sm.value ? 12 : 12))
 
 const portfolioData = portfolioJsonData
 
@@ -101,6 +101,7 @@ onMounted(() => {
     .portfolio-grid {
       width: 100%;
       margin: 0;
+      gap: 24px;
     }
 
     .portfolio-card {
