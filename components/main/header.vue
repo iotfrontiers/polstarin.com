@@ -14,7 +14,7 @@
         </VList>
       </VMenu>
 
-      <VBtn @click="$router.push('/corp/portfolio')" class="v-btn--blank gnb-menu-btn">포트폴리오</VBtn>
+      <VBtn @click="$router.push('/portfolio')" class="v-btn--blank gnb-menu-btn">포트폴리오</VBtn>
 
       <VMenu transition="scroll-y-transition">
         <template v-slot:activator="{ props }">

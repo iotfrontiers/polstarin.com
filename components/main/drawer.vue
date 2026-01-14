@@ -16,7 +16,7 @@
         <VListItem @click="movePage('/corp/map')" prependIcon="mdi-map-marker-distance">오시는길</VListItem>
       </VListGroup>
 
-      <VListItem @click="movePage('/corp/portfolio')" prependIcon="mdi-format-list-checkbox">포트폴리오</VListItem>
+      <VListItem @click="movePage('/portfolio')" prependIcon="mdi-format-list-checkbox">포트폴리오</VListItem>
 
       <VListGroup>
         <template v-slot:activator="{ props: prop }" value="2">

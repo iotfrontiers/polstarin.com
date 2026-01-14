@@ -8,13 +8,13 @@
       </div>
       <VRow class="buttons" align="center">
         <VCol>
-          <VBtn @click="$router.push('/corp/portfolio')">VIEW MORE</VBtn>
+          <VBtn @click="$router.push('/portfolio')">VIEW MORE</VBtn>
         </VCol>
       </VRow>
     </VCol>
     <VCol :cols="contentCols" class="portfolio-col">
       <div class="portfolio-grid">
-        <VCard v-for="item in mainPortfolioItems" :key="item.id" class="portfolio-card" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
+          <VCard v-for="item in mainPortfolioItems" :key="item.id" class="portfolio-card" theme="light" @click="$router.push(`/portfolio/${item.id}`)">
           <VImg :src="item.imgUrl" height="200" cover />
           <VCardTitle class="portfolio-title">
             {{ item.title }}
