@@ -40,8 +40,8 @@
       <section class="clients-section fade-in delay-3" aria-label="주요 고객사">
         <h2 class="section-title">주요 고객사</h2>
         <div class="logo-grid">
-          <div class="logo-card" v-for="i in 29" :key="i">
-            <img class="logo-img" :src="`/client/group-img${i}.png`" :alt="`고객사 로고 ${i}`" loading="lazy" />
+          <div class="logo-card" v-for="name in clientNames" :key="name">
+            <span class="logo-text">{{ name }}</span>
           </div>
         </div>
       </section>
@@ -74,6 +74,26 @@
     </div>
   </div>
 </template>
+<script setup lang="ts">
+const clientNames = [
+  '현대자동차',
+  'LG전자',
+  'LG U+',
+  '삼성전자',
+  '한국전자통신연구원',
+  '중소기업청',
+  '중소벤처기업진흥공단',
+  '네이버',
+  '카카오',
+  '쿠팡',
+  '토스',
+  '배달의민족',
+  '서울대학교',
+  '연세대학교',
+  '울산과학기술원',
+  'SK텔레콤',
+]
+</script>
 <style lang="scss" scoped>
 .clients-page {
   --primary-color: #0066ff;
@@ -241,11 +261,17 @@
     border-color: #d1d5db;
   }
 
-  .logo-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    filter: saturate(1.02);
+  .logo-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .logo-card:hover .logo-text {
+    color: var(--primary-color);
+    transform: scale(1.05);
   }
 
   .features-section {
