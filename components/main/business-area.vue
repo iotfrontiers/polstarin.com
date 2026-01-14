@@ -101,27 +101,6 @@ onMounted(() => {
       display: flex;
       flex-wrap: nowrap;
       gap: 20px;
-      overflow-x: auto;
-      scrollbar-width: thin;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .portfolio-grid::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    .portfolio-grid::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 3px;
-    }
-
-    .portfolio-grid::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 3px;
-    }
-
-    .portfolio-grid::-webkit-scrollbar-thumb:hover {
-      background: #555;
     }
 
     .portfolio-card {
@@ -131,9 +110,8 @@ onMounted(() => {
       height: 100%;
       display: flex;
       flex-direction: column;
-      flex: 0 0 calc(25% - 15px);
-      min-width: 250px;
-      max-width: 300px;
+      flex: 1 1 0;
+      min-width: 0;
     }
 
     .portfolio-card:hover {
@@ -144,17 +122,23 @@ onMounted(() => {
 
     .portfolio-card .v-img {
       flex-shrink: 0;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
     }
 
     .portfolio-title {
-      padding: 16px 14px;
-      font-size: 15px;
+      padding: 12px 10px;
+      font-size: clamp(12px, 1.2vw, 15px);
       font-weight: 600;
       line-height: 1.4;
       flex-grow: 1;
       display: flex;
       align-items: center;
-      min-height: 60px;
+      min-height: 50px;
+      word-break: keep-all;
+      overflow-wrap: break-word;
     }
   }
 }
