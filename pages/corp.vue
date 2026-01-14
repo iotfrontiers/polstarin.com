@@ -2,6 +2,7 @@
   <div class="page-wrap">
     <CommonPageContainer
       header-bg-img="banner-corp.png"
+      :hide-sub-title="$route.path.startsWith('/corp/client')"
       :tabItems="[
         { title: '인사말', targetUrl: '/corp/introduce' },
         { title: '사업영역', targetUrl: '/corp/field' },

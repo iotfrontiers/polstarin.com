@@ -6,7 +6,7 @@
     </VRow>
     <VRow class="content-wrap">
       <div class="section">
-        <div class="sub-title text-h3 font-weight-black mb-15">{{ subTitle }}</div>
+        <div v-if="!hideSubTitle" class="sub-title text-h3 font-weight-black mb-15">{{ subTitle }}</div>
         <slot />
       </div>
     </VRow>
@@ -19,9 +19,11 @@ const props = withDefaults(
   defineProps<{
     headerBgImg?: string
     tabItems: Tab[]
+    hideSubTitle?: boolean
   }>(),
   {
     headerBgImg: 'banner-corp.png',
+    hideSubTitle: false,
   },
 )
 
