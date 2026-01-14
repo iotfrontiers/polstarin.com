@@ -36,6 +36,7 @@
           <VListItem @click="$router.push('/community/notice')">공지사항</VListItem>
           <VListItem @click="$router.push('/community/news')">News</VListItem>
           <VListItem @click="$router.push('/community/education')">교육자료</VListItem>
+          <VListItem @click="$router.push('/inquiry/pds')">자료실</VListItem>
         </VList>
       </VMenu>
 
@@ -45,7 +46,6 @@
         </template>
         <VList class="overlay-menu">
           <VListItem @click="$router.push('/inquiry/ask')">기술/견적문의</VListItem>
-          <VListItem @click="$router.push('/inquiry/pds')">자료실</VListItem>
         </VList>
       </VMenu>
 
