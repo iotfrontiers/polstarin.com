@@ -14,9 +14,9 @@
     </VCol>
     <VCol :cols="contentCols" class="portfolio-col">
       <VRow class="portfolio-grid" dense>
-        <VCol v-for="item in mainPortfolioItems" :key="item.id" cols="12" sm="6" lg="3" class="d-flex">
+        <VCol v-for="(item, index) in mainPortfolioItems" :key="item.id" :cols="index === 0 ? 12 : 12" :sm="index === 0 ? 12 : 6" :lg="index === 0 ? 6 : 2" class="d-flex">
           <VCard class="portfolio-card flex-fill" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
-            <VImg :src="item.imgUrl" height="180" contain />
+            <VImg :src="item.imgUrl" :height="index === 0 ? 280 : 180" contain />
             <VCardTitle class="portfolio-title">
               {{ item.title }}
             </VCardTitle>

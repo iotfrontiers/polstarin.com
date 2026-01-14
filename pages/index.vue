@@ -21,7 +21,7 @@
   padding-bottom: 0;
 
   .v-row.main-row {
-    min-height: min(1080px, max(100vw, 700px));
+    min-height: min(750px, max(100vw, 490px));
     background-image: url('~/assets/img/main/banner3.jpg');
     background-size: cover;
     background-repeat: no-repeat;
