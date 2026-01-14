@@ -11,6 +11,7 @@
       </section>
     </VRow>
     <MainBusinessArea />
+    <MainHistory />
     <MainNotice />
   </VContainer>
 </template>
