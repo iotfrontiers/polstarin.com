@@ -14,9 +14,9 @@
     </VCol>
     <VCol :cols="contentCols" class="portfolio-col">
       <VRow class="portfolio-grid" dense>
-        <VCol v-for="(item, index) in mainPortfolioItems" :key="item.id" :cols="index === 0 ? 12 : 12" :sm="index === 0 ? 12 : 6" :lg="index === 0 ? 6 : 2" class="d-flex">
+        <VCol v-for="item in mainPortfolioItems" :key="item.id" cols="12" sm="6" md="3" class="d-flex">
           <VCard class="portfolio-card flex-fill" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
-            <VImg :src="item.imgUrl" :height="index === 0 ? 280 : 180" contain />
+            <VImg :src="item.imgUrl" height="200" cover />
             <VCardTitle class="portfolio-title">
               {{ item.title }}
             </VCardTitle>
@@ -101,13 +101,16 @@ onMounted(() => {
     .portfolio-grid {
       width: 100%;
       margin: 0;
-      gap: 24px;
+      gap: 20px;
     }
 
     .portfolio-card {
       cursor: pointer;
       border: 1px solid rgba(0, 0, 0, 0.06);
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .portfolio-card:hover {
@@ -116,11 +119,19 @@ onMounted(() => {
       border-color: #0066ff;
     }
 
+    .portfolio-card .v-img {
+      flex-shrink: 0;
+    }
+
     .portfolio-title {
-      padding: 14px 12px;
-      font-size: 16px;
+      padding: 16px 14px;
+      font-size: 15px;
       font-weight: 600;
-      line-height: 1.3;
+      line-height: 1.4;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      min-height: 60px;
     }
   }
 }
