@@ -76,7 +76,23 @@ function logoClick() {
   font-weight: 600;
 
   .gnb-menu-btn {
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff !important;
+    text-shadow: 
+      1px 1px 2px rgba(0, 0, 0, 0.8),
+      0 0 4px rgba(0, 0, 0, 0.5),
+      -1px -1px 2px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+  }
+
+  .gnb-menu-btn:hover {
+    text-shadow: 
+      2px 2px 4px rgba(0, 0, 0, 0.9),
+      0 0 6px rgba(0, 0, 0, 0.7),
+      -2px -2px 4px rgba(0, 0, 0, 0.9);
+    transform: translateY(-1px);
   }
 
   @media screen and (max-width: 700px) {
@@ -93,6 +109,22 @@ function logoClick() {
     background-size: 14rem;
     background-position-y: center;
     cursor: pointer;
+    filter: 
+      drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.9))
+      drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.9))
+      drop-shadow(2px -2px 3px rgba(0, 0, 0, 0.9))
+      drop-shadow(-2px 2px 3px rgba(0, 0, 0, 0.9))
+      drop-shadow(0 0 4px rgba(0, 0, 0, 0.7));
+    transition: filter 0.2s ease;
+  }
+
+  .logo:hover {
+    filter: 
+      drop-shadow(3px 3px 4px rgba(0, 0, 0, 0.95))
+      drop-shadow(-3px -3px 4px rgba(0, 0, 0, 0.95))
+      drop-shadow(3px -3px 4px rgba(0, 0, 0, 0.95))
+      drop-shadow(-3px 3px 4px rgba(0, 0, 0, 0.95))
+      drop-shadow(0 0 6px rgba(0, 0, 0, 0.8));
   }
 
   .menus {
