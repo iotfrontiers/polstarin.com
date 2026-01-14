@@ -2,76 +2,62 @@
   <VRow class="business-row">
     <!-- <VCol class="left-col" cols="3"> -->
     <VCol class="left-col">
-      <div class="section-title">Business Area</div>
+      <div class="section-title">포트폴리오</div>
       <div class="desc">
-        <span class="text-grey-darken-2">다양한 통합 개발 서비스와 함께</span> <br /><span class="font-weight-medium"
-          >끝 없는 프로젝트를 이어나갑니다.</span
-        >
+        <span class="text-grey-darken-2">대표 포트폴리오를 한눈에 확인하세요.</span>
       </div>
       <VRow class="buttons" align="center">
         <VCol>
-          <VBtn @click="$router.push('/field/display')">VIEW MORE</VBtn>
-        </VCol>
-        <VCol style="text-align: justify">
-          <v-pagination v-model="selectedIdx" :length="4" color="brown-darken-4" @update:modelValue="onUpdatePageNum"></v-pagination>
+          <VBtn @click="$router.push('/corp/portfolio')">VIEW MORE</VBtn>
         </VCol>
       </VRow>
     </VCol>
-    <VCol :cols="slideCols">
-      <!-- swiper ... -->
-      <Swiper class="swiper-container" :slides-per-view="'auto'" :space-between="10" @swiper="onSwiper" @activeIndexChange="onActiveIndexChange">
-        <SwiperSlide v-for="(item, idx) in resources" :key="idx">
-          <a v-if="item.idx !== 99">
-            <div>
-              <img :src="`/img/main-field-box${idx + 1}.png`" />
-
-              <div class="title font-weight-medium mt-4">
-                <v-divider :thickness="3" :class="['me-4', 'ms-1', { selected: selectedIdx === item.idx }]" vertical></v-divider>
-                {{ item.label }}
-              </div>
-            </div>
-          </a>
-        </SwiperSlide>
-      </Swiper>
+    <VCol :cols="contentCols" class="portfolio-col">
+      <VRow class="portfolio-grid" dense>
+        <VCol v-for="item in mainPortfolioItems" :key="item.id" cols="12" sm="6" lg="3" class="d-flex">
+          <VCard class="portfolio-card flex-fill" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
+            <VImg :src="item.imgUrl" height="200" cover />
+            <VCardTitle class="portfolio-title">
+              {{ item.title }}
+            </VCardTitle>
+          </VCard>
+        </VCol>
+      </VRow>
     </VCol>
   </VRow>
 </template>
 
-<script lang="ts" setup>
-import { Swiper } from 'swiper/vue'
-// import { Pagination, FreeMode } from 'swiper/modules'
+<script setup>
 import { useDisplay } from 'vuetify'
+import portfolioJsonData from '~/data/portfolio.json'
+import { computed, onMounted, ref } from 'vue'
 
 const display = useDisplay()
 
-const slideCols = computed(() => (display.xs.value || display.sm.value ? 12 : display.md.value ? 11 : 9))
+const contentCols = computed(() => (display.xs.value || display.sm.value ? 12 : display.md.value ? 11 : 9))
 
-const swiper = ref()
+const portfolioData = portfolioJsonData
 
-const resources: { idx: number; label: string }[] = [
-  { idx: 1, label: '응용 LED 디스플레이' },
-  { idx: 2, label: '스마트팩토리(빌딩 자동화), 기계식 주차장' },
-  { idx: 3, label: '개발(S/W & H/W)' },
-  { idx: 4, label: '인력 아웃소싱 사업' },
-  // { idx: 99, label: '' },
-  // { idx: 99, label: '' },
-  // { idx: 99, label: '' },
-  // { idx: 99, label: '' },
-]
+function pickRandomUnique(list, count) {
+  if (count <= 0) return []
+  if (list.length <= count) return [...list]
 
-const selectedIdx = ref<number>(1)
-
-const onSwiper = (swiperInstance: any) => {
-  swiper.value = swiperInstance
+  const copied = [...list]
+  for (let i = copied.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copied[i], copied[j]] = [copied[j], copied[i]]
+  }
+  return copied.slice(0, count)
 }
 
-function onUpdatePageNum(idx: number) {
-  swiper.value.slideTo(idx - 1)
-}
+// SSR hydration mismatch 방지:
+// - 서버에서는 안정적으로 "앞 4개"를 렌더
+// - 클라이언트 마운트 후 랜덤 4개로 교체
+const mainPortfolioItems = ref((portfolioData?.list ?? []).slice(0, 4))
 
-function onActiveIndexChange(obj: any) {
-  selectedIdx.value = obj.realIndex + 1
-}
+onMounted(() => {
+  mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 4)
+})
 </script>
 
 <style lang="scss">
@@ -105,62 +91,35 @@ function onActiveIndexChange(obj: any) {
 
       .buttons {
         margin-top: 50px;
-
-        .v-pagination {
-          // width: 200px;
-          display: inline-block;
-          .v-pagination__prev {
-            display: none;
-            margin: 0;
-          }
-          .v-pagination__next {
-            display: none;
-            margin: 0;
-          }
-
-          .v-pagination__item {
-            margin: 0;
-          }
-
-          .v-btn__content {
-            font-weight: 600;
-            font-size: 30px;
-          }
-
-          .v-pagination__item--is-active .v-btn__content {
-            font-weight: 900;
-            font-size: 40px !important;
-          }
-        }
       }
     }
 
-    .swiper-container {
+    .portfolio-col {
       width: 100%;
-      .swiper-slide {
-        max-width: 340px;
-        min-width: 228px;
-        width: 100%;
-        // height: auto;
+    }
 
-        img {
-          max-width: 100%;
-        }
-      }
+    .portfolio-grid {
+      width: 100%;
+      margin: 0;
+    }
 
-      .v-divider {
-        &.selected {
-          border-color: blue;
-          opacity: 0.6;
-        }
-      }
+    .portfolio-card {
+      cursor: pointer;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
 
-      .title {
-        height: 35px;
-        display: flex;
-        align-items: center;
-        font-size: 18px;
-      }
+    .portfolio-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      border-color: #0066ff;
+    }
+
+    .portfolio-title {
+      padding: 14px 12px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
     }
   }
 }
