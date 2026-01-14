@@ -13,16 +13,14 @@
       </VRow>
     </VCol>
     <VCol :cols="contentCols" class="portfolio-col">
-      <VRow class="portfolio-grid" dense>
-        <VCol v-for="item in mainPortfolioItems" :key="item.id" cols="12" sm="6" md="3" class="d-flex">
-          <VCard class="portfolio-card flex-fill" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
-            <VImg :src="item.imgUrl" height="200" cover />
-            <VCardTitle class="portfolio-title">
-              {{ item.title }}
-            </VCardTitle>
-          </VCard>
-        </VCol>
-      </VRow>
+      <div class="portfolio-grid">
+        <VCard v-for="item in mainPortfolioItems" :key="item.id" class="portfolio-card" theme="light" @click="$router.push(`/corp/portfolio/${item.id}`)">
+          <VImg :src="item.imgUrl" height="200" cover />
+          <VCardTitle class="portfolio-title">
+            {{ item.title }}
+          </VCardTitle>
+        </VCard>
+      </div>
     </VCol>
   </VRow>
 </template>
@@ -100,8 +98,30 @@ onMounted(() => {
 
     .portfolio-grid {
       width: 100%;
-      margin: 0;
+      display: flex;
+      flex-wrap: nowrap;
       gap: 20px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .portfolio-grid::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .portfolio-grid::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .portfolio-grid::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    .portfolio-grid::-webkit-scrollbar-thumb:hover {
+      background: #555;
     }
 
     .portfolio-card {
@@ -111,6 +131,9 @@ onMounted(() => {
       height: 100%;
       display: flex;
       flex-direction: column;
+      flex: 0 0 calc(25% - 15px);
+      min-width: 250px;
+      max-width: 300px;
     }
 
     .portfolio-card:hover {

@@ -76,7 +76,7 @@ function logoClick() {
   font-weight: 600;
 
   .gnb-menu-btn {
-    font-size: 18px;
+    font-size: 23.4px;
     font-weight: 600;
     color: #ffffff !important;
     text-shadow: 
