@@ -13,26 +13,6 @@
           유능한 전문 업체를 만나 제품과 서비스를 완성하고, 고객의 이야기를 가치로 바꿔보세요.
         </p>
       </section>
-      <VRow class="quick-button-row">
-        <VCol>
-          <p class="title">Business Area</p>
-          <p class="text-grey-lighten-1 mt-2">사업분야</p>
-          <p class="text-grey-lighten-1 text-right more">
-            <VBtn class="v-btn--blank" @click="$router.push('/field/display')">
-              <span>View More <VIcon icon="mdi-arrow-right-bold-circle" /></span>
-            </VBtn>
-          </p>
-        </VCol>
-        <VCol>
-          <p class="title">Qutote Contact</p>
-          <p class="text-grey-lighten-1 mt-2">견적/문의 사항</p>
-          <p class="text-grey-lighten-1 text-right more">
-            <VBtn class="v-btn--blank" @click="$router.push('/inquiry/ask')">
-              <span>View More <VIcon icon="mdi-arrow-right-bold-circle" /></span>
-            </VBtn>
-          </p>
-        </VCol>
-      </VRow>
     </VRow>
     <MainBusinessArea />
     <MainAboutUs />
@@ -78,41 +58,6 @@
           background-image: url('/logo/logo-white.png');
           background-repeat: no-repeat;
           margin: 10px 0 25px;
-        }
-      }
-    }
-
-    .quick-button-row {
-      position: absolute;
-      left: 95px;
-      left: min(95px, 5vw);
-      bottom: 5px;
-      gap: min(30px, 1vw);
-
-      .v-col {
-        // min-width: 260px;
-        min-width: min(95px, 80vw);
-        border-right: 1px solid #fff;
-        padding-right: 30px;
-
-        p {
-          font-size: 15px;
-
-          &.title {
-            font-weight: 700;
-            // font-size: 25px;
-            font-size: 1.2rem;
-          }
-
-          &.more {
-            // margin-top: 20px;
-            // margin-bottom: 20px;
-            margin-top: min(20px, 1vw);
-            margin-bottom: min(20px, 1vw);
-          }
-          &.more .v-icon {
-            margin-left: 15px;
-          }
         }
       }
     }
