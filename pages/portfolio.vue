@@ -1,6 +1,6 @@
 <template>
   <VContainer class="portfolio-page-container" :fluid="true">
-    <VRow class="page-header-row" :style="{ backgroundImage: 'url(/img/banner-corp.png)' }">
+    <VRow class="page-header-row" :style="{ backgroundImage: 'url(/img/banner-portfolio.png)' }">
       <MainHeader />
       <div class="header-title-overlay">
         <h1 class="page-title">포트폴리오</h1>

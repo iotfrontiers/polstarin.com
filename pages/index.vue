@@ -27,6 +27,7 @@
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
+    padding-top: min(104px, calc(4vw + 54px));
 
     .banner-text {
       position: absolute;

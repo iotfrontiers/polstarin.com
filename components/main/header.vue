@@ -62,6 +62,14 @@ function logoClick() {
   max-height: 50px;
   min-height: 50px;
   font-weight: 600;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  width: 100%;
+  padding-right: min(2vw, 95px);
+  box-sizing: border-box;
 
   .gnb-menu-btn {
     font-size: 23.4px;
@@ -90,13 +98,15 @@ function logoClick() {
   }
 
   .logo {
-    width: 100%;
-    height: 100%;
+    width: 14rem;
+    height: 50px;
     background-image: url('/logo/logo-white.png');
     background-repeat: no-repeat;
-    background-size: 14rem;
-    background-position-y: center;
+    background-size: contain;
+    background-position: center;
     cursor: pointer;
+    position: relative;
+    z-index: 10;
     filter: 
       drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.9))
       drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.9))
@@ -120,9 +130,14 @@ function logoClick() {
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    padding: 12px 24px;
+    padding: 8px 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 5;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: visible;
   }
 }
 
