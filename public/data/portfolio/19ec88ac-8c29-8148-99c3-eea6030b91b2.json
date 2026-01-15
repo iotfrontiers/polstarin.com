@@ -1,0 +1,13 @@
+{
+  "title": "방광 헬스케어 펌웨어 개발(피에조디스크)",
+  "categories": [
+    "Linux",
+    "C/C++",
+    "Gyro",
+    "초음파"
+  ],
+  "id": "19ec88ac-8c29-8148-99c3-eea6030b91b2",
+  "content": "\n### 방광 헬스케어 데이터 수집을 위한 ESP32 펌웨어 개발\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-8148-99c3-eea6030b91b2/4736d6bef128adec0df5d7c5df32b581.png)\n\n\n### 프로젝트 내용 \n\n\n피에조디스크 센서와 각종 센서를 통한 방광 모니터링\n\n\n### 개발 언어 \n\n\nESP-IDF\n\n\n### 기술 스택\n\n- ESP-IDF (C/C++)\n\n### 주요 기능\n\n- 9축 모션 센서, Probe 초음파 데이터, 조도 데이터 수집\n- 수집 한 데이터 csv 형식 데이터 저장\n- MicroPhone 녹음 및 재생\n- Micro SdCard 데이터 저장\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-8148-99c3-eea6030b91b2/daac6eac8eea93514c4886f361cdafea.png)\n\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}

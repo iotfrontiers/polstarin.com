@@ -2,20 +2,163 @@
   "nextCursor": null,
   "list": [
     {
-      "title": "바닥신호등 글자표시 DISPLAY",
+      "title": "물류 로봇 상태 모니터링 LED 시스템",
+      "categories": [],
+      "id": "2e9c88ac-8c29-80b6-a330-dc48c52be393",
+      "lastUpdateDate": "2026-01-15T01:19:00.000Z"
+    },
+    {
+      "title": "로비 인사말 디스플레이 시스템",
+      "categories": [],
+      "id": "2e9c88ac-8c29-8013-85aa-d8909d59e190",
+      "lastUpdateDate": "2026-01-15T01:18:00.000Z"
+    },
+    {
+      "title": "인에어(In-Air)공기질 측정 및 플라즈마 살균 통합 시스템",
+      "categories": [],
+      "id": "2e9c88ac-8c29-8036-981d-cd9f45a4c489",
+      "lastUpdateDate": "2026-01-15T01:18:00.000Z"
+    },
+    {
+      "title": "대기 환경 측정 값 표시 앱 [취미 프로젝트]",
+      "categories": [
+        "Kotlin",
+        "Android",
+        "RestAPI"
+      ],
+      "id": "19ec88ac-8c29-8105-8b2b-c6b4bb84083b",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "스마트 디스플레이 광고판 프로젝트",
+      "categories": [
+        "JAVA",
+        "Android",
+        "Bluetooth",
+        "WifiDirect"
+      ],
+      "id": "19ec88ac-8c29-8136-b75a-eb01b1a2c0e2",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "의료기기 개발",
+      "categories": [
+        "펌웨어",
+        "C/C++",
+        "C#"
+      ],
+      "id": "19ec88ac-8c29-8191-b631-fb7c56b9540b",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "산업용 HMI(IOT 제품) 개발 및 양산",
       "categories": [
         "C/C++",
-        "Wifi",
         "Linux",
-        "Serial",
-        "Python",
-        "Raspberry Pi",
-        "CM4",
-        "RS485"
+        "QT"
       ],
-      "id": "33af5bd6-4c6d-4c77-a569-a408e1c2563b",
-      "imgUrl": "/notion-resources/33af5bd6-4c6d-4c77-a569-a408e1c2563b/7d843653d11b2fe4c7c579a4ef9690d5.png",
-      "lastUpdateDate": "2024-11-12T04:39:00.000Z"
+      "id": "19ec88ac-8c29-81c0-9da9-cafb96d3a26f",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "IoT 기능을 이용한 그늘막 개발",
+      "categories": [
+        "Android",
+        "Mqtt",
+        "Ble",
+        "Node.Js",
+        "MySql"
+      ],
+      "id": "19ec88ac-8c29-81cb-94a4-efa59af7b421",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "반도체 장비 개발",
+      "categories": [
+        "펌웨어",
+        "C/C++",
+        "C#",
+        "Verilog",
+        "ORCAD"
+      ],
+      "id": "19ec88ac-8c29-81d2-b54c-ce943164f8b5",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "창고 관리용 전자표시기 / 게이트웨이",
+      "categories": [
+        "Arudino",
+        "C/C++",
+        "RestAPI",
+        "Mqtt",
+        "Wifi",
+        "ESP-Now"
+      ],
+      "id": "19ec88ac-8c29-81f2-8383-f4cebdb4f5fb",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "고양이 운동기구(Cat Wheel)",
+      "categories": [
+        "펌웨어",
+        "C/C++",
+        "Android",
+        "Bluetooth"
+      ],
+      "id": "19ec88ac-8c29-81fc-93aa-f5cb59bb6551",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "IOT 그늘막 제어 모바일 안드로이드 앱 개발",
+      "categories": [
+        "Android",
+        "Mqtt",
+        "Ble",
+        "Node.Js",
+        "MySql"
+      ],
+      "id": "19ec88ac-8c29-8149-8e96-f018d7ce199d",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "주차장 자동차 번호식별 프로젝트 [취미 프로젝트]",
+      "categories": [
+        "C/C++",
+        "JAVA",
+        "Android",
+        "Git",
+        "Wifi",
+        "MySql",
+        "Window App",
+        "Spring Boot",
+        "Naver Cloud"
+      ],
+      "id": "19ec88ac-8c29-8157-811f-cc515c3299ac",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "분산형 IoT 환경 센서",
+      "categories": [
+        "Arudino",
+        "C/C++",
+        "RestAPI",
+        "Mqtt",
+        "Wifi",
+        "ESP-Now"
+      ],
+      "id": "19ec88ac-8c29-8161-a817-f23b775e6e1d",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "Modbus RS485 Multiplexer",
+      "categories": [
+        "Arudino",
+        "C/C++",
+        "RS485",
+        "Modbus"
+      ],
+      "id": "19ec88ac-8c29-816e-9c2a-e6e60dcd0038",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "기계식 주차장 디스플레이",
@@ -30,66 +173,8 @@
         "RS485",
         "PLC"
       ],
-      "id": "37bb0b8f-f5e4-4377-9ff0-3cfe661b138b",
-      "imgUrl": "/notion-resources/37bb0b8f-f5e4-4377-9ff0-3cfe661b138b/41024c0463f29ce30a397d50a583ca5a.jpg",
-      "lastUpdateDate": "2024-01-27T08:11:00.000Z"
-    },
-    {
-      "title": "스마트 디스플레이 광고판 프로젝트",
-      "categories": [
-        "JAVA",
-        "Android",
-        "Bluetooth",
-        "WifiDirect"
-      ],
-      "id": "c19c21dd-13d7-4175-84ef-667a95b27cda",
-      "imgUrl": "/notion-resources/c19c21dd-13d7-4175-84ef-667a95b27cda/deba822615c55673630a22864552eadb.jpeg",
-      "lastUpdateDate": "2023-12-14T01:28:00.000Z"
-    },
-    {
-      "title": "투명 LED를 이용한 대기기상 시계",
-      "categories": [
-        "펌웨어",
-        "C/C++",
-        "Android",
-        "JAVA",
-        "Git",
-        "Firebase",
-        "Bluetooth",
-        "Window App",
-        "C#",
-        "OTA"
-      ],
-      "id": "1948a069-7b4d-4259-a472-15cb50a60d49",
-      "imgUrl": "/notion-resources/1948a069-7b4d-4259-a472-15cb50a60d49/eb9200860513186e9922250fb45821ef.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "IOT 그늘막 제어 모바일 안드로이드 앱 개발",
-      "categories": [
-        "Android",
-        "Mqtt",
-        "Ble",
-        "Node.Js",
-        "MySql"
-      ],
-      "id": "343af98e-170d-4a31-8620-b0bb4383e437",
-      "imgUrl": "/notion-resources/343af98e-170d-4a31-8620-b0bb4383e437/ace5ba7a7cde6e8b63c17f6459e856d1.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "창고 관리용 제품 위치 표시기",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "000fe8c5-fb19-42fb-9345-a49fccd7d5eb",
-      "imgUrl": "/notion-resources/000fe8c5-fb19-42fb-9345-a49fccd7d5eb/b0195d3266dfc88e4e7bb886c2d9b418.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-8177-9f33-c078ec3f8225",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "누에 사육 및 관리 프로젝트",
@@ -98,9 +183,36 @@
         "Arudino",
         "C/C++"
       ],
-      "id": "2ec7dbad-d6dc-4e4d-b74b-8fc0f5b1dbfe",
-      "imgUrl": "/notion-resources/2ec7dbad-d6dc-4e4d-b74b-8fc0f5b1dbfe/5d48dadf20f6821decb888bb2898382f.jpeg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-81a5-af2b-caecbcd0e40e",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "청소 차량 Tracer 펌웨어 개발",
+      "categories": [
+        "Arudino",
+        "C/C++",
+        "RestAPI",
+        "Mqtt",
+        "Wifi",
+        "ESP-Now"
+      ],
+      "id": "19ec88ac-8c29-81c1-92be-fff123c7421f",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "바닥신호등 글자표시 DISPLAY",
+      "categories": [
+        "C/C++",
+        "Wifi",
+        "Linux",
+        "Serial",
+        "Python",
+        "Raspberry Pi",
+        "CM4",
+        "RS485"
+      ],
+      "id": "19ec88ac-8c29-81ed-9881-c6a0e9c5ff8a",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "일체형 IoT 환경 센서",
@@ -111,33 +223,8 @@
         "Mqtt",
         "Wifi"
       ],
-      "id": "7aafb80b-0296-4a74-80dd-1846f2a5bf41",
-      "imgUrl": "/notion-resources/7aafb80b-0296-4a74-80dd-1846f2a5bf41/1e67fc24838a8860bb0b87aec0f649dd.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "반도체 장비 개발",
-      "categories": [
-        "펌웨어",
-        "C/C++",
-        "C#",
-        "Verilog",
-        "ORCAD"
-      ],
-      "id": "8745cb4e-1c48-41e1-8261-ef1bba7b3593",
-      "imgUrl": "/notion-resources/8745cb4e-1c48-41e1-8261-ef1bba7b3593/bdaa96db59eecf7c3a5c90f0d27090f8.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "대기 환경 측정 값 표시 앱 [취미 프로젝트]",
-      "categories": [
-        "Kotlin",
-        "Android",
-        "RestAPI"
-      ],
-      "id": "e8d9a167-d69e-41f4-9e7f-8a528a859382",
-      "imgUrl": "/notion-resources/e8d9a167-d69e-41f4-9e7f-8a528a859382/8bfd9cdc385a3dc794c50e68d7b64e57.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-81fa-b054-de75370b670d",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "IOT LED 전광판 및 모바일 어플리케이션 개발",
@@ -153,36 +240,19 @@
         "C#",
         "OTA"
       ],
-      "id": "1120f86e-9471-447b-ad1f-db17a2cc0741",
-      "imgUrl": "/notion-resources/1120f86e-9471-447b-ad1f-db17a2cc0741/8d4a5ae49f39e0a8089e26feb8c95db4.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-8141-b195-f2014e950714",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
-      "title": "창고 관리용 전자표시기 / 게이트웨이",
+      "title": "방광 헬스케어 펌웨어 개발(피에조디스크)",
       "categories": [
-        "Arudino",
+        "Linux",
         "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
+        "Gyro",
+        "초음파"
       ],
-      "id": "e8b5e3f9-8e3e-4822-9cc9-164935326927",
-      "imgUrl": "/notion-resources/e8b5e3f9-8e3e-4822-9cc9-164935326927/54fef13cd3867af4df78d28e38a030dc.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "IoT 기능을 이용한 그늘막 개발",
-      "categories": [
-        "Android",
-        "Mqtt",
-        "Ble",
-        "Node.Js",
-        "MySql"
-      ],
-      "id": "fa6feafc-02e3-48b5-ae98-62b15679a41c",
-      "imgUrl": "/notion-resources/fa6feafc-02e3-48b5-ae98-62b15679a41c/97b1837a9597cf45b7b24936ed7eab4c.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-8148-99c3-eea6030b91b2",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "LTE 중계기 및 댁내형 장비 개발 및 양산",
@@ -191,9 +261,25 @@
         "C/C++",
         "Linux"
       ],
-      "id": "0eb15f35-9d92-4cb2-badf-21af853a8d23",
-      "imgUrl": "/notion-resources/0eb15f35-9d92-4cb2-badf-21af853a8d23/a1dc47f9013ca8d5c47c73f6ea5f0102.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-8177-9300-ebe7ac854d97",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+    },
+    {
+      "title": "투명 LED를 이용한 대기기상 시계",
+      "categories": [
+        "펌웨어",
+        "C/C++",
+        "Android",
+        "JAVA",
+        "Git",
+        "Firebase",
+        "Bluetooth",
+        "Window App",
+        "C#",
+        "OTA"
+      ],
+      "id": "19ec88ac-8c29-8198-b6ed-fd978feb831c",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "•스마트폰으로 제어가 가능한 POV 디스플레이 개발",
@@ -204,38 +290,21 @@
         "Bluetooth",
         "OTA"
       ],
-      "id": "214b1d93-44b1-4697-91c4-cfd6528ccbab",
-      "imgUrl": "/notion-resources/214b1d93-44b1-4697-91c4-cfd6528ccbab/09c63b1af9f85c6393ae27fdfb0cd21a.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-81b4-8cc7-c4368706896f",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
-      "title": "주차장 자동차 번호식별 프로젝트 [취미 프로젝트]",
+      "title": "창고 관리용 제품 위치 표시기",
       "categories": [
+        "Arudino",
         "C/C++",
-        "JAVA",
-        "Android",
-        "Git",
+        "RestAPI",
+        "Mqtt",
         "Wifi",
-        "MySql",
-        "Window App",
-        "Spring Boot",
-        "Naver Cloud"
+        "ESP-Now"
       ],
-      "id": "348fcb0b-a589-4f19-9935-6dde4b6da40d",
-      "imgUrl": "/notion-resources/348fcb0b-a589-4f19-9935-6dde4b6da40d/6d3f82938804f1e96d495eca6e96b67d.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "고양이 운동기구(Cat Wheel)",
-      "categories": [
-        "펌웨어",
-        "C/C++",
-        "Android",
-        "Bluetooth"
-      ],
-      "id": "d0c95557-f970-41c0-9606-e6c696d341d6",
-      "imgUrl": "/notion-resources/d0c95557-f970-41c0-9606-e6c696d341d6/5bdadd7e9d3205ccc1e3b9ba1451f44d.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-81b9-aa64-f127806c9a0d",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "실시간 검색어, 코로나, 뉴스 데이터 제공 모바일 앱 개발 [취미 프로젝트]",
@@ -245,83 +314,8 @@
         "Web crawling",
         "공공API"
       ],
-      "id": "0917ace2-bb6b-445b-90f6-76a6059f451c",
-      "imgUrl": "/notion-resources/0917ace2-bb6b-445b-90f6-76a6059f451c/b091cd51936546d38a36d46e856c4fe0.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "분산형 IoT 환경 센서",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "45df5216-514d-483d-864c-2ad609ddd118",
-      "imgUrl": "/notion-resources/45df5216-514d-483d-864c-2ad609ddd118/7e185719c5d8061ea62a54b936432c47.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "Modbus RS485 Multiplexer",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RS485",
-        "Modbus"
-      ],
-      "id": "86bb176d-dcbd-44fb-ad67-20818b3b9d92",
-      "imgUrl": "/notion-resources/86bb176d-dcbd-44fb-ad67-20818b3b9d92/c1076966a92350008237ee2268364ec0.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "방광 헬스케어 펌웨어 개발(피에조디스크)",
-      "categories": [
-        "Linux",
-        "C/C++",
-        "Gyro",
-        "초음파"
-      ],
-      "id": "1498b4db-3b93-4419-9e5b-8a51b44d6b09",
-      "imgUrl": "/notion-resources/1498b4db-3b93-4419-9e5b-8a51b44d6b09/90837772d259ba10d2197c488efab3c2.png",
-      "lastUpdateDate": "2024-01-12T07:19:00.000Z"
-    },
-    {
-      "title": "청소 차량 Tracer 펌웨어 개발",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "72aa9331-2380-4d1d-a58d-e9b479b6462e",
-      "imgUrl": "/notion-resources/72aa9331-2380-4d1d-a58d-e9b479b6462e/301a2fc90ba0de66e76ed621ab8fc4cf.jpg",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "산업용 HMI(IOT 제품) 개발 및 양산",
-      "categories": [
-        "C/C++",
-        "Linux",
-        "QT"
-      ],
-      "id": "a0c2f772-4c42-4bad-acfd-707c97f70edb",
-      "imgUrl": "/notion-resources/a0c2f772-4c42-4bad-acfd-707c97f70edb/1697f61b455fd209d12e128b9de64cea.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
-    },
-    {
-      "title": "의료기기 개발",
-      "categories": [
-        "펌웨어",
-        "C/C++",
-        "C#"
-      ],
-      "id": "d77a847c-83f5-4b56-9ec4-85e395bcfb48",
-      "imgUrl": "/notion-resources/d77a847c-83f5-4b56-9ec4-85e395bcfb48/c006a754d737201f9dc6a58ccb74f7f2.png",
-      "lastUpdateDate": "2023-12-06T05:57:00.000Z"
+      "id": "19ec88ac-8c29-81f9-b51b-e0b56d53e1d2",
+      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     }
   ]
 }

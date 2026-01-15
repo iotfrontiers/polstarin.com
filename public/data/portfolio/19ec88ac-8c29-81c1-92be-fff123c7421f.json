@@ -1,0 +1,15 @@
+{
+  "title": "청소 차량 Tracer 펌웨어 개발",
+  "categories": [
+    "Arudino",
+    "C/C++",
+    "RestAPI",
+    "Mqtt",
+    "Wifi",
+    "ESP-Now"
+  ],
+  "id": "19ec88ac-8c29-81c1-92be-fff123c7421f",
+  "content": "\n[embed]()\n\n\n### **프로젝트 개요:**\n\n\n이 프로젝트는 청소 차량의 위치, 온도, 습도, 충격, 도어 상태 등을 실시간으로 모니터링하기 위한 Tracer 펌웨어를 개발하는 프로젝트입니다.\n\n\n### \n\n\n![Tracer.jpg](/notion-resources/19ec88ac-8c29-81c1-92be-fff123c7421f/975424c5db84ce989bef2ae1dfdcbdc3.jpg)\n\n\n### **프로젝트 기술 스택:**\n\n- ESP32 MCU\n- 온습도 센서\n- GPS 센서\n- 충격 센서\n- 도어 센서\n- LTE-M 모듈\n- REST API\n\n### **프로젝트 주요 기능:**\n\n- 온습도, GPS, 충격, Door 센서 값 수집\n- LTE-M 무선 통신을 이용한 데이터 전송\n- REST API를 이용한 데이터 수신\n\n### **프로젝트 진행 과정:**\n\n1. Tracer 펌웨어의 시스템 아키텍처를 설계\n2. 온습도, GPS, 충격, Door 센서를 사용하여 데이터를 수집하는 코드를 개발\n3. LTE-M 무선 통신을 이용한 데이터 전송 코드를 개발\n4. REST API를 이용한 데이터 수신 코드를 개발\n5. Tracer 펌웨어를 테스트 및 검증\n\n### **프로젝트 결과:**\n\n- 청소 차량의 위치, 온도, 습도, 충격, 도어 상태 등을 실시간으로 모니터링\n- LTE-M 무선 통신을 사용하여 데이터를 전송\n- REST API를 사용하여 데이터를 수신하여 대시보드에 표시\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}

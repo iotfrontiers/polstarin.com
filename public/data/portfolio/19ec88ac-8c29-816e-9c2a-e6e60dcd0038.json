@@ -1,0 +1,13 @@
+{
+  "title": "Modbus RS485 Multiplexer",
+  "categories": [
+    "Arudino",
+    "C/C++",
+    "RS485",
+    "Modbus"
+  ],
+  "id": "19ec88ac-8c29-816e-9c2a-e6e60dcd0038",
+  "content": "\n[embed]()\n\n\n## ESP32 보드 제작 및 Modbus Multiplexer 통신 프로토콜 개발\n\n\n![multiplexer.jpg](/notion-resources/19ec88ac-8c29-816e-9c2a-e6e60dcd0038/d59ea313b52b1ab967fb3bbecbf6964c.jpg)\n\n\n### **프로젝트 개요:**\n\n\n이 프로젝트는 PC 또는 HMI에서 16개의 PLC를 RS485 통신으로 연결하여 데이터를 받아오는 프로젝트를 개선하기 위한 작업입니다. 기존 프로젝트에서는 PC에서 직접 16개의 PLC와 통신을 하여 데이터를 받아왔기 때문에 통신 속도가 느리고 PC의 통신 과부하가 발생하는 문제가 있었습니다. 이를 개선하기 위해 중간에 Modbus Multiplexer를 사용하여 통신을 중계하는 방식을 채택하였습니다.\n\n\n### **프로젝트 목표:**\n\n- 통신 속도 개선\n- PC의 통신 과부하 방지\n\n### **프로젝트 기술 스택:**\n\n- Arduino ( C/C++)\n\n### **프로젝트 주요 기능:**\n\n- RS485 통신\n- 국번 스위칭\n- Modbus Protocol\n\n### **프로젝트 진행 과정:**\n\n1. Modbus Multiplexer의 작동 원리 및 프로토콜을 연구\n2. ESP32 보드 제작\n3. Modbus Multiplexer 통신 프로토콜 개발\n4. 테스트 및 검증\n\n### **프로젝트 결과:**\n\n- 기존 프로젝트 대비 통신 속도가 약 2배 개선\n- PC의 통신 과부하가 발생하지 않게됨.\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}

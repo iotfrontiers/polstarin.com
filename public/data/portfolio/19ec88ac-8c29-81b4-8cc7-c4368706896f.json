@@ -1,0 +1,14 @@
+{
+  "title": "•스마트폰으로 제어가 가능한 POV 디스플레이 개발",
+  "categories": [
+    "펌웨어",
+    "C/C++",
+    "Android",
+    "Bluetooth",
+    "OTA"
+  ],
+  "id": "19ec88ac-8c29-81b4-8cc7-c4368706896f",
+  "content": "\n# 스마트폰 연동 잔상 LED 디스플레이 개발\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81b4-8cc7-c4368706896f/9dac0ac5e3248f57a651dc90251667cb.png)\n\n\n## 프로젝트 내용\n\n\n• 스마트폰으로 제어가 가능한 POV 디스플레이 개발\n\n\n## 기술 스택\n\n- 펌웨어: Arduino IDE, PWM, LED Strip\n- 하드웨어: Arduino Nano, 회로 및 PCB\n- 앱: Android, 블루투스\n\n## 주요 기능\n\n- 스마트폰으로 POV 이미지 및 영상 제어\n- PWM 제어를 통한 잔상 효과 구현\n\n## **개발 내용**\n\n- **펌웨어 개발**\n\t- Arduino IDE를 사용하여 펌웨어를 개발\n\t- PWM을 사용하여 LED Strip 제어\n\t- 스마트폰과 블루투스 통신을 통해 이미지 및 영상 제어\n- **하드웨어 개발**\n\t- Arduino Nano를 사용하여 하드웨어를 개발\n\t- 회로 및 PCB 설계\n- **앱 개발**\n\t- Android 스튜디오를 사용하여 앱을 개발\n\t- 스마트폰에서 이미지 및 영상을 선택하여 POV 디스플레이에 출력\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}

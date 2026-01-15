@@ -1,0 +1,13 @@
+{
+  "title": "실시간 검색어, 코로나, 뉴스 데이터 제공 모바일 앱 개발 [취미 프로젝트]",
+  "categories": [
+    "개인 프로젝트",
+    "Android",
+    "Web crawling",
+    "공공API"
+  ],
+  "id": "19ec88ac-8c29-81f9-b51b-e0b56d53e1d2",
+  "content": "\n#              [안드로이드 개인 어플리케이션 개발]\n\n\n![그림05.jpg](/notion-resources/19ec88ac-8c29-81f9-b51b-e0b56d53e1d2/8c8c0ad17376184930109ec6535ca591.jpg)\n\n\n## 개요\n\n\n네이버 실시간 검색어 폐지에 따른 실시간 검색어, 코로나, 뉴스 데이터 제공\n\n\n(웹 크롤링 및 공공 API 사용)\n\n\n## 기술 요약\n\n- Android Studio SDK\n- 웹 크롤링\n- 공공 API\n- 구글 애드몹 광고 등록\n- 어플리케이션 배포 및 관리\n\n## 주요 기능\n\n- 실시간 급상승 검색어 표시\n- 금일 코로나 확진자 데이터 표시\n- 뉴스 토픽 표시 및 리다이렉트\n\n구글 스토어 링크 [https://play.google.com/store/apps/details?id=com.bins.bindailydata](https://play.google.com/store/apps/details?id=com.bins.bindailydata)\n\n\n## \n\n",
+  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "imgUrl": ""
+}
