@@ -1,6 +1,6 @@
 import { type NotionData, type NotionListResponse } from '~/composables/notion'
 import { useDeepMerge } from '../utils/core'
-import { createNotionClient, getNotionMarkdownContent, getImageUrlInPage, getDataFilePath, getPageDataFilePath } from './utils'
+import { createNotionClient, getNotionMarkdownContent, getImageUrlInPage, getDataFilePath, getPageDataFilePath, formatNotionId } from './utils'
 import { writeFileSync, existsSync, readFileSync, mkdirSync } from 'node:fs'
 import { dirname } from 'pathe'
 import consola from 'consola'
@@ -76,11 +76,19 @@ export class NotionDataLoader {
    */
   async loadDatabase(databaseId: string, loadSubPages = true) {
     consola.info(`load ${this.options.id} database`)
+    
+    if (!databaseId) {
+      throw new Error(`${this.options.id} database ID가 설정되지 않았습니다.`)
+    }
 
     try {
+      // 데이터베이스 ID를 하이픈 형식으로 변환
+      const formattedDatabaseId = formatNotionId(databaseId)
+      consola.info(`Database ID: ${formattedDatabaseId}`)
+      
       const notion = createNotionClient()
       const queryOption = <QueryDatabaseParameters>this.options.customizeDatabaseQuery({
-        database_id: databaseId,
+        database_id: formattedDatabaseId,
         page_size: 100,
       })
       const result = await notion.databases.query(queryOption)

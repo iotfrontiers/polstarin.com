@@ -32,5 +32,9 @@ export const makePortfolioDataFile = async () => {
       }
     },
   })
-  await loader.loadDatabase(process.env.NOTION_PORTFOLIO_DATABASE_ID)
+  const databaseId = process.env.NOTION_PORTFOLIO_DATABASE_ID
+  if (!databaseId) {
+    throw new Error('NOTION_PORTFOLIO_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
+  }
+  await loader.loadDatabase(databaseId)
 }

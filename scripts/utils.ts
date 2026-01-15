@@ -10,13 +10,43 @@ import axios from 'axios'
 import https from 'https'
 
 /**
+ * UUID 형식으로 변환 (하이픈 추가)
+ * @param id
+ * @returns
+ */
+export const formatNotionId = (id: string): string => {
+  if (!id) return id
+  // 이미 하이픈이 있으면 그대로 반환
+  if (id.includes('-')) return id
+  // 하이픈이 없으면 UUID 형식으로 변환: 8-4-4-4-12
+  if (id.length === 32) {
+    return `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(16, 20)}-${id.slice(20, 32)}`
+  }
+  return id
+}
+
+/**
  * notion client 객체 생성
  * @returns
  */
 export const createNotionClient = () => {
-  return new Client({
-    auth: decryptString(process.env.NOTION_API_SECRET),
-  })
+  const apiSecret = process.env.NOTION_API_SECRET
+  if (!apiSecret) {
+    throw new Error('NOTION_API_SECRET 환경 변수가 설정되지 않았습니다.')
+  }
+  
+  try {
+    const decryptedSecret = decryptString(apiSecret)
+    if (!decryptedSecret || decryptedSecret.trim() === '') {
+      throw new Error('NOTION_API_SECRET 복호화 실패 또는 빈 값입니다.')
+    }
+    return new Client({
+      auth: decryptedSecret,
+    })
+  } catch (error) {
+    console.error('Notion API Secret 복호화 오류:', error)
+    throw new Error('NOTION_API_SECRET 복호화 중 오류가 발생했습니다.')
+  }
 }
 
 /**
