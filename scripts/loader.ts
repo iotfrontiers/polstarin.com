@@ -211,7 +211,7 @@ export class NotionDataLoader {
             imgUrl: !this.options.hasImageInList
               ? null
               : requireUpdatePage(row.id, row['last_edited_time'])
-              ? await getImageUrlInPage(row.id, true, true) // useCloudinary: true로 설정
+              ? await getImageUrlInPage(row.id)
               : oldData.list.find(r => r.id === row.id)?.imgUrl,
             lastUpdateDate: row['last_edited_time'],
           })
