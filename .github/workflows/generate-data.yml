@@ -17,7 +17,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
+          token: ${{ secrets.PRIVATE_GITHUB_TOKEN || github.token }}
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -47,6 +49,8 @@ jobs:
         run: yarn run update:data
 
       - name: Push Data
+        env:
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN || github.token }}
         run: |
           CURRENT_DATE=$(date +%Y%m%d%H%m)
 
@@ -55,6 +59,7 @@ jobs:
 
           # 변경 사항이 있을 때만 커밋 및 푸시 수행
           if [[ `git status --porcelain` ]]; then
+            git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
             git fetch origin
             git add -A
             git commit -am "Update notion data : ${CURRENT_DATE}"
