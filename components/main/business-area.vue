@@ -49,12 +49,12 @@ function pickRandomUnique(list, count) {
 }
 
 // SSR hydration mismatch 방지:
-// - 서버에서는 안정적으로 "앞 4개"를 렌더
-// - 클라이언트 마운트 후 랜덤 4개로 교체
-const mainPortfolioItems = ref((portfolioData?.list ?? []).slice(0, 4))
+// - 서버에서는 안정적으로 "앞 8개"를 렌더
+// - 클라이언트 마운트 후 랜덤 8개로 교체
+const mainPortfolioItems = ref((portfolioData?.list ?? []).slice(0, 8))
 
 onMounted(() => {
-  mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 4)
+  mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 8)
 })
 </script>
 
@@ -99,7 +99,7 @@ onMounted(() => {
     .portfolio-grid {
       width: 100%;
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: 20px;
     }
 
@@ -110,8 +110,9 @@ onMounted(() => {
       height: 100%;
       display: flex;
       flex-direction: column;
-      flex: 1 1 0;
-      min-width: 0;
+      flex: 1 1 calc(25% - 15px); // 한 줄에 4개씩 표시 (gap 20px 고려)
+      min-width: 200px;
+      max-width: calc(25% - 15px);
     }
 
     .portfolio-card:hover {
