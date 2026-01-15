@@ -54,21 +54,57 @@ function pickRandomUnique(list, count) {
   return copied.slice(0, count)
 }
 
+// 8개 중 특정 인덱스의 항목만 교체하는 함수
+function replaceItemAtIndex(currentItems, allItems, index) {
+  if (!currentItems || currentItems.length === 0) return currentItems
+  if (!allItems || allItems.length === 0) return currentItems
+  if (index < 0 || index >= currentItems.length) return currentItems
+  
+  // 현재 표시된 항목들의 ID 목록
+  const currentIds = new Set(currentItems.map(item => item.id))
+  
+  // 전체 리스트에서 현재 표시되지 않은 항목들만 필터링
+  const availableItems = allItems.filter(item => !currentIds.has(item.id))
+  
+  // 교체할 항목이 없으면 그대로 반환
+  if (availableItems.length === 0) return currentItems
+  
+  // 새 항목 중에서 랜덤하게 1개 선택
+  const newItem = availableItems[Math.floor(Math.random() * availableItems.length)]
+  
+  // 지정된 인덱스의 항목을 교체
+  const newItems = [...currentItems]
+  newItems[index] = newItem
+  
+  return newItems
+}
+
 // SSR hydration mismatch 방지:
 // - 서버에서는 안정적으로 "앞 8개"를 렌더
 // - 클라이언트 마운트 후 랜덤 8개로 교체
 const mainPortfolioItems = ref((portfolioData?.list ?? []).slice(0, 8))
+
+// 현재 교체할 인덱스 (0~7 순환)
+const currentReplaceIndex = ref(0)
 
 let refreshInterval = null
 
 onMounted(() => {
   // 초기 랜덤 선택
   mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 8)
+  currentReplaceIndex.value = 0
   
-  // 5초마다 랜덤하게 갱신
+  // 10초마다 순차적으로 1개씩 교체 (1번째 → 2번째 → ... → 8번째 → 1번째)
   refreshInterval = setInterval(() => {
-    mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 8)
-  }, 5000) // 5초 = 5000ms
+    mainPortfolioItems.value = replaceItemAtIndex(
+      mainPortfolioItems.value,
+      portfolioData?.list ?? [],
+      currentReplaceIndex.value
+    )
+    
+    // 다음 인덱스로 이동 (0~7 순환)
+    currentReplaceIndex.value = (currentReplaceIndex.value + 1) % 8
+  }, 10000) // 10초 = 10000ms
 })
 
 onUnmounted(() => {
