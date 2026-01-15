@@ -102,41 +102,72 @@ export const createNotionClient = () => {
  * @returns
  */
 export const getImageUrlInPage = async (pageId: string, saveAsLocal: boolean = true, useCloudinary = false) => {
+  console.log(`[DEBUG][getImageUrlInPage] 시작 - pageId: ${pageId}, saveAsLocal: ${saveAsLocal}, useCloudinary: ${useCloudinary}`)
   try {
     const notion = createNotionClient()
     const blockResult = await notion.blocks.children.list({
       block_id: pageId,
     })
 
+    console.log(`[DEBUG][getImageUrlInPage] 블록 개수: ${blockResult.results?.length || 0}`)
+
     if (blockResult.results) {
       for (const block of blockResult.results) {
         if (block['type'] === 'image' && block['image']) {
-          let fileUrl = null
-          if (saveAsLocal && block['image']?.file?.url) {
-            fileUrl = block['image']?.file?.url
-            // const localFileUrl = await saveFileFromImageUrl('portfolio', fileUrl)
+          console.log(`[DEBUG][getImageUrlInPage] 이미지 블록 발견 - type: ${block['type']}`)
+          console.log(`[DEBUG][getImageUrlInPage] external?.url: ${block['image']?.external?.url || '없음'}`)
+          console.log(`[DEBUG][getImageUrlInPage] file?.url: ${block['image']?.file?.url || '없음'}`)
 
-            if (useCloudinary) {
-              const cloudinaryFileUrl = await uploadCloudinaryImage(fileUrl)
-              if (cloudinaryFileUrl) {
-                fileUrl = cloudinaryFileUrl
-              }
-            } else {
-              const localFileUrl = await saveFileFromImageUrl(pageId, fileUrl)
-              if (localFileUrl) {
-                fileUrl = localFileUrl
-              }
-            }
+          // 외부 URL이 있으면 우선 사용
+          if (block['image']?.external?.url) {
+            console.log(`[DEBUG][getImageUrlInPage] 외부 URL 반환: ${block['image']?.external?.url}`)
+            return block['image']?.external?.url
           }
 
-          return fileUrl ? fileUrl : block['image']?.external?.url
+          // 파일 URL이 있는 경우
+          if (block['image']?.file?.url) {
+            const originalFileUrl = block['image']?.file?.url
+            console.log(`[DEBUG][getImageUrlInPage] 원본 파일 URL: ${originalFileUrl}`)
+
+            if (saveAsLocal) {
+              if (useCloudinary) {
+                console.log(`[DEBUG][getImageUrlInPage] Cloudinary 업로드 시도...`)
+                const cloudinaryFileUrl = await uploadCloudinaryImage(originalFileUrl)
+                if (cloudinaryFileUrl) {
+                  console.log(`[DEBUG][getImageUrlInPage] Cloudinary 업로드 성공: ${cloudinaryFileUrl}`)
+                  return cloudinaryFileUrl
+                }
+                console.log(`[DEBUG][getImageUrlInPage] Cloudinary 업로드 실패, 원본 URL 사용: ${originalFileUrl}`)
+                // Cloudinary 업로드 실패 시 원본 URL 사용
+                return originalFileUrl
+              } else {
+                console.log(`[DEBUG][getImageUrlInPage] 로컬 파일 저장 시도...`)
+                const localFileUrl = await saveFileFromImageUrl(pageId, originalFileUrl)
+                if (localFileUrl) {
+                  console.log(`[DEBUG][getImageUrlInPage] 로컬 파일 저장 성공: ${localFileUrl}`)
+                  return localFileUrl
+                }
+                console.log(`[DEBUG][getImageUrlInPage] 로컬 파일 저장 실패, 원본 URL 사용: ${originalFileUrl}`)
+                // 로컬 파일 저장 실패 시 원본 URL 사용
+                return originalFileUrl
+              }
+            }
+
+            // saveAsLocal이 false면 원본 URL 그대로 반환
+            console.log(`[DEBUG][getImageUrlInPage] saveAsLocal=false, 원본 URL 반환: ${originalFileUrl}`)
+            return originalFileUrl
+          }
         }
       }
     }
+    console.log(`[DEBUG][getImageUrlInPage] 이미지 블록을 찾지 못함`)
   } catch (e) {
-    console.error(e)
+    console.error(`[DEBUG][getImageUrlInPage] 에러 발생:`, e)
     return null
   }
+  
+  console.log(`[DEBUG][getImageUrlInPage] null 반환`)
+  return null
 }
 
 /**
@@ -281,13 +312,18 @@ export const getPageDataFilePath = (id: string, pageId: string) => {
 }
 
 export const saveFileFromImageUrl = async (pageId: string, url: string) => {
+  console.log(`[DEBUG][saveFileFromImageUrl] 시작 - pageId: ${pageId}, url: ${url}`)
   try {
     if (!url.includes('amazonaws.com')) {
+      console.log(`[DEBUG][saveFileFromImageUrl] amazonaws.com이 포함되지 않음, null 반환`)
       return null
     }
 
     const targetDir = resolve(getNotionResourcePath(), `./${pageId}`)
+    console.log(`[DEBUG][saveFileFromImageUrl] 대상 디렉토리: ${targetDir}`)
+    
     if (!existsSync(targetDir)) {
+      console.log(`[DEBUG][saveFileFromImageUrl] 디렉토리 생성: ${targetDir}`)
       mkdirSync(targetDir, { recursive: true })
     }
 
@@ -297,16 +333,25 @@ export const saveFileFromImageUrl = async (pageId: string, url: string) => {
         .update(pageId + resourceUrl.origin + resourceUrl.pathname)
         .digest('hex') + extname(resourceUrl.pathname)
     const filePath = join(targetDir, fileName)
+    console.log(`[DEBUG][saveFileFromImageUrl] 파일 경로: ${filePath}`)
 
     if (!existsSync(filePath)) {
+      console.log(`[DEBUG][saveFileFromImageUrl] 파일 다운로드 시작...`)
       await downloadToFile(filePath, url)
+      console.log(`[DEBUG][saveFileFromImageUrl] 파일 다운로드 완료`)
+    } else {
+      console.log(`[DEBUG][saveFileFromImageUrl] 파일이 이미 존재함`)
     }
 
-    return `/notion-resources/${pageId}/${fileName}`
+    const returnPath = `/notion-resources/${pageId}/${fileName}`
+    console.log(`[DEBUG][saveFileFromImageUrl] 성공, 반환 경로: ${returnPath}`)
+    return returnPath
   } catch (e) {
-    console.error(e)
+    console.error(`[DEBUG][saveFileFromImageUrl] 에러 발생:`, e)
+    console.error(`[DEBUG][saveFileFromImageUrl] 에러 스택:`, e instanceof Error ? e.stack : '스택 없음')
   }
 
+  console.log(`[DEBUG][saveFileFromImageUrl] 실패, null 반환`)
   return null
 }
 

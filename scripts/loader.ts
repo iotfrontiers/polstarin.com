@@ -206,15 +206,33 @@ export class NotionDataLoader {
             listData = (await this.options.customizeDatabaseResponse(<DatabaseObjectResponse>row)) || {}
           }
 
+          const hasImageInList = this.options.hasImageInList
+          const requiresUpdate = requireUpdatePage(row.id, row['last_edited_time'])
+          const oldImgUrl = oldData?.list.find(r => r.id === row.id)?.imgUrl
+          
+          console.log(`[DEBUG][loader] ${row.id} - hasImageInList: ${hasImageInList}, requiresUpdate: ${requiresUpdate}, oldImgUrl: ${oldImgUrl || '없음'}`)
+          
+          let imgUrl = null
+          if (hasImageInList) {
+            if (requiresUpdate) {
+              console.log(`[DEBUG][loader] ${row.id} - 이미지 URL 가져오기 시작...`)
+              imgUrl = await getImageUrlInPage(row.id)
+              console.log(`[DEBUG][loader] ${row.id} - 이미지 URL 가져오기 완료: ${imgUrl || 'null'}`)
+            } else {
+              imgUrl = oldImgUrl
+              console.log(`[DEBUG][loader] ${row.id} - 기존 이미지 URL 사용: ${imgUrl || '없음'}`)
+            }
+          } else {
+            console.log(`[DEBUG][loader] ${row.id} - hasImageInList=false, imgUrl=null`)
+          }
+
           listData = useDeepMerge({}, listData, {
             id: row.id as string,
-            imgUrl: !this.options.hasImageInList
-              ? null
-              : requireUpdatePage(row.id, row['last_edited_time'])
-              ? await getImageUrlInPage(row.id)
-              : oldData.list.find(r => r.id === row.id)?.imgUrl,
+            imgUrl: imgUrl,
             lastUpdateDate: row['last_edited_time'],
           })
+          
+          console.log(`[DEBUG][loader] ${row.id} - 최종 imgUrl: ${listData.imgUrl || 'null/undefined'}`)
 
           list.push(listData)
         }
