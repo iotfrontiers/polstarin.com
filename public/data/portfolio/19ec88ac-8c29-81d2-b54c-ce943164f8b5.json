@@ -8,7 +8,7 @@
     "ORCAD"
   ],
   "id": "19ec88ac-8c29-81d2-b54c-ce943164f8b5",
-  "content": "\n# ⏹️ **의료기기 개발**\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81d2-b54c-ce943164f8b5/9414ca3af00e7b89f3dde0602473f348.png)\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81d2-b54c-ce943164f8b5/cf0e6c44f8e681602b5905cfc730dbed.png)\n\n\n## 프로젝트 내용\n\n\n• 반도체 검사장비 개발\n\n\n## 기술 스택\n\n- WTS: 센서, 디지털 신호처리, 컴퓨터 비전, 반도체 공정 기술\n- FPTS: 센서, 디지털 신호처리, 컴퓨터 비전, 반도체 재료 분석 기술\n- ATS: 센서, 디지털 신호처리, 컴퓨터 비전, 자동화 기술\n\n## 주요 기능\n\n- WTS: 반도체 웨이퍼의 전기적 특성을 검사하여 불량을 검출\n- FPTS: 반도체의 불량 원인을 분석하여 수율을 향상\n- ATS: 반도체 웨이퍼의 전기적 특성을 자동으로 검사하여 생산성을 향상\n\n## 개발 내용\n\n- WTS: 고감도 센서 개발, 딥러닝 기반 검사 기술 개발\n- FPTS: 고속 샘플링 기술 개발, 3차원 영상 분석 기술 개발\n- ATS: 고속 검사 기술 개발, 자동화 기술 개발\n",
-  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "content": "\n![Untitled.png](/notion-resources/19ec88ac-8c29-81d2-b54c-ce943164f8b5/9414ca3af00e7b89f3dde0602473f348.png)\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81d2-b54c-ce943164f8b5/cf0e6c44f8e681602b5905cfc730dbed.png)\n\n\n## 프로젝트 내용\n\n\n• 반도체 검사장비 개발\n\n\n## 기술 스택\n\n- WTS: 센서, 디지털 신호처리, 컴퓨터 비전, 반도체 공정 기술\n- FPTS: 센서, 디지털 신호처리, 컴퓨터 비전, 반도체 재료 분석 기술\n- ATS: 센서, 디지털 신호처리, 컴퓨터 비전, 자동화 기술\n\n## 주요 기능\n\n- WTS: 반도체 웨이퍼의 전기적 특성을 검사하여 불량을 검출\n- FPTS: 반도체의 불량 원인을 분석하여 수율을 향상\n- ATS: 반도체 웨이퍼의 전기적 특성을 자동으로 검사하여 생산성을 향상\n\n## 개발 내용\n\n- WTS: 고감도 센서 개발, 딥러닝 기반 검사 기술 개발\n- FPTS: 고속 샘플링 기술 개발, 3차원 영상 분석 기술 개발\n- ATS: 고속 검사 기술 개발, 자동화 기술 개발\n",
+  "lastUpdateDate": "2026-01-15T09:00:00.000Z",
   "imgUrl": ""
 }
