@@ -75,23 +75,41 @@ export class NotionDataLoader {
    * @returns
    */
   async loadDatabase(databaseId: string, loadSubPages = true) {
-    consola.info(`load ${this.options.id} database`)
+    consola.info(`[${this.options.id}] 데이터베이스 로드 시작`)
+    console.log(`[DEBUG][${this.options.id}] 원본 databaseId:`, databaseId)
+    console.log(`[DEBUG][${this.options.id}] databaseId 타입:`, typeof databaseId)
+    console.log(`[DEBUG][${this.options.id}] databaseId 길이:`, databaseId ? databaseId.length : 0)
     
     if (!databaseId) {
-      throw new Error(`${this.options.id} database ID가 설정되지 않았습니다.`)
+      const errorMsg = `${this.options.id} database ID가 설정되지 않았습니다.`
+      console.error(`[ERROR][${this.options.id}]`, errorMsg)
+      throw new Error(errorMsg)
     }
 
     try {
       // 데이터베이스 ID를 하이픈 형식으로 변환
+      console.log(`[DEBUG][${this.options.id}] ID 변환 시작...`)
       const formattedDatabaseId = formatNotionId(databaseId)
-      consola.info(`Database ID: ${formattedDatabaseId}`)
+      console.log(`[DEBUG][${this.options.id}] 변환된 Database ID:`, formattedDatabaseId)
+      consola.info(`[${this.options.id}] Database ID: ${formattedDatabaseId}`)
       
+      console.log(`[DEBUG][${this.options.id}] Notion Client 생성 시작...`)
       const notion = createNotionClient()
+      console.log(`[DEBUG][${this.options.id}] Notion Client 생성 완료`)
+      
       const queryOption = <QueryDatabaseParameters>this.options.customizeDatabaseQuery({
         database_id: formattedDatabaseId,
         page_size: 100,
       })
+      console.log(`[DEBUG][${this.options.id}] Query 옵션:`, JSON.stringify({
+        database_id: formattedDatabaseId,
+        page_size: queryOption.page_size,
+        sorts: queryOption.sorts,
+      }, null, 2))
+      
+      console.log(`[DEBUG][${this.options.id}] Notion API 호출 시작...`)
       const result = await notion.databases.query(queryOption)
+      console.log(`[DEBUG][${this.options.id}] Notion API 호출 성공. 결과 개수:`, result.results?.length || 0)
 
       const dataFilePath = getDataFilePath(this.options.id)
       this.createDirectories(dataFilePath)
@@ -147,13 +165,31 @@ export class NotionDataLoader {
       } as NotionListResponse<NotionData>
 
       writeFileSync(dataFilePath, JSON.stringify(r, null, 2))
-      consola.info(`finished ${this.options.id} database`)
+      consola.info(`[${this.options.id}] 데이터베이스 로드 완료`)
+      console.log(`[DEBUG][${this.options.id}] 파일 저장 완료:`, dataFilePath)
 
+      console.log(`[DEBUG][${this.options.id}] 페이지 로드 시작...`)
       for (const item of list) {
         await this.loadPage(item.id)
       }
+      console.log(`[DEBUG][${this.options.id}] 모든 페이지 로드 완료`)
     } catch (e) {
-      console.error(e)
+      console.error(`[ERROR][${this.options.id}] 데이터베이스 로드 중 오류 발생:`)
+      console.error(`[ERROR][${this.options.id}] 오류 타입:`, e?.constructor?.name || typeof e)
+      console.error(`[ERROR][${this.options.id}] 오류 메시지:`, e instanceof Error ? e.message : String(e))
+      console.error(`[ERROR][${this.options.id}] 오류 스택:`, e instanceof Error ? e.stack : '스택 정보 없음')
+      
+      if (e && typeof e === 'object' && 'code' in e) {
+        console.error(`[ERROR][${this.options.id}] 오류 코드:`, e.code)
+      }
+      if (e && typeof e === 'object' && 'status' in e) {
+        console.error(`[ERROR][${this.options.id}] HTTP 상태:`, e.status)
+      }
+      if (e && typeof e === 'object' && 'body' in e) {
+        console.error(`[ERROR][${this.options.id}] 응답 본문:`, e.body)
+      }
+      
+      consola.error(`[${this.options.id}] 오류 발생:`, e)
       return {
         list: [],
       }
@@ -220,16 +256,32 @@ export class NotionDataLoader {
    * @param id 아이디
    */
   async loadPageHierarchy(id: string, depth: number = 0) {
+    console.log(`[DEBUG][${this.options.id}] loadPageHierarchy 시작 - depth: ${depth}`)
+    console.log(`[DEBUG][${this.options.id}] 원본 page ID:`, id)
+    console.log(`[DEBUG][${this.options.id}] page ID 타입:`, typeof id)
+    console.log(`[DEBUG][${this.options.id}] page ID 길이:`, id ? id.length : 0)
+    
     if (!id) {
-      throw new Error('id is empty')
+      const errorMsg = 'id is empty'
+      console.error(`[ERROR][${this.options.id}]`, errorMsg)
+      throw new Error(errorMsg)
     }
 
-    consola.info(`load ${this.options.id} page hierarchy data : ` + id)
+    // 페이지 ID도 하이픈 형식으로 변환
+    const formattedPageId = formatNotionId(id)
+    console.log(`[DEBUG][${this.options.id}] 변환된 page ID:`, formattedPageId)
+    
+    consola.info(`load ${this.options.id} page hierarchy data : ` + formattedPageId)
 
+    console.log(`[DEBUG][${this.options.id}] Notion Client 생성 시작...`)
     const notion = createNotionClient()
+    console.log(`[DEBUG][${this.options.id}] Notion Client 생성 완료`)
+    
+    console.log(`[DEBUG][${this.options.id}] pages.retrieve 호출 시작...`)
     const pageInfo = await notion.pages.retrieve({
-      page_id: id as string,
+      page_id: formattedPageId as string,
     })
+    console.log(`[DEBUG][${this.options.id}] pages.retrieve 호출 성공`)
 
     const page: NotionData = {
       id: pageInfo.id,

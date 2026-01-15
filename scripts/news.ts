@@ -42,5 +42,14 @@ export const makeNewsDataFile = async () => {
       }
     },
   })
-  await loader.loadDatabase(process.env.NOTION_NEWS_DATABASE_ID)
+  const databaseId = process.env.NOTION_NEWS_DATABASE_ID
+  console.log('[DEBUG][news] 환경 변수에서 Database ID 가져옴:', databaseId ? `${databaseId.substring(0, 10)}...` : '없음')
+  
+  if (!databaseId) {
+    throw new Error('NOTION_NEWS_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
+  }
+  
+  console.log('[DEBUG][news] loadDatabase 호출 시작...')
+  await loader.loadDatabase(databaseId)
+  console.log('[DEBUG][news] loadDatabase 호출 완료')
 }

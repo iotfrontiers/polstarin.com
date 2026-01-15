@@ -18,5 +18,14 @@ export const makeEducationDataFile = async () => {
     },
   })
 
-  await loader.loadPageHierarchy(process.env.NOTION_EDUCATION_PAGE_ID)
+  const pageId = process.env.NOTION_EDUCATION_PAGE_ID
+  console.log('[DEBUG][education] 환경 변수에서 Page ID 가져옴:', pageId ? `${pageId.substring(0, 10)}...` : '없음')
+  
+  if (!pageId) {
+    throw new Error('NOTION_EDUCATION_PAGE_ID 환경 변수가 설정되지 않았습니다.')
+  }
+  
+  console.log('[DEBUG][education] loadPageHierarchy 호출 시작...')
+  await loader.loadPageHierarchy(pageId)
+  console.log('[DEBUG][education] loadPageHierarchy 호출 완료')
 }

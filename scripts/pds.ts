@@ -42,5 +42,14 @@ export const makePdsDataFile = async () => {
       }
     },
   })
-  await loader.loadDatabase(process.env.NOTION_PDS_DATABASE_ID)
+  const databaseId = process.env.NOTION_PDS_DATABASE_ID
+  console.log('[DEBUG][pds] 환경 변수에서 Database ID 가져옴:', databaseId ? `${databaseId.substring(0, 10)}...` : '없음')
+  
+  if (!databaseId) {
+    throw new Error('NOTION_PDS_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
+  }
+  
+  console.log('[DEBUG][pds] loadDatabase 호출 시작...')
+  await loader.loadDatabase(databaseId)
+  console.log('[DEBUG][pds] loadDatabase 호출 완료')
 }

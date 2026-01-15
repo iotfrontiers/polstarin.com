@@ -15,13 +15,29 @@ import https from 'https'
  * @returns
  */
 export const formatNotionId = (id: string): string => {
-  if (!id) return id
+  console.log('[DEBUG] formatNotionId - 입력 ID:', id)
+  console.log('[DEBUG] formatNotionId - ID 타입:', typeof id)
+  console.log('[DEBUG] formatNotionId - ID 길이:', id ? id.length : 0)
+  
+  if (!id) {
+    console.log('[DEBUG] formatNotionId - ID가 비어있음')
+    return id
+  }
+  
   // 이미 하이픈이 있으면 그대로 반환
-  if (id.includes('-')) return id
+  if (id.includes('-')) {
+    console.log('[DEBUG] formatNotionId - 하이픈이 이미 포함됨, 그대로 반환')
+    return id
+  }
+  
   // 하이픈이 없으면 UUID 형식으로 변환: 8-4-4-4-12
   if (id.length === 32) {
-    return `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(16, 20)}-${id.slice(20, 32)}`
+    const formatted = `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(16, 20)}-${id.slice(20, 32)}`
+    console.log('[DEBUG] formatNotionId - 변환 완료:', formatted)
+    return formatted
   }
+  
+  console.log('[DEBUG] formatNotionId - 길이가 32가 아님, 그대로 반환')
   return id
 }
 
@@ -31,21 +47,37 @@ export const formatNotionId = (id: string): string => {
  */
 export const createNotionClient = () => {
   const apiSecret = process.env.NOTION_API_SECRET
+  console.log('[DEBUG] NOTION_API_SECRET 존재 여부:', !!apiSecret)
+  console.log('[DEBUG] NOTION_API_SECRET 길이:', apiSecret ? apiSecret.length : 0)
+  console.log('[DEBUG] NOTION_API_SECRET 시작 부분:', apiSecret ? apiSecret.substring(0, 10) + '...' : '없음')
+  
   if (!apiSecret) {
     throw new Error('NOTION_API_SECRET 환경 변수가 설정되지 않았습니다.')
   }
   
   try {
+    console.log('[DEBUG] 복호화 시작...')
     const decryptedSecret = decryptString(apiSecret)
+    console.log('[DEBUG] 복호화 완료. 길이:', decryptedSecret ? decryptedSecret.length : 0)
+    console.log('[DEBUG] 복호화된 값 시작 부분:', decryptedSecret ? decryptedSecret.substring(0, 10) + '...' : '없음')
+    
     if (!decryptedSecret || decryptedSecret.trim() === '') {
       throw new Error('NOTION_API_SECRET 복호화 실패 또는 빈 값입니다.')
     }
-    return new Client({
+    
+    console.log('[DEBUG] Notion Client 생성 중...')
+    const client = new Client({
       auth: decryptedSecret,
     })
+    console.log('[DEBUG] Notion Client 생성 완료')
+    return client
   } catch (error) {
-    console.error('Notion API Secret 복호화 오류:', error)
-    throw new Error('NOTION_API_SECRET 복호화 중 오류가 발생했습니다.')
+    console.error('[DEBUG] Notion API Secret 복호화 오류:', error)
+    if (error instanceof Error) {
+      console.error('[DEBUG] 에러 메시지:', error.message)
+      console.error('[DEBUG] 에러 스택:', error.stack)
+    }
+    throw new Error(`NOTION_API_SECRET 복호화 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
