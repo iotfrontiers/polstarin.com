@@ -60,10 +60,14 @@ footer.v-footer {
 
 .contact-us-row {
   min-height: 335px;
-  background-image: url('/img/main-contact.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  // 배경 이미지 제거
+  // background-image: url('/img/main-contact.png');
+  // background-size: cover;
+  // background-repeat: no-repeat;
+  // background-position: center;
+  
+  // 반투명 배경 추가 (메뉴와 유사한 스타일)
+  background-color: rgba(33, 33, 33, 0.85); // 어두운 회색 반투명 배경
   position: relative;
   padding-bottom: 0;
   // padding-left: 95px;
