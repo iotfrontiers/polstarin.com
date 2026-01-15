@@ -108,8 +108,46 @@ export class NotionDataLoader {
       }, null, 2))
       
       console.log(`[DEBUG][${this.options.id}] Notion API 호출 시작...`)
-      const result = await notion.databases.query(queryOption)
-      console.log(`[DEBUG][${this.options.id}] Notion API 호출 성공. 결과 개수:`, result.results?.length || 0)
+      let result
+      try {
+        result = await notion.databases.query(queryOption)
+        console.log(`[DEBUG][${this.options.id}] Notion API 호출 성공. 결과 개수:`, result.results?.length || 0)
+      } catch (error: any) {
+        // 페이지인 경우, 페이지의 자식 데이터베이스를 찾아서 사용
+        if (error.code === 'validation_error' && error.message?.includes('is a page, not a database')) {
+          console.log(`[DEBUG][${this.options.id}] 페이지로 감지됨. 자식 데이터베이스를 찾는 중...`)
+          
+          try {
+            // 페이지를 가져와서 자식 블록 확인
+            const page = await notion.pages.retrieve({ page_id: formattedDatabaseId })
+            console.log(`[DEBUG][${this.options.id}] 페이지 정보:`, page.id)
+            
+            // 페이지의 자식 블록 조회
+            const blocks = await notion.blocks.children.list({ block_id: formattedDatabaseId })
+            console.log(`[DEBUG][${this.options.id}] 자식 블록 개수:`, blocks.results?.length || 0)
+            
+            // 데이터베이스 블록 찾기
+            const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+            
+            if (databaseBlock && databaseBlock['child_database']) {
+              const actualDatabaseId = databaseBlock['child_database']['database_id']
+              console.log(`[DEBUG][${this.options.id}] 데이터베이스 발견! ID:`, actualDatabaseId)
+              
+              // 실제 데이터베이스 ID로 다시 쿼리
+              queryOption.database_id = actualDatabaseId as string
+              result = await notion.databases.query(queryOption)
+              console.log(`[DEBUG][${this.options.id}] 데이터베이스 쿼리 성공. 결과 개수:`, result.results?.length || 0)
+            } else {
+              throw new Error(`${this.options.id}: 페이지 내에 데이터베이스를 찾을 수 없습니다. 페이지가 데이터베이스 페이지인지 확인하세요.`)
+            }
+          } catch (pageError: any) {
+            console.error(`[ERROR][${this.options.id}] 페이지 처리 실패:`, pageError.message)
+            throw new Error(`${this.options.id}: 제공된 ID는 페이지입니다. 데이터베이스 ID를 확인하세요. 원본 에러: ${error.message}`)
+          }
+        } else {
+          throw error
+        }
+      }
 
       const dataFilePath = getDataFilePath(this.options.id)
       this.createDirectories(dataFilePath)

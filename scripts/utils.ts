@@ -24,20 +24,35 @@ export const formatNotionId = (id: string): string => {
     return id
   }
   
-  // 이미 하이픈이 있으면 그대로 반환
-  if (id.includes('-')) {
-    console.log('[DEBUG] formatNotionId - 하이픈이 이미 포함됨, 그대로 반환')
+  // 접두사가 있는 경우 (예: News-19ec88ac8c29814c82c0ffd96e94951f)
+  // 접두사와 ID를 분리
+  let prefix = ''
+  let idPart = id
+  
+  // 하이픈으로 시작하지 않는 접두사 처리 (예: News-)
+  const match = id.match(/^([A-Za-z]+)-(.+)$/)
+  if (match) {
+    prefix = match[1] + '-'
+    idPart = match[2]
+    console.log('[DEBUG] formatNotionId - 접두사 발견:', prefix)
+  }
+  
+  // ID 부분에 이미 하이픈이 있으면 (올바른 UUID 형식) 그대로 반환
+  if (idPart.includes('-') && idPart.length === 36) {
+    console.log('[DEBUG] formatNotionId - ID 부분이 이미 하이픈 포함 UUID 형식, 그대로 반환')
     return id
   }
   
-  // 하이픈이 없으면 UUID 형식으로 변환: 8-4-4-4-12
-  if (id.length === 32) {
-    const formatted = `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(16, 20)}-${id.slice(20, 32)}`
-    console.log('[DEBUG] formatNotionId - 변환 완료:', formatted)
-    return formatted
+  // ID 부분이 32자리면 하이픈 추가
+  if (idPart.length === 32) {
+    const formatted = `${idPart.slice(0, 8)}-${idPart.slice(8, 12)}-${idPart.slice(12, 16)}-${idPart.slice(16, 20)}-${idPart.slice(20, 32)}`
+    const result = prefix + formatted
+    console.log('[DEBUG] formatNotionId - 변환 완료:', result)
+    return result
   }
   
-  console.log('[DEBUG] formatNotionId - 길이가 32가 아님, 그대로 반환')
+  // 그 외의 경우 그대로 반환
+  console.log('[DEBUG] formatNotionId - 형식 변환 불가, 그대로 반환')
   return id
 }
 
