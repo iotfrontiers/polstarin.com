@@ -14,7 +14,13 @@
     </VCol>
     <VCol :cols="contentCols" class="portfolio-col">
       <div class="portfolio-grid">
-          <VCard v-for="item in mainPortfolioItems" :key="item.id" class="portfolio-card" theme="light" @click="$router.push(`/portfolio/${item.id}`)">
+          <VCard 
+            v-for="item in mainPortfolioItems" 
+            :key="item.id" 
+            class="portfolio-card" 
+            theme="light" 
+            @click="$router.push(`/portfolio/${item.id}`)"
+          >
           <VImg :src="item.imgUrl" height="200" cover />
           <VCardTitle class="portfolio-title">
             {{ item.title }}
@@ -28,7 +34,7 @@
 <script setup>
 import { useDisplay } from 'vuetify'
 import portfolioJsonData from '~/data/portfolio.json'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 const display = useDisplay()
 
@@ -53,8 +59,24 @@ function pickRandomUnique(list, count) {
 // - 클라이언트 마운트 후 랜덤 8개로 교체
 const mainPortfolioItems = ref((portfolioData?.list ?? []).slice(0, 8))
 
+let refreshInterval = null
+
 onMounted(() => {
+  // 초기 랜덤 선택
   mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 8)
+  
+  // 5초마다 랜덤하게 갱신
+  refreshInterval = setInterval(() => {
+    mainPortfolioItems.value = pickRandomUnique(portfolioData?.list ?? [], 8)
+  }, 5000) // 5초 = 5000ms
+})
+
+onUnmounted(() => {
+  // 컴포넌트 언마운트 시 interval 정리
+  if (refreshInterval) {
+    clearInterval(refreshInterval)
+    refreshInterval = null
+  }
 })
 </script>
 
@@ -106,13 +128,25 @@ onMounted(() => {
     .portfolio-card {
       cursor: pointer;
       border: 1px solid rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.5s ease;
       height: 100%;
       display: flex;
       flex-direction: column;
       flex: 1 1 calc(25% - 15px); // 한 줄에 4개씩 표시 (gap 20px 고려)
       min-width: 200px;
       max-width: calc(25% - 15px);
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .portfolio-card:hover {
