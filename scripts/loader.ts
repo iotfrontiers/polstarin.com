@@ -137,7 +137,13 @@ export class NotionDataLoader {
               const childDatabase = (databaseBlock as any).child_database
               console.log(`[DEBUG][${this.options.id}] child_database 객체:`, childDatabase ? JSON.stringify(childDatabase, null, 2) : '없음')
               
-              const actualDatabaseId = childDatabase?.database_id || childDatabase?.id
+              // Notion API에서 child_database 블록의 경우:
+              // 1. 블록 자체의 id가 데이터베이스 ID일 수 있음
+              // 2. child_database 객체에는 title만 있고 database_id는 없음
+              // 3. 블록의 id를 데이터베이스 ID로 사용 시도
+              const blockId = (databaseBlock as any).id
+              const actualDatabaseId = childDatabase?.database_id || blockId || childDatabase?.id
+              console.log(`[DEBUG][${this.options.id}] 블록 ID:`, blockId)
               console.log(`[DEBUG][${this.options.id}] 추출된 데이터베이스 ID:`, actualDatabaseId)
               
               if (actualDatabaseId) {
