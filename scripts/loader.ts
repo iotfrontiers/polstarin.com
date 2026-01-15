@@ -127,18 +127,35 @@ export class NotionDataLoader {
             console.log(`[DEBUG][${this.options.id}] 자식 블록 개수:`, blocks.results?.length || 0)
             
             // 데이터베이스 블록 찾기
-            const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+            console.log(`[DEBUG][${this.options.id}] 자식 블록 타입들:`, blocks.results.map((b: any) => b.type))
             
-            if (databaseBlock && databaseBlock['child_database']) {
-              const actualDatabaseId = databaseBlock['child_database']['database_id']
-              console.log(`[DEBUG][${this.options.id}] 데이터베이스 발견! ID:`, actualDatabaseId)
+            const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+            console.log(`[DEBUG][${this.options.id}] 데이터베이스 블록:`, databaseBlock ? JSON.stringify(databaseBlock, null, 2) : '없음')
+            
+            if (databaseBlock) {
+              // child_database 블록의 구조 확인
+              const childDatabase = (databaseBlock as any).child_database
+              console.log(`[DEBUG][${this.options.id}] child_database 객체:`, childDatabase ? JSON.stringify(childDatabase, null, 2) : '없음')
               
-              // 실제 데이터베이스 ID로 다시 쿼리
-              queryOption.database_id = actualDatabaseId as string
-              result = await notion.databases.query(queryOption)
-              console.log(`[DEBUG][${this.options.id}] 데이터베이스 쿼리 성공. 결과 개수:`, result.results?.length || 0)
+              const actualDatabaseId = childDatabase?.database_id || childDatabase?.id
+              console.log(`[DEBUG][${this.options.id}] 추출된 데이터베이스 ID:`, actualDatabaseId)
+              
+              if (actualDatabaseId) {
+                console.log(`[DEBUG][${this.options.id}] 데이터베이스 발견! ID:`, actualDatabaseId)
+              
+                // 실제 데이터베이스 ID로 다시 쿼리
+                queryOption.database_id = actualDatabaseId as string
+                result = await notion.databases.query(queryOption)
+                console.log(`[DEBUG][${this.options.id}] 데이터베이스 쿼리 성공. 결과 개수:`, result.results?.length || 0)
+              } else {
+                console.error(`[ERROR][${this.options.id}] 데이터베이스 ID를 추출할 수 없습니다.`)
+                console.error(`[ERROR][${this.options.id}] 블록 구조:`, JSON.stringify(databaseBlock, null, 2))
+                throw new Error(`${this.options.id}: 페이지 내에 데이터베이스를 찾았지만 ID를 추출할 수 없습니다. 페이지가 데이터베이스 페이지인지 확인하세요.`)
+              }
             } else {
-              throw new Error(`${this.options.id}: 페이지 내에 데이터베이스를 찾을 수 없습니다. 페이지가 데이터베이스 페이지인지 확인하세요.`)
+              // 자식 블록이 없거나 데이터베이스 블록이 없는 경우
+              console.log(`[DEBUG][${this.options.id}] 모든 자식 블록 정보:`, JSON.stringify(blocks.results, null, 2))
+              throw new Error(`${this.options.id}: 페이지 내에 데이터베이스 블록을 찾을 수 없습니다. 페이지가 데이터베이스 페이지인지 확인하세요.`)
             }
           } catch (pageError: any) {
             console.error(`[ERROR][${this.options.id}] 페이지 처리 실패:`, pageError.message)

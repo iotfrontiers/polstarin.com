@@ -25,30 +25,29 @@ export const formatNotionId = (id: string): string => {
   }
   
   // 접두사가 있는 경우 (예: News-19ec88ac8c29814c82c0ffd96e94951f)
-  // 접두사와 ID를 분리
-  let prefix = ''
+  // Notion API는 접두사를 받지 않으므로 접두사를 제거해야 함
   let idPart = id
   
   // 하이픈으로 시작하지 않는 접두사 처리 (예: News-)
+  // 접두사는 로깅용으로만 사용하고, 실제 반환값에서는 제거
   const match = id.match(/^([A-Za-z]+)-(.+)$/)
   if (match) {
-    prefix = match[1] + '-'
+    const prefix = match[1] + '-'
     idPart = match[2]
-    console.log('[DEBUG] formatNotionId - 접두사 발견:', prefix)
+    console.log('[DEBUG] formatNotionId - 접두사 발견 및 제거:', prefix, '→ ID 부분:', idPart)
   }
   
-  // ID 부분에 이미 하이픈이 있으면 (올바른 UUID 형식) 그대로 반환
+  // ID 부분에 이미 하이픈이 있으면 (올바른 UUID 형식) 그대로 반환 (접두사 제거 후)
   if (idPart.includes('-') && idPart.length === 36) {
-    console.log('[DEBUG] formatNotionId - ID 부분이 이미 하이픈 포함 UUID 형식, 그대로 반환')
-    return id
+    console.log('[DEBUG] formatNotionId - ID 부분이 이미 하이픈 포함 UUID 형식, 접두사 제거 후 반환')
+    return idPart
   }
   
-  // ID 부분이 32자리면 하이픈 추가
+  // ID 부분이 32자리면 하이픈 추가 (접두사 제거 후)
   if (idPart.length === 32) {
     const formatted = `${idPart.slice(0, 8)}-${idPart.slice(8, 12)}-${idPart.slice(12, 16)}-${idPart.slice(16, 20)}-${idPart.slice(20, 32)}`
-    const result = prefix + formatted
-    console.log('[DEBUG] formatNotionId - 변환 완료:', result)
-    return result
+    console.log('[DEBUG] formatNotionId - 변환 완료 (접두사 제거):', formatted)
+    return formatted
   }
   
   // 그 외의 경우 그대로 반환
