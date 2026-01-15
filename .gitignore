@@ -74,6 +74,10 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.env.app
+.env.notion
+.env.email
+.env.cloudinary
 .env.development.local
 .env.test.local
 .env.production.local

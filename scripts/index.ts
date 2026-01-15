@@ -13,9 +13,15 @@ import consola from 'consola'
   console.log('[DEBUG] 현재 디렉토리:', process.cwd())
   console.log('='.repeat(80))
   
-  console.log('[DEBUG] dotenv.config() 호출...')
-  dotenv.config()
-  console.log('[DEBUG] dotenv.config() 완료')
+  console.log('[DEBUG] 환경 변수 파일 로드 시작...')
+  // 여러 환경 변수 파일을 순서대로 로드 (나중에 로드된 것이 우선순위가 높음)
+  dotenv.config({ path: '.env.app' })
+  dotenv.config({ path: '.env.notion' })
+  dotenv.config({ path: '.env.email' })
+  dotenv.config({ path: '.env.cloudinary' })
+  // 기존 .env 파일도 지원 (하위 호환성)
+  dotenv.config({ path: '.env' })
+  console.log('[DEBUG] 환경 변수 파일 로드 완료')
   
   // 환경 변수 확인
   const requiredEnvVars = [

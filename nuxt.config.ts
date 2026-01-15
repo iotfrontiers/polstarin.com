@@ -1,6 +1,15 @@
 import compression from 'vite-plugin-compression2'
 import { resolve } from 'pathe'
+import dotenv from 'dotenv'
 // import { copySync } from 'fs-extra'
+
+// 여러 환경 변수 파일 로드 (Nuxt가 시작되기 전에 로드)
+dotenv.config({ path: '.env.app' })
+dotenv.config({ path: '.env.notion' })
+dotenv.config({ path: '.env.email' })
+dotenv.config({ path: '.env.cloudinary' })
+// 기존 .env 파일도 지원 (하위 호환성)
+dotenv.config({ path: '.env' })
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
