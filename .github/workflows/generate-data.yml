@@ -31,6 +31,19 @@ jobs:
         run: yarn install
 
       - name: Generate Data
+        env:
+          NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+          NOTION_PORTFOLIO_DATABASE_ID: ${{ secrets.NOTION_PORTFOLIO_DATABASE_ID }}
+          NOTION_NOTICE_DATABASE_ID: ${{ secrets.NOTION_NOTICE_DATABASE_ID }}
+          NOTION_NEWS_DATABASE_ID: ${{ secrets.NOTION_NEWS_DATABASE_ID }}
+          NOTION_PDS_DATABASE_ID: ${{ secrets.NOTION_PDS_DATABASE_ID }}
+          NOTION_ASK_DATABASE_ID: ${{ secrets.NOTION_ASK_DATABASE_ID }}
+          NOTION_EDUCATION_DATABASE_ID: ${{ secrets.NOTION_EDUCATION_DATABASE_ID }}
+          NOTION_PRODUCT_DATABASE_ID: ${{ secrets.NOTION_PRODUCT_DATABASE_ID }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_UPLOAD_PRESET: ${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
         run: yarn run update:data
 
       - name: Push Data
