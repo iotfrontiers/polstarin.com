@@ -192,7 +192,7 @@ export class NotionDataLoader {
         const pageData = oldData.list.find(row => row.id === id)
 
         if (!pageData) {
-          return pageData
+          return true  // 새 항목이므로 업데이트 필요
         }
 
         return lastUpdatedTime !== pageData.lastUpdateDate
