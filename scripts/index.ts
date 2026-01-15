@@ -24,8 +24,12 @@ import consola from 'consola'
     'NOTION_NOTICE_DATABASE_ID',
     'NOTION_NEWS_DATABASE_ID',
     'NOTION_PDS_DATABASE_ID',
-    'NOTION_EDUCATION_PAGE_ID',  // education은 PAGE_ID 사용
-    'NOTION_PRODUCT_PAGE_ID',    // product는 PAGE_ID 사용
+  ]
+  
+  // 선택적 환경 변수 (없어도 에러가 나지 않음)
+  const optionalEnvVars = [
+    'NOTION_EDUCATION_PAGE_ID',
+    'NOTION_PRODUCT_PAGE_ID',
   ]
   
   console.log('[DEBUG] 환경 변수 확인 시작...')
@@ -71,13 +75,23 @@ import consola from 'consola'
     await makePdsDataFile()
     console.log('[DEBUG] PDS 데이터 생성 완료')
     
-    console.log('[DEBUG] 교육 데이터 생성 시작...')
-    await makeEducationDataFile()
-    console.log('[DEBUG] 교육 데이터 생성 완료')
+    // 교육 데이터 (선택적)
+    if (process.env.NOTION_EDUCATION_PAGE_ID) {
+      console.log('[DEBUG] 교육 데이터 생성 시작...')
+      await makeEducationDataFile()
+      console.log('[DEBUG] 교육 데이터 생성 완료')
+    } else {
+      console.log('[DEBUG] NOTION_EDUCATION_PAGE_ID가 설정되지 않아 교육 데이터 생성 건너뜀')
+    }
     
-    console.log('[DEBUG] 제품 데이터 생성 시작...')
-    await makeProductDataFile()
-    console.log('[DEBUG] 제품 데이터 생성 완료')
+    // 제품 데이터 (선택적)
+    if (process.env.NOTION_PRODUCT_PAGE_ID) {
+      console.log('[DEBUG] 제품 데이터 생성 시작...')
+      await makeProductDataFile()
+      console.log('[DEBUG] 제품 데이터 생성 완료')
+    } else {
+      console.log('[DEBUG] NOTION_PRODUCT_PAGE_ID가 설정되지 않아 제품 데이터 생성 건너뜀')
+    }
     
     console.log('='.repeat(80))
     console.log('[DEBUG] 모든 데이터 생성 완료')

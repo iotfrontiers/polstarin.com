@@ -22,7 +22,8 @@ export const makeEducationDataFile = async () => {
   console.log('[DEBUG][education] 환경 변수에서 Page ID 가져옴:', pageId ? `${pageId.substring(0, 10)}...` : '없음')
   
   if (!pageId) {
-    throw new Error('NOTION_EDUCATION_PAGE_ID 환경 변수가 설정되지 않았습니다.')
+    console.warn('[WARN][education] NOTION_EDUCATION_PAGE_ID 환경 변수가 설정되지 않았습니다. 교육 데이터 생성을 건너뜁니다.')
+    return
   }
   
   console.log('[DEBUG][education] loadPageHierarchy 호출 시작...')
