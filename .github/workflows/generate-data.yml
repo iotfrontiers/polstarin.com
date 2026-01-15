@@ -7,6 +7,7 @@ on:
     - cron: '0 0 * * *'
 
 permissions:
+  contents: read
   contents: write
 
 jobs:
@@ -15,9 +16,11 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          token: ${{ github.token }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Install Node.js
         uses: actions/setup-node@v3
