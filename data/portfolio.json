@@ -5,18 +5,21 @@
       "title": "물류 로봇 상태 모니터링 LED 시스템",
       "categories": [],
       "id": "2e9c88ac-8c29-80b6-a330-dc48c52be393",
+      "imgUrl": "/notion-resources/2e9c88ac-8c29-80b6-a330-dc48c52be393/fb01610b908525e2c1ec712e41ead7ad.png",
       "lastUpdateDate": "2026-01-15T01:19:00.000Z"
     },
     {
       "title": "로비 인사말 디스플레이 시스템",
       "categories": [],
       "id": "2e9c88ac-8c29-8013-85aa-d8909d59e190",
+      "imgUrl": "/notion-resources/2e9c88ac-8c29-8013-85aa-d8909d59e190/a9b24e6e5ffd616dce131d4c53554bd5.png",
       "lastUpdateDate": "2026-01-15T01:18:00.000Z"
     },
     {
       "title": "인에어(In-Air)공기질 측정 및 플라즈마 살균 통합 시스템",
       "categories": [],
       "id": "2e9c88ac-8c29-8036-981d-cd9f45a4c489",
+      "imgUrl": "/notion-resources/2e9c88ac-8c29-8036-981d-cd9f45a4c489/6627fdb5e75139cf91d1b8100d9550d2.png",
       "lastUpdateDate": "2026-01-15T01:18:00.000Z"
     },
     {
@@ -27,6 +30,7 @@
         "RestAPI"
       ],
       "id": "19ec88ac-8c29-8105-8b2b-c6b4bb84083b",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8105-8b2b-c6b4bb84083b/312d32c0586d56c893ea4024c16bfbcb.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -38,6 +42,7 @@
         "WifiDirect"
       ],
       "id": "19ec88ac-8c29-8136-b75a-eb01b1a2c0e2",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8136-b75a-eb01b1a2c0e2/f017eabfb13f4f12ea7119186728caab.jpeg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -48,6 +53,7 @@
         "C#"
       ],
       "id": "19ec88ac-8c29-8191-b631-fb7c56b9540b",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8191-b631-fb7c56b9540b/c7441163fb83b6049f677120e8defbc1.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -58,6 +64,7 @@
         "QT"
       ],
       "id": "19ec88ac-8c29-81c0-9da9-cafb96d3a26f",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81c0-9da9-cafb96d3a26f/8e5182c1fd45eccc709950fdcdd8fe58.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -70,6 +77,7 @@
         "MySql"
       ],
       "id": "19ec88ac-8c29-81cb-94a4-efa59af7b421",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81cb-94a4-efa59af7b421/d2762ae4ddaf22ee9aff7c091e42172a.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -96,6 +104,7 @@
         "ESP-Now"
       ],
       "id": "19ec88ac-8c29-81f2-8383-f4cebdb4f5fb",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81f2-8383-f4cebdb4f5fb/e3305fa9df9eee31f1d330d72863cd1f.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -107,6 +116,7 @@
         "Bluetooth"
       ],
       "id": "19ec88ac-8c29-81fc-93aa-f5cb59bb6551",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81fc-93aa-f5cb59bb6551/59821c8f97d08cff627aac52e7912baf.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -119,6 +129,7 @@
         "MySql"
       ],
       "id": "19ec88ac-8c29-8149-8e96-f018d7ce199d",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8149-8e96-f018d7ce199d/50d44c880c305ff7b0e9e58f48089c37.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -135,6 +146,7 @@
         "Naver Cloud"
       ],
       "id": "19ec88ac-8c29-8157-811f-cc515c3299ac",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8157-811f-cc515c3299ac/9c420d7332351f11d80943229f03b740.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -148,6 +160,7 @@
         "ESP-Now"
       ],
       "id": "19ec88ac-8c29-8161-a817-f23b775e6e1d",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8161-a817-f23b775e6e1d/8c80a05d7326335ee598e510ba0909dc.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -159,6 +172,7 @@
         "Modbus"
       ],
       "id": "19ec88ac-8c29-816e-9c2a-e6e60dcd0038",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-816e-9c2a-e6e60dcd0038/d59ea313b52b1ab967fb3bbecbf6964c.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -175,6 +189,7 @@
         "PLC"
       ],
       "id": "19ec88ac-8c29-8177-9f33-c078ec3f8225",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8177-9f33-c078ec3f8225/37526e5692879fa160cf1dd219786372.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -185,6 +200,7 @@
         "C/C++"
       ],
       "id": "19ec88ac-8c29-81a5-af2b-caecbcd0e40e",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81a5-af2b-caecbcd0e40e/8bf4afcafd49f6bbb6f81421a34b9009.jpeg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -198,6 +214,7 @@
         "ESP-Now"
       ],
       "id": "19ec88ac-8c29-81c1-92be-fff123c7421f",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81c1-92be-fff123c7421f/975424c5db84ce989bef2ae1dfdcbdc3.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -213,6 +230,7 @@
         "RS485"
       ],
       "id": "19ec88ac-8c29-81ed-9881-c6a0e9c5ff8a",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81ed-9881-c6a0e9c5ff8a/cd7fada610682e77ceabbac4607c4d99.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -225,6 +243,7 @@
         "Wifi"
       ],
       "id": "19ec88ac-8c29-81fa-b054-de75370b670d",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81fa-b054-de75370b670d/75328842c3d4cd7c726a074d46b905d2.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -242,6 +261,7 @@
         "OTA"
       ],
       "id": "19ec88ac-8c29-8141-b195-f2014e950714",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8141-b195-f2014e950714/8157fc5f9c441e264997113070b7274a.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -253,6 +273,7 @@
         "초음파"
       ],
       "id": "19ec88ac-8c29-8148-99c3-eea6030b91b2",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8148-99c3-eea6030b91b2/4736d6bef128adec0df5d7c5df32b581.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -263,6 +284,7 @@
         "Linux"
       ],
       "id": "19ec88ac-8c29-8177-9300-ebe7ac854d97",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8177-9300-ebe7ac854d97/826557fce61716df271445e4718ab882.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -280,6 +302,7 @@
         "OTA"
       ],
       "id": "19ec88ac-8c29-8198-b6ed-fd978feb831c",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-8198-b6ed-fd978feb831c/7cee0da17356eaeb379128a881e688f3.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -292,6 +315,7 @@
         "OTA"
       ],
       "id": "19ec88ac-8c29-81b4-8cc7-c4368706896f",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81b4-8cc7-c4368706896f/9dac0ac5e3248f57a651dc90251667cb.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -305,6 +329,7 @@
         "ESP-Now"
       ],
       "id": "19ec88ac-8c29-81b9-aa64-f127806c9a0d",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81b9-aa64-f127806c9a0d/7ba6ce4e9b8d8c30269c14490130f38a.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
@@ -316,6 +341,7 @@
         "공공API"
       ],
       "id": "19ec88ac-8c29-81f9-b51b-e0b56d53e1d2",
+      "imgUrl": "/notion-resources/19ec88ac-8c29-81f9-b51b-e0b56d53e1d2/8c8c0ad17376184930109ec6535ca591.jpg",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     }
   ]
