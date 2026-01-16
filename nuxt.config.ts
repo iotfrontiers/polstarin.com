@@ -120,7 +120,7 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       meta: [
-        { name: 'viewport', content: 'width=1200,initial-scale=1,minimum-scale=0.1,maximum-scale=5,user-scalable=yes' },
+        { name: 'viewport', content: 'width=1200,minimum-scale=0.1,maximum-scale=5,user-scalable=yes' },
         { content: 'website', property: 'og:type' },
         { content: 'www.polstarin.com', property: 'og:site:name' },
         { content: '//www.polstarin.com', property: 'og:url' },
@@ -129,6 +129,24 @@ export default defineNuxtConfig({
         { content: '폴스타인', property: 'og:title' },
         { content: 'We are IT experts. POLSTARIN', property: 'og:description' },
         { content: '//www.polstarin.com/_nuxt/banner-top.a3296987.png', property: 'og:image' },
+      ],
+      script: [
+        {
+          innerHTML: `
+            (function() {
+              var desktopWidth = 1200;
+              var screenWidth = window.innerWidth || window.screen.width || window.screen.availWidth;
+              if (screenWidth < 1200) {
+                var initialScale = screenWidth / desktopWidth;
+                var viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                  viewport.setAttribute('content', 'width=' + desktopWidth + ',initial-scale=' + initialScale.toFixed(3) + ',minimum-scale=0.1,maximum-scale=5,user-scalable=yes');
+                }
+              }
+            })();
+          `,
+          type: 'text/javascript',
+        },
       ],
       title: '(주) 폴스타인',
     },
