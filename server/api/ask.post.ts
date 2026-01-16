@@ -191,56 +191,6 @@ export default defineEventHandler(async event => {
       
       console.log('[DEBUG][ask] 5-4-17. Notion API 호출 시작...')
       const pageResponse = await notion.pages.create(requestBody)
-        parent: {
-          database_id: notionConfig.askDatabaseId,
-        },
-        properties: {
-          제목: {
-            type: 'title',
-            title: [
-              {
-                text: {
-                  content: body.title || '',
-                },
-              },
-            ],
-          },
-          작성자: {
-            type: 'rich_text',
-            rich_text: [
-              {
-                text: {
-                  content: body.author || '',
-                },
-              },
-            ],
-          },
-          이메일: {
-            type: 'email',
-            email: body.email,
-          },
-          연락처: {
-            type: 'rich_text',
-            rich_text: contactRichText,
-          },
-        },
-        children: [
-          {
-            object: 'block',
-            type: 'paragraph',
-            paragraph: {
-              rich_text: [
-                {
-                  type: 'text',
-                  text: {
-                    content: body.content || '',
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      })
       
       console.log('[DEBUG][ask] 5-5. Notion 페이지 생성 요청 완료')
       notionSaved = true
