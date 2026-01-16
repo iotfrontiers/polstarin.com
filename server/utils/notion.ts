@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, createWriteStream } from 'node:fs'
 import { NotionToMarkdown } from 'notion-to-md'
 import { NotionData, NotionListResponse, NotionPageRequest } from '~/composables/notion'
 import https from 'https'
+import { decryptString } from './crypt'
 
 export const createNotionClient = () => {
   const { notion } = useRuntimeConfig()
