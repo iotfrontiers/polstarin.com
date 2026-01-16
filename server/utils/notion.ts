@@ -10,42 +10,29 @@ import https from 'https'
 import { decryptString } from './crypt'
 
 export const createNotionClient = () => {
-  console.log('[DEBUG][notion][client] ========== Notion 클라이언트 생성 시작 ==========')
   const { notion } = useRuntimeConfig()
-  console.log('[DEBUG][notion][client] 1. notion.apiSecret 존재 여부:', !!notion.apiSecret)
-  console.log('[DEBUG][notion][client] 2. notion.apiSecret 길이:', notion.apiSecret?.length || 0)
-  console.log('[DEBUG][notion][client] 3. notion.apiSecret (일부):', notion.apiSecret ? `${notion.apiSecret.substring(0, 10)}...` : '없음')
   
   if (!notion.apiSecret) {
-    console.error('[DEBUG][notion][client] 4. ⚠️ NOTION_API_SECRET 환경 변수가 설정되지 않았습니다!')
+    console.error('⚠️ NOTION_API_SECRET 환경 변수가 설정되지 않았습니다!')
     throw new Error('NOTION_API_SECRET 환경 변수가 설정되지 않았습니다.')
   }
   
-  console.log('[DEBUG][notion][client] 5. 복호화 시작...')
   let decryptedSecret: string
   try {
     decryptedSecret = decryptString(notion.apiSecret)
-    console.log('[DEBUG][notion][client] 6. 복호화 완료')
-    console.log('[DEBUG][notion][client] 7. 복호화된 값 길이:', decryptedSecret?.length || 0)
-    console.log('[DEBUG][notion][client] 8. 복호화된 값 (일부):', decryptedSecret ? `${decryptedSecret.substring(0, 10)}...` : '없음')
     
     if (!decryptedSecret || decryptedSecret.trim() === '') {
-      console.error('[DEBUG][notion][client] 9. ⚠️ 복호화된 값이 비어있습니다!')
+      console.error('⚠️ 복호화된 값이 비어있습니다!')
       throw new Error('복호화된 NOTION_API_SECRET이 비어있습니다.')
     }
   } catch (decryptError) {
-    console.error('[DEBUG][notion][client] 10. 복호화 오류 발생!')
-    console.error('[DEBUG][notion][client] 11. 오류 타입:', decryptError?.constructor?.name || typeof decryptError)
-    console.error('[DEBUG][notion][client] 12. 오류 메시지:', decryptError instanceof Error ? decryptError.message : String(decryptError))
+    console.error('복호화 오류:', decryptError instanceof Error ? decryptError.message : String(decryptError))
     throw decryptError
   }
   
-  console.log('[DEBUG][notion][client] 13. Notion Client 생성 시작...')
   const client = new Client({
     auth: decryptedSecret,
   })
-  console.log('[DEBUG][notion][client] 14. Notion Client 생성 완료')
-  console.log('[DEBUG][notion][client] ========== Notion 클라이언트 생성 완료 ==========')
   return client
 }
 
