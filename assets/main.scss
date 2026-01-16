@@ -12,6 +12,19 @@
 html,
 body {
   margin: 0;
+  min-width: 1200px; // 모바일에서도 데스크탑 최소 너비 유지
+}
+
+// 모바일에서 데스크탑 레이아웃 강제
+@media (max-width: 1199px) {
+  html {
+    min-width: 1200px;
+  }
+  
+  body {
+    min-width: 1200px;
+    overflow-x: auto; // 가로 스크롤 허용
+  }
 }
 
 // @use 'vuetify' with (
