@@ -17,9 +17,29 @@ export default defineEventHandler(async event => {
   try {
     console.log('[DEBUG][ask] 1. 환경 변수 로드 시작...')
     errorDetails = { step: 'load_config' }
-    const { notion: notionConfig } = useRuntimeConfig()
+    const { notion: notionConfig, email: emailConfig } = useRuntimeConfig()
     console.log('[DEBUG][ask] 1-1. notionConfig.askDatabaseId 존재 여부:', !!notionConfig.askDatabaseId)
     console.log('[DEBUG][ask] 1-2. notionConfig.askDatabaseId 값:', notionConfig.askDatabaseId ? `${notionConfig.askDatabaseId.substring(0, 10)}...` : '없음')
+    console.log('[DEBUG][ask] 1-3. notionConfig.apiSecret 존재 여부:', !!notionConfig.apiSecret)
+    console.log('[DEBUG][ask] 1-4. notionConfig.apiSecret 길이:', notionConfig.apiSecret?.length || 0)
+    console.log('[DEBUG][ask] 1-5. emailConfig.googleSmtpUser 존재 여부:', !!emailConfig.googleSmtpUser)
+    console.log('[DEBUG][ask] 1-6. emailConfig.googleSmtpUser 길이:', emailConfig.googleSmtpUser?.length || 0)
+    console.log('[DEBUG][ask] 1-7. emailConfig.googleSmtpPassword 존재 여부:', !!emailConfig.googleSmtpPassword)
+    console.log('[DEBUG][ask] 1-8. emailConfig.googleSmtpPassword 길이:', emailConfig.googleSmtpPassword?.length || 0)
+    
+    // 환경 변수 검증
+    if (!notionConfig.askDatabaseId) {
+      console.error('[DEBUG][ask] 1-9. ⚠️ NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다!')
+    }
+    if (!notionConfig.apiSecret) {
+      console.error('[DEBUG][ask] 1-10. ⚠️ NOTION_API_SECRET 환경 변수가 설정되지 않았습니다!')
+    }
+    if (!emailConfig.googleSmtpUser) {
+      console.error('[DEBUG][ask] 1-11. ⚠️ GOOGLE_SMTP_USER 환경 변수가 설정되지 않았습니다!')
+    }
+    if (!emailConfig.googleSmtpPassword) {
+      console.error('[DEBUG][ask] 1-12. ⚠️ GOOGLE_SMTP_PASSWORD 환경 변수가 설정되지 않았습니다!')
+    }
     
     console.log('[DEBUG][ask] 2. Notion 클라이언트 생성 시작...')
     errorDetails = { step: 'create_notion_client' }
@@ -80,6 +100,12 @@ export default defineEventHandler(async event => {
 
       console.log('[DEBUG][ask] 5-3. Notion 페이지 생성 요청 시작...')
       console.log('[DEBUG][ask] 5-4. database_id:', notionConfig.askDatabaseId)
+      
+      if (!notionConfig.askDatabaseId) {
+        console.error('[DEBUG][ask] 5-4-1. ⚠️ database_id가 없습니다! NOTION_ASK_DATABASE_ID 환경 변수를 확인하세요.')
+        throw new Error('NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
+      }
+      
       const pageResponse = await notion.pages.create({
         parent: {
           database_id: notionConfig.askDatabaseId,
