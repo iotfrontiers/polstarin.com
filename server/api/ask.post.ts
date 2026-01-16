@@ -105,7 +105,7 @@ export default defineEventHandler(async event => {
       <p>${body.content || ''}</p>
       `
 
-      await sendEmail('프론티어 기술/견적문의 : ' + body.title, mailContent)
+      await sendEmail('폴스타인 기술/견적문의 : ' + body.title, mailContent)
       emailSent = true
       console.log('이메일 전송 성공')
     } catch (emailError) {

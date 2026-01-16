@@ -2,7 +2,7 @@
   <VNavigationDrawer color="#1e293b" v-model="showDrawer" location="right" temporary :width="300">
     <VToolbar density="compact" color="blue-lighten-1">
       <VAppBarNavIcon @click="showDrawer = false" style="color:#fff"></VAppBarNavIcon>
-      <VToolbarTitle>Frontier Site Map</VToolbarTitle>
+      <VToolbarTitle>POLSTARIN Site Map</VToolbarTitle>
     </VToolbar>
     <VList density="compact">
       <VListItem @click="movePage('/')" prependIcon="mdi-home-circle">Home</VListItem>

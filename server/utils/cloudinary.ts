@@ -34,7 +34,7 @@ export const uploadCloudinaryImage = (imageUrl: string) => {
       .update(resourceUrl.origin + resourceUrl.pathname)
       .digest('hex')
 
-    const destUrl = cloudinary.url(`frontier/${fileId}`, {
+    const destUrl = cloudinary.url(`polstarin/${fileId}`, {
       upload_preset: cloudinaryConfig.uploadPreset,
       secure: !process.dev,
       format: getFileExt(resourceUrl.pathname),

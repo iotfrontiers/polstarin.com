@@ -46,7 +46,7 @@ export const sendEmail = async (subject: string, content: string) => {
     for (const receiver of receiverList) {
       try {
         await transporter.sendMail({
-          from: `"Frontier" <${decryptString(email.googleSmtpUser)}>`,
+          from: `"POLSTARIN" <${decryptString(email.googleSmtpUser)}>`,
           to: receiver,
           subject,
           html: content.replace(/\n/gi, '<br />'),
