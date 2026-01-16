@@ -106,11 +106,13 @@ export default defineEventHandler(async event => {
         throw new Error('NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
       }
       
-      // 데이터베이스 정보 조회 (속성 확인)
+      // 데이터베이스 정보 조회 (속성 확인) - 페이지인 경우 자식 데이터베이스 찾기
       console.log('[DEBUG][ask] 5-4-2. 데이터베이스 정보 조회 시작...')
+      let actualDatabaseId = notionConfig.askDatabaseId
+      
       try {
         const dbInfo = await notion.databases.retrieve({
-          database_id: notionConfig.askDatabaseId,
+          database_id: actualDatabaseId,
         })
         console.log('[DEBUG][ask] 5-4-3. 데이터베이스 조회 성공!')
         console.log('[DEBUG][ask] 5-4-4. 데이터베이스 제목:', dbInfo.title?.[0]?.plain_text || '없음')
@@ -119,19 +121,67 @@ export default defineEventHandler(async event => {
         Object.entries(dbInfo.properties || {}).forEach(([key, value]: [string, any]) => {
           console.log(`[DEBUG][ask] 5-4-7.   - "${key}": 타입=${value.type}`)
         })
-      } catch (dbInfoError) {
+      } catch (dbInfoError: any) {
         console.error('[DEBUG][ask] 5-4-8. 데이터베이스 정보 조회 실패!')
         console.error('[DEBUG][ask] 5-4-9. 조회 오류 타입:', dbInfoError?.constructor?.name || typeof dbInfoError)
         console.error('[DEBUG][ask] 5-4-10. 조회 오류 메시지:', dbInfoError instanceof Error ? dbInfoError.message : String(dbInfoError))
         if (dbInfoError && typeof dbInfoError === 'object' && 'code' in dbInfoError) {
           console.error('[DEBUG][ask] 5-4-11. 조회 오류 코드:', (dbInfoError as any).code)
         }
+        
+        // 페이지인 경우, 자식 데이터베이스 찾기
+        if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
+          console.log('[DEBUG][ask] 5-4-12. 페이지로 감지됨. 자식 데이터베이스를 찾는 중...')
+          
+          try {
+            // 페이지를 가져와서 자식 블록 확인
+            const page = await notion.pages.retrieve({ page_id: actualDatabaseId })
+            console.log('[DEBUG][ask] 5-4-13. 페이지 정보:', page.id)
+            
+            // 페이지의 자식 블록 조회
+            const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
+            console.log('[DEBUG][ask] 5-4-14. 자식 블록 개수:', blocks.results?.length || 0)
+            console.log('[DEBUG][ask] 5-4-15. 자식 블록 타입들:', blocks.results.map((b: any) => b.type))
+            
+            // 데이터베이스 블록 찾기
+            const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+            console.log('[DEBUG][ask] 5-4-16. 데이터베이스 블록:', databaseBlock ? JSON.stringify(databaseBlock, null, 2) : '없음')
+            
+            if (databaseBlock) {
+              const blockId = (databaseBlock as any).id
+              actualDatabaseId = blockId
+              console.log('[DEBUG][ask] 5-4-17. 블록 ID (실제 데이터베이스 ID):', actualDatabaseId)
+              
+              // 실제 데이터베이스 ID로 다시 조회
+              const dbInfo = await notion.databases.retrieve({
+                database_id: actualDatabaseId,
+              })
+              console.log('[DEBUG][ask] 5-4-18. 자식 데이터베이스 조회 성공!')
+              console.log('[DEBUG][ask] 5-4-19. 데이터베이스 제목:', dbInfo.title?.[0]?.plain_text || '없음')
+              console.log('[DEBUG][ask] 5-4-20. 데이터베이스 속성 목록:', Object.keys(dbInfo.properties || {}))
+              console.log('[DEBUG][ask] 5-4-21. 데이터베이스 속성 상세:')
+              Object.entries(dbInfo.properties || {}).forEach(([key, value]: [string, any]) => {
+                console.log(`[DEBUG][ask] 5-4-22.   - "${key}": 타입=${value.type}`)
+              })
+            } else {
+              console.error('[DEBUG][ask] 5-4-23. 페이지 내에 자식 데이터베이스를 찾을 수 없습니다!')
+              throw new Error('페이지 내에 자식 데이터베이스를 찾을 수 없습니다.')
+            }
+          } catch (childDbError) {
+            console.error('[DEBUG][ask] 5-4-24. 자식 데이터베이스 찾기 실패!')
+            console.error('[DEBUG][ask] 5-4-25. 오류 메시지:', childDbError instanceof Error ? childDbError.message : String(childDbError))
+            throw childDbError
+          }
+        } else {
+          // 다른 종류의 에러는 그대로 throw
+          throw dbInfoError
+        }
       }
       
-      // API 요청 본문 구성
+      // API 요청 본문 구성 (실제 데이터베이스 ID 사용)
       const requestBody = {
         parent: {
-          database_id: notionConfig.askDatabaseId,
+          database_id: actualDatabaseId,
         },
         properties: {
           제목: {
@@ -227,7 +277,7 @@ export default defineEventHandler(async event => {
       console.log('[DEBUG][ask] 5-16. 추가 진단: 데이터베이스 쿼리 시도...')
       try {
         const testQuery = await notion.databases.query({
-          database_id: notionConfig.askDatabaseId,
+          database_id: actualDatabaseId,
           page_size: 1,
         })
         console.log('[DEBUG][ask] 5-17. 데이터베이스 쿼리 성공! (접근 가능)')
