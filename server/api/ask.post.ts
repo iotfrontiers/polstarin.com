@@ -106,7 +106,91 @@ export default defineEventHandler(async event => {
         throw new Error('NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
       }
       
-      const pageResponse = await notion.pages.create({
+      // 데이터베이스 정보 조회 (속성 확인)
+      console.log('[DEBUG][ask] 5-4-2. 데이터베이스 정보 조회 시작...')
+      try {
+        const dbInfo = await notion.databases.retrieve({
+          database_id: notionConfig.askDatabaseId,
+        })
+        console.log('[DEBUG][ask] 5-4-3. 데이터베이스 조회 성공!')
+        console.log('[DEBUG][ask] 5-4-4. 데이터베이스 제목:', dbInfo.title?.[0]?.plain_text || '없음')
+        console.log('[DEBUG][ask] 5-4-5. 데이터베이스 속성 목록:', Object.keys(dbInfo.properties || {}))
+        console.log('[DEBUG][ask] 5-4-6. 데이터베이스 속성 상세:')
+        Object.entries(dbInfo.properties || {}).forEach(([key, value]: [string, any]) => {
+          console.log(`[DEBUG][ask] 5-4-7.   - "${key}": 타입=${value.type}`)
+        })
+      } catch (dbInfoError) {
+        console.error('[DEBUG][ask] 5-4-8. 데이터베이스 정보 조회 실패!')
+        console.error('[DEBUG][ask] 5-4-9. 조회 오류 타입:', dbInfoError?.constructor?.name || typeof dbInfoError)
+        console.error('[DEBUG][ask] 5-4-10. 조회 오류 메시지:', dbInfoError instanceof Error ? dbInfoError.message : String(dbInfoError))
+        if (dbInfoError && typeof dbInfoError === 'object' && 'code' in dbInfoError) {
+          console.error('[DEBUG][ask] 5-4-11. 조회 오류 코드:', (dbInfoError as any).code)
+        }
+      }
+      
+      // API 요청 본문 구성
+      const requestBody = {
+        parent: {
+          database_id: notionConfig.askDatabaseId,
+        },
+        properties: {
+          제목: {
+            type: 'title',
+            title: [
+              {
+                text: {
+                  content: body.title || '',
+                },
+              },
+            ],
+          },
+          작성자: {
+            type: 'rich_text',
+            rich_text: [
+              {
+                text: {
+                  content: body.author || '',
+                },
+              },
+            ],
+          },
+          이메일: {
+            type: 'email',
+            email: body.email,
+          },
+          연락처: {
+            type: 'rich_text',
+            rich_text: contactRichText,
+          },
+        },
+        children: [
+          {
+            object: 'block',
+            type: 'paragraph',
+            paragraph: {
+              rich_text: [
+                {
+                  type: 'text',
+                  text: {
+                    content: body.content || '',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }
+      
+      console.log('[DEBUG][ask] 5-4-12. API 요청 본문 구성 완료')
+      console.log('[DEBUG][ask] 5-4-13. 요청 본문 (JSON):', JSON.stringify(requestBody, null, 2))
+      console.log('[DEBUG][ask] 5-4-14. properties 키 목록:', Object.keys(requestBody.properties))
+      console.log('[DEBUG][ask] 5-4-15. properties 상세:')
+      Object.entries(requestBody.properties).forEach(([key, value]: [string, any]) => {
+        console.log(`[DEBUG][ask] 5-4-16.   - "${key}": 타입=${value.type}, 값=`, JSON.stringify(value).substring(0, 100))
+      })
+      
+      console.log('[DEBUG][ask] 5-4-17. Notion API 호출 시작...')
+      const pageResponse = await notion.pages.create(requestBody)
         parent: {
           database_id: notionConfig.askDatabaseId,
         },
@@ -165,9 +249,48 @@ export default defineEventHandler(async event => {
       console.error('[DEBUG][ask] 5-7. Notion 저장 오류 발생!')
       console.error('[DEBUG][ask] 5-8. Notion 저장 오류 타입:', notionError?.constructor?.name || typeof notionError)
       console.error('[DEBUG][ask] 5-9. Notion 저장 오류 메시지:', notionError instanceof Error ? notionError.message : String(notionError))
-      if (notionError instanceof Error && notionError.stack) {
-        console.error('[DEBUG][ask] 5-10. Notion 저장 오류 스택:', notionError.stack)
+      
+      // APIResponseError의 상세 정보 추출
+      if (notionError && typeof notionError === 'object') {
+        if ('code' in notionError) {
+          console.error('[DEBUG][ask] 5-10. Notion API 오류 코드:', (notionError as any).code)
+        }
+        if ('status' in notionError) {
+          console.error('[DEBUG][ask] 5-11. Notion API HTTP 상태:', (notionError as any).status)
+        }
+        if ('headers' in notionError) {
+          console.error('[DEBUG][ask] 5-12. Notion API 응답 헤더:', JSON.stringify((notionError as any).headers || {}))
+        }
+        if ('body' in notionError) {
+          console.error('[DEBUG][ask] 5-13. Notion API 응답 본문:', JSON.stringify((notionError as any).body || {}))
+        }
+        if ('request_id' in notionError) {
+          console.error('[DEBUG][ask] 5-14. Notion API 요청 ID:', (notionError as any).request_id)
+        }
       }
+      
+      if (notionError instanceof Error && notionError.stack) {
+        console.error('[DEBUG][ask] 5-15. Notion 저장 오류 스택:', notionError.stack)
+      }
+      
+      // 추가 진단: 데이터베이스 접근 가능 여부 확인
+      console.log('[DEBUG][ask] 5-16. 추가 진단: 데이터베이스 쿼리 시도...')
+      try {
+        const testQuery = await notion.databases.query({
+          database_id: notionConfig.askDatabaseId,
+          page_size: 1,
+        })
+        console.log('[DEBUG][ask] 5-17. 데이터베이스 쿼리 성공! (접근 가능)')
+        console.log('[DEBUG][ask] 5-18. 쿼리 결과 개수:', testQuery.results.length)
+      } catch (queryError) {
+        console.error('[DEBUG][ask] 5-19. 데이터베이스 쿼리 실패! (접근 불가)')
+        console.error('[DEBUG][ask] 5-20. 쿼리 오류 타입:', queryError?.constructor?.name || typeof queryError)
+        console.error('[DEBUG][ask] 5-21. 쿼리 오류 메시지:', queryError instanceof Error ? queryError.message : String(queryError))
+        if (queryError && typeof queryError === 'object' && 'code' in queryError) {
+          console.error('[DEBUG][ask] 5-22. 쿼리 오류 코드:', (queryError as any).code)
+        }
+      }
+      
       // Notion 저장 실패해도 이메일은 전송하도록 계속 진행
     }
 
