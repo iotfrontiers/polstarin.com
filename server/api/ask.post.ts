@@ -6,22 +6,33 @@ import { sendEmail } from '~/server/utils/email'
  * 기술/견적 문의
  */
 export default defineEventHandler(async event => {
+  // 즉시 로그 출력 (함수 시작 확인) - 가장 먼저 실행
   console.log('[DEBUG][ask] ========== 문의 등록 API 시작 ==========')
+  console.log('[DEBUG][ask] 시간:', new Date().toISOString())
+  console.log('[DEBUG][ask] 요청 URL:', event.node.req.url)
+  console.log('[DEBUG][ask] 요청 메서드:', event.node.req.method)
+  
+  let errorDetails: any = { step: 'init' }
+  
   try {
     console.log('[DEBUG][ask] 1. 환경 변수 로드 시작...')
+    errorDetails = { step: 'load_config' }
     const { notion: notionConfig } = useRuntimeConfig()
     console.log('[DEBUG][ask] 1-1. notionConfig.askDatabaseId 존재 여부:', !!notionConfig.askDatabaseId)
     console.log('[DEBUG][ask] 1-2. notionConfig.askDatabaseId 값:', notionConfig.askDatabaseId ? `${notionConfig.askDatabaseId.substring(0, 10)}...` : '없음')
     
     console.log('[DEBUG][ask] 2. Notion 클라이언트 생성 시작...')
+    errorDetails = { step: 'create_notion_client' }
     const notion = createNotionClient()
     console.log('[DEBUG][ask] 2-1. Notion 클라이언트 생성 완료')
     
     console.log('[DEBUG][ask] 3. 요청 본문 읽기 시작...')
+    errorDetails = { step: 'read_body' }
     const body = (await readBody(event)) as NotionAskReqeust
     console.log('[DEBUG][ask] 3-1. 요청 본문:', JSON.stringify(body, null, 2))
 
     console.log('[DEBUG][ask] 4. 요청 본문 검증 시작...')
+    errorDetails = { step: 'validate_body' }
     console.log('[DEBUG][ask] 4-1. body 존재:', !!body)
     console.log('[DEBUG][ask] 4-2. body.title:', body?.title || '없음')
     console.log('[DEBUG][ask] 4-3. body.author:', body?.author || '없음')
@@ -31,6 +42,17 @@ export default defineEventHandler(async event => {
     
     if (!body || !body.title || !body.author || !body.content || !body.email || !/.+@.+\..+/.test(body.email)) {
       console.error('[DEBUG][ask] 4-7. 요청 본문 검증 실패')
+      errorDetails = { 
+        step: 'validate_body_failed',
+        body: {
+          hasBody: !!body,
+          hasTitle: !!body?.title,
+          hasAuthor: !!body?.author,
+          hasContent: !!body?.content,
+          hasEmail: !!body?.email,
+          emailValid: body?.email ? /.+@.+\..+/.test(body.email) : false,
+        }
+      }
       throw createError({
         statusCode: 400,
         message: '유효하지 않은 요청입니다.',
@@ -40,6 +62,7 @@ export default defineEventHandler(async event => {
 
     // Notion에 저장 (에러가 발생해도 이메일은 전송하도록 try-catch 분리)
     console.log('[DEBUG][ask] 5. Notion 저장 시작...')
+    errorDetails = { step: 'notion_save' }
     let notionSaved = false
     try {
       console.log('[DEBUG][ask] 5-1. 연락처 처리 시작...')
@@ -124,6 +147,7 @@ export default defineEventHandler(async event => {
 
     // 이메일 전송 (에러가 발생해도 Notion 저장은 성공했을 수 있으므로 try-catch 분리)
     console.log('[DEBUG][ask] 6. 이메일 전송 시작...')
+    errorDetails = { step: 'email_send' }
     let emailSent = false
     try {
       console.log('[DEBUG][ask] 6-1. 이메일 내용 생성 시작...')
@@ -177,9 +201,24 @@ export default defineEventHandler(async event => {
     if (error instanceof Error && error.stack) {
       console.error('[DEBUG][ask] 에러 스택:', error.stack)
     }
+    if (errorDetails) {
+      console.error('[DEBUG][ask] 에러 상세 정보:', JSON.stringify(errorDetails, null, 2))
+    }
+    
+    // 에러 응답에 디버깅 정보 포함 (개발 환경에서만)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const isDev = process.env.NODE_ENV === 'development' || process.dev
+    
     throw createError({
       statusCode: 500,
-      message: '문의 등록 중 오류가 발생하였습니다. 오류가 지속될 경우 담당자에게 문의해주세요.',
+      message: isDev 
+        ? `문의 등록 중 오류가 발생하였습니다. [${errorDetails?.step || 'unknown'}] ${errorMessage}`
+        : '문의 등록 중 오류가 발생하였습니다. 오류가 지속될 경우 담당자에게 문의해주세요.',
+      data: isDev ? {
+        error: errorMessage,
+        step: errorDetails?.step || 'unknown',
+        stack: error instanceof Error ? error.stack : undefined,
+      } : undefined,
     })
   }
 })
