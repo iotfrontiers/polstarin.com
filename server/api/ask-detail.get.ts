@@ -2,7 +2,7 @@ import { getAskDetail } from '~/server/utils/postgres'
 import type { NotionData } from '~/composables/notion'
 
 /**
- * 기술/견적 문의 상세 조회
+ * 제작의뢰 상세 조회
  * Postgres에서 직접 조회 (빠름)
  */
 export default defineEventHandler(async event => {

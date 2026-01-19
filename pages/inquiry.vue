@@ -3,7 +3,7 @@
     <CommonPageContainer
       header-bg-img="banner-inquiry.png"
       :tabItems="[
-        { title: '기술/견적문의', targetUrl: '/inquiry/ask' },
+        { title: '제작의뢰', targetUrl: '/inquiry/ask' },
         { title: '자료실', targetUrl: '/inquiry/pds' },
       ]"
     >

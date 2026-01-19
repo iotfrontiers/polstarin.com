@@ -28,7 +28,7 @@
         <VListItem @click="movePage('/community/pds')" prependIcon="mdi-download-box-outline">자료실</VListItem>
       </VListGroup>
 
-      <VListItem @click="movePage('/ask')" prependIcon="mdi-file-document-edit">기술/견적문의</VListItem>
+      <VListItem @click="movePage('/ask')" prependIcon="mdi-file-document-edit">제작의뢰</VListItem>
 
       <VListGroup v-if="productIntroMenu.show">
         <template v-slot:activator="{ props: prop }">

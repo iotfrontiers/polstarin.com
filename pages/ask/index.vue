@@ -5,7 +5,7 @@
     </VRow>
     <VRow class="content-wrap">
       <div class="section">
-        <div class="sub-title text-h3 font-weight-black mb-15">기술/견적문의</div>
+        <div class="sub-title text-h3 font-weight-black mb-15">제작의뢰</div>
         <div class="d-flex justify-space-between align-center mb-4">
           <div class="text-body-1 text-grey-darken-1">
             총 {{ totalCount }}개의 문의가 있습니다.

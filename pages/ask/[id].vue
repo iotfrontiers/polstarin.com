@@ -5,7 +5,7 @@
     </VRow>
     <VRow class="content-wrap">
       <div class="section">
-        <div class="sub-title text-h3 font-weight-black mb-15">기술/견적문의</div>
+        <div class="sub-title text-h3 font-weight-black mb-15">제작의뢰</div>
         <BoardDetail apiUrl="/api/ask-detail" listPageUrl="/ask" />
       </div>
     </VRow>

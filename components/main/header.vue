@@ -28,7 +28,7 @@
         </VList>
       </VMenu>
 
-      <VBtn @click="$router.push('/ask')" class="v-btn--blank gnb-menu-btn">기술/견적문의</VBtn>
+      <VBtn @click="$router.push('/ask')" class="v-btn--blank gnb-menu-btn">제작의뢰</VBtn>
 
       <VMenu transition="scroll-y-transition" v-if="productIntroMenu.show">
         <template v-slot:activator="{ props }">

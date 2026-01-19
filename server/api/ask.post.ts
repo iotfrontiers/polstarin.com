@@ -4,7 +4,7 @@ import { saveToNotion, sendEmailNotification } from '~/server/utils/ask-file-sto
 import { randomUUID } from 'node:crypto'
 
 /**
- * 기술/견적 문의
+ * 제작의뢰
  * Postgres 저장 → Notion 저장 → 이메일 전송 → 사용자 응답
  * 모든 작업을 동기적으로 처리하여 Vercel 서버리스 환경에서도 안정적으로 동작
  */

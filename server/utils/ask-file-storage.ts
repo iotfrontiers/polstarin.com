@@ -282,7 +282,7 @@ export async function sendEmailNotification(post: NotionData, body: any) {
       <p></p>
       <p>${post.content || ''}</p>
     `
-    const emailSubject = '폴스타인 기술/견적문의 : ' + post.title
+    const emailSubject = '폴스타인 제작의뢰 : ' + post.title
     
     console.log('[ask-file-storage] 이메일 전송 시작:', { subject: emailSubject, postId: post.id })
     await sendEmail(emailSubject, mailContent)

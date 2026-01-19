@@ -3,7 +3,7 @@ import { createNotionClient } from '~/server/utils/notion'
 import type { NotionData } from '~/composables/notion'
 
 /**
- * 기술/견적 문의 목록 조회
+ * 제작의뢰 목록 조회
  * Postgres 우선, 없으면 Notion으로 폴백
  */
 export default defineEventHandler(async event => {
