@@ -8,7 +8,7 @@
         <div class="sub-title text-h3 font-weight-black mb-15">기술/견적문의</div>
         <div class="d-flex justify-space-between align-center mb-4">
           <div class="text-body-1 text-grey-darken-1">
-            총 {{ askList?.list?.length || 0 }}개의 문의가 있습니다.
+            총 {{ totalCount }}개의 문의가 있습니다.
           </div>
           <VBtn color="primary" @click="$router.push('/ask/write')">
             <VIcon start>mdi-pencil</VIcon>
@@ -16,6 +16,16 @@
           </VBtn>
         </div>
         <BoardList v-if="askList" :listData="askList" detailPageUrl="/ask/" />
+        
+        <!-- 페이지네이션 -->
+        <div v-if="totalPages > 1" class="d-flex justify-center mt-6">
+          <VPagination
+            v-model="currentPage"
+            :length="totalPages"
+            :total-visible="7"
+            @update:model-value="loadAskList"
+          />
+        </div>
       </div>
     </VRow>
   </VContainer>
@@ -24,21 +34,42 @@
 <script setup lang="ts">
 import type { NotionListResponse, NotionData } from '~/composables/notion'
 
+const currentPage = ref(1)
+const pageSize = ref(10)
 const askList = ref<NotionListResponse<NotionData>>()
+const totalCount = ref(0)
+const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value))
 
 async function loadAskList() {
   await useLoadingTask(async () => {
     try {
-      askList.value = await $fetch('/api/ask-list', {
+      const response = await $fetch<{
+        list: NotionData[]
+        totalCount: number
+        currentPage: number
+        pageSize: number
+        hasMore: boolean
+        nextCursor?: string
+        source?: string
+      }>('/api/ask-list', {
         method: 'post',
         body: {
-          pageSize: 100,
+          page: currentPage.value,
+          pageSize: pageSize.value,
+          startCursor: askList.value?.nextCursor, // 노션 페이지네이션용
         },
       })
 
-      let startNo = 1
-      askList.value?.list?.forEach(row => {
-        row.num = startNo++
+      askList.value = {
+        list: response.list,
+        nextCursor: response.nextCursor,
+      }
+      totalCount.value = response.totalCount || 0
+
+      // 번호 매기기
+      const startNo = (currentPage.value - 1) * pageSize.value + 1
+      askList.value?.list?.forEach((row, index) => {
+        row.num = startNo + index
       })
     } catch (e) {
       console.error('문의 목록 조회 오류:', e)
