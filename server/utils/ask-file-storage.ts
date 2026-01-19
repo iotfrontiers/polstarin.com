@@ -188,14 +188,11 @@ export async function saveToNotion(post: NotionData, body: any) {
     // 필드 존재 여부 확인
     console.log('[ask-file-storage] 데이터베이스 스키마 확인 시작')
     let hasPublishedField = false
-    let hasViewCountField = false
     try {
       const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
       // @ts-ignore
       hasPublishedField = !!dbInfo?.properties?.['게시여부']
-      // @ts-ignore
-      hasViewCountField = !!dbInfo?.properties?.['조회수']
-      console.log('[ask-file-storage] 스키마 확인 완료:', { hasPublishedField, hasViewCountField })
+      console.log('[ask-file-storage] 스키마 확인 완료:', { hasPublishedField })
     } catch (e) {
       console.warn('[ask-file-storage] 데이터베이스 정보 조회 실패:', e)
     }
@@ -226,10 +223,6 @@ export async function saveToNotion(post: NotionData, body: any) {
     
     if (hasPublishedField) {
       properties.게시여부 = { type: 'checkbox', checkbox: true }
-    }
-    
-    if (hasViewCountField) {
-      properties.조회수 = { type: 'number', number: 0 }
     }
     
     console.log('[ask-file-storage] Notion 페이지 생성 시작:', { postId: post.id, title: post.title })

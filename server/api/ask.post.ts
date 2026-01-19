@@ -62,7 +62,6 @@ export default defineEventHandler(async event => {
       email: body.email,
       contact: body.contact || '',
       content: body.content,
-      viewCnt: 0,
       date: now,
     }
     

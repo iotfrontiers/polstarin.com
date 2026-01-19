@@ -48,7 +48,6 @@ export async function initAskTable() {
         email TEXT NOT NULL,
         contact TEXT DEFAULT '',
         content TEXT NOT NULL,
-        view_cnt INTEGER DEFAULT 0,
         date TIMESTAMP NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
@@ -89,8 +88,8 @@ export async function insertAskPost(post: NotionData) {
   
   try {
     await sql`
-      INSERT INTO ask_posts (id, title, author, email, contact, content, view_cnt, date)
-      VALUES (${post.id}, ${post.title}, ${post.author}, ${post.email}, ${post.contact || ''}, ${post.content}, ${post.viewCnt || 0}, ${post.date})
+      INSERT INTO ask_posts (id, title, author, email, contact, content, date)
+      VALUES (${post.id}, ${post.title}, ${post.author}, ${post.email}, ${post.contact || ''}, ${post.content}, ${post.date})
       ON CONFLICT (id) DO UPDATE SET
         title = EXCLUDED.title,
         author = EXCLUDED.author,
@@ -196,7 +195,7 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
     
     // 최신 50개만 조회 (정렬: 최신순)
     const result = await sql`
-      SELECT id, title, author, email, contact, content, view_cnt, date
+      SELECT id, title, author, email, contact, content, date
       FROM ask_posts
       ORDER BY date DESC
       LIMIT ${pageSize}
@@ -210,7 +209,6 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
       email: row.email,
       contact: row.contact || '',
       content: row.content,
-      viewCnt: row.view_cnt || 0,
       date: row.date,
     }))
     
@@ -238,7 +236,7 @@ export async function getAskDetail(id: string): Promise<NotionData | null> {
   
   try {
     const result = await sql`
-      SELECT id, title, author, email, contact, content, view_cnt, date
+      SELECT id, title, author, email, contact, content, date
       FROM ask_posts
       WHERE id = ${id}
     `
@@ -255,35 +253,10 @@ export async function getAskDetail(id: string): Promise<NotionData | null> {
       email: row.email,
       contact: row.contact || '',
       content: row.content,
-      viewCnt: row.view_cnt || 0,
       date: row.date,
     }
   } catch (error) {
     console.error('[postgres] 상세 조회 실패:', error)
-    throw error
-  }
-}
-
-/**
- * 조회수 증가
- */
-export async function incrementViewCount(id: string): Promise<number> {
-  try {
-    const result = await sql`
-      UPDATE ask_posts
-      SET view_cnt = view_cnt + 1,
-          updated_at = NOW()
-      WHERE id = ${id}
-      RETURNING view_cnt
-    `
-    
-    if (result.rows.length > 0) {
-      return result.rows[0].view_cnt
-    }
-    
-    return 0
-  } catch (error) {
-    console.error('[postgres] 조회수 증가 실패:', error)
     throw error
   }
 }

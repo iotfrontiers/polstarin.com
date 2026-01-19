@@ -1,4 +1,4 @@
-import { getAskDetail, incrementViewCount } from '~/server/utils/postgres'
+import { getAskDetail } from '~/server/utils/postgres'
 import type { NotionData } from '~/composables/notion'
 
 /**
@@ -8,7 +8,6 @@ import type { NotionData } from '~/composables/notion'
 export default defineEventHandler(async event => {
   const query = getQuery(event)
   const id = query['id'] as string
-  const updateView = query['update'] === 'true'
   
   if (!id) {
     throw createError({
@@ -26,18 +25,6 @@ export default defineEventHandler(async event => {
         statusCode: 404,
         message: '글을 찾을 수 없습니다.',
       })
-    }
-    
-    // 조회수 업데이트
-    if (updateView) {
-      try {
-        const newViewCnt = await incrementViewCount(id)
-        detailData.viewCnt = newViewCnt
-        console.log(`[ask-detail] 조회수 업데이트 완료: ${id} (${newViewCnt})`)
-      } catch (viewError) {
-        console.error('[ask-detail] 조회수 업데이트 실패:', viewError)
-        // 조회수 업데이트 실패해도 상세 데이터는 반환
-      }
     }
     
     return detailData
