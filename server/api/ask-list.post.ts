@@ -31,7 +31,18 @@ export default defineEventHandler(async event => {
   }
   
   const staticList = staticData.list || []
-  const totalCount = staticData.totalCount || staticList.length
+  // totalCount가 없거나 0이면 실제 리스트 개수를 사용
+  let totalCount = staticData.totalCount
+  if (!totalCount || totalCount === 0) {
+    totalCount = staticList.length
+  }
+  
+  // 디버그 로그
+  console.log('[ask-list] 정적 파일 데이터:', {
+    listCount: staticList.length,
+    totalCount: staticData.totalCount,
+    calculatedTotalCount: totalCount,
+  })
   
   // 정적 파일이 비어있거나 데이터가 없을 때: 노션에서 최신 50개 가져와서 정적 파일에 저장
   if (staticList.length === 0 && page === 1) {
@@ -192,12 +203,14 @@ export default defineEventHandler(async event => {
     const endIndex = Math.min(offset + pageSize, MAX_STATIC_ITEMS)
     const pageData = staticData.list.slice(offset, endIndex)
     
+    const finalTotalCount = totalCount || staticData.list.length
+    
     return {
       list: pageData,
-      totalCount: staticData.totalCount || staticData.list.length,
+      totalCount: finalTotalCount,
       currentPage: page,
       pageSize,
-      hasMore: offset + pageSize < (staticData.totalCount || staticData.list.length),
+      hasMore: offset + pageSize < finalTotalCount,
       source: 'static',
     }
   }
