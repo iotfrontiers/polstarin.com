@@ -90,46 +90,35 @@ export default defineEventHandler(async event => {
     console.log('[ask.post] 백그라운드 작업 시작:', newId)
     
     // SITE_URL 환경 변수 확인
-    const siteUrl = process.env.SITE_URL || process.env.VERCEL_URL 
+    const siteUrl = process.env.SITE_URL || (process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000'
+      : 'http://localhost:3000')
     const backgroundUrl = `${siteUrl}/api/ask-background`
     console.log('[ask.post] 백그라운드 API URL:', backgroundUrl)
     console.log('[ask.post] 환경 변수:', {
       hasSiteUrl: !!process.env.SITE_URL,
       hasVercelUrl: !!process.env.VERCEL_URL,
       vercelUrl: process.env.VERCEL_URL,
+      finalSiteUrl: siteUrl,
     })
     
-    // fetch로 별도 API 호출 (await하지 않음 - fire and forget)
-    fetch(backgroundUrl, {
+    // $fetch로 별도 API 호출 (await하지 않음 - fire and forget)
+    $fetch(backgroundUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         post: newPost,
         originalBody: body,
-      }),
+      },
     })
-      .then(async res => {
-        console.log('[ask.post] 백그라운드 API 응답 상태:', res.status, res.statusText)
-        if (!res.ok) {
-          const errorText = await res.text()
-          console.error('[ask.post] 백그라운드 API 실패:', {
-            status: res.status,
-            statusText: res.statusText,
-            error: errorText,
-          })
-        } else {
-          const result = await res.json()
-          console.log('[ask.post] 백그라운드 작업 완료:', result)
-        }
+      .then(result => {
+        console.log('[ask.post] 백그라운드 작업 완료:', result)
       })
       .catch(err => {
         console.error('[ask.post] 백그라운드 API 호출 실패:', {
           message: err instanceof Error ? err.message : String(err),
           stack: err instanceof Error ? err.stack : undefined,
+          data: (err as any)?.data,
+          status: (err as any)?.status,
         })
       })
     

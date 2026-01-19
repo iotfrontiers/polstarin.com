@@ -145,7 +145,7 @@ async function incrementTotalCount() {
       INSERT INTO ask_metadata (key, value)
       VALUES ('totalCount', '1')
       ON CONFLICT (key) DO UPDATE SET
-        value = (CAST(value AS INTEGER) + 1)::TEXT,
+        value = (CAST(ask_metadata.value AS INTEGER) + 1)::TEXT,
         updated_at = NOW()
     `
   } catch (error) {
