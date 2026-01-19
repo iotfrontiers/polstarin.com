@@ -10,7 +10,7 @@ export default defineEventHandler(async event => {
   try {
     const body = (await readBody(event)) || {}
     const page = Number(body.page) || 1
-    const pageSize = Number(body.pageSize) || 10
+    const pageSize = Number(body.pageSize) || 50 // 기본값 50으로 변경
     
     // Postgres에서 목록 조회 시도
     try {

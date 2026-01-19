@@ -195,7 +195,7 @@ export async function getTotalCount(): Promise<number> {
 /**
  * 목록 조회 (페이지네이션)
  */
-export async function getAskList(page: number = 1, pageSize: number = 10): Promise<{
+export async function getAskList(page: number = 1, pageSize: number = 50): Promise<{
   list: NotionData[]
   totalCount: number
   hasMore: boolean
