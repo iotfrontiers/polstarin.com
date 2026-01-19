@@ -1,0 +1,240 @@
+import { writeFileSync, readFileSync, existsSync, mkdirSync, unlinkSync, promises as fs } from 'node:fs'
+import { resolve } from 'pathe'
+import type { NotionData, NotionListResponse } from '~/composables/notion'
+import { createNotionClient } from './notion'
+import { sendEmail } from './email'
+
+const MAX_STATIC_ITEMS = 50 // 최신 50개만 정적 파일에 저장
+
+// 파일 경로
+const getAskListPath = () => resolve(process.cwd(), 'data/ask.json')
+const getAskDetailDir = () => resolve(process.cwd(), 'public/data/ask')
+const getAskDetailPath = (id: string) => resolve(getAskDetailDir(), `${id}.json`)
+
+/**
+ * 정적 파일에 새 글 추가 (최신 50개만 유지)
+ * 동시성 처리를 위해 파일 락 사용
+ */
+export async function appendToAskList(newPost: NotionData) {
+  const filePath = getAskListPath()
+  
+  // 디렉토리 생성 (없으면)
+  const dir = resolve(process.cwd(), 'data')
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true })
+  }
+  
+  // 파일 락을 위한 간단한 재시도 로직
+  let retries = 10
+  while (retries > 0) {
+    try {
+      // 기존 목록 읽기
+      let existingData: NotionListResponse<NotionData> & { totalCount?: number } = { list: [], totalCount: 0 }
+      if (existsSync(filePath)) {
+        try {
+          const content = await fs.readFile(filePath, 'utf-8')
+          existingData = JSON.parse(content)
+        } catch (e) {
+          console.warn('기존 파일 읽기 실패, 새로 시작:', e)
+          existingData = { list: [], totalCount: 0 }
+        }
+      }
+      
+      // 새 글을 맨 앞에 추가
+      const updatedList = [newPost, ...(existingData.list || [])]
+      
+      // 최신 50개만 유지
+      const limitedList = updatedList.slice(0, MAX_STATIC_ITEMS)
+      
+      // 제거된 글들의 ID 찾기 (51번째 이후)
+      const removedIds = updatedList.slice(MAX_STATIC_ITEMS).map(item => item.id).filter(Boolean)
+      
+      // 전체 개수 증가
+      const totalCount = (existingData.totalCount || existingData.list?.length || 0) + 1
+      
+      // 파일 저장
+      const dataToSave = {
+        list: limitedList,
+        totalCount,
+        lastUpdated: new Date().toISOString(),
+      }
+      
+      await fs.writeFile(filePath, JSON.stringify(dataToSave, null, 2), 'utf-8')
+      console.log(`[ask-file-storage] 정적 파일에 새 글 추가 완료. 전체 개수: ${totalCount}`)
+      
+      // 제거된 글들의 상세 파일 삭제
+      if (removedIds.length > 0) {
+        await cleanupOldDetailFiles(removedIds)
+      }
+      
+      return
+    } catch (error: any) {
+      // 파일이 잠겨있거나 다른 프로세스가 사용 중일 수 있음
+      if (error.code === 'EBUSY' || error.code === 'EAGAIN') {
+        retries--
+        if (retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 100)) // 100ms 대기 후 재시도
+          continue
+        }
+      }
+      throw error
+    }
+  }
+  
+  throw new Error('파일 저장 실패: 재시도 횟수 초과')
+}
+
+/**
+ * 상세 파일 저장
+ */
+export async function saveAskDetail(post: NotionData) {
+  const dir = getAskDetailDir()
+  const filePath = getAskDetailPath(post.id!)
+  
+  // 디렉토리 생성
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true })
+  }
+  
+  // 파일 저장
+  writeFileSync(filePath, JSON.stringify(post, null, 2), 'utf-8')
+  console.log(`[ask-file-storage] 상세 파일 저장 완료: ${post.id}`)
+}
+
+/**
+ * 오래된 상세 파일 정리 (50개 초과 시 삭제)
+ */
+async function cleanupOldDetailFiles(removedIds: string[]) {
+  const detailDir = getAskDetailDir()
+  
+  for (const id of removedIds) {
+    const filePath = getAskDetailPath(id)
+    if (existsSync(filePath)) {
+      try {
+        await fs.unlink(filePath)
+        console.log(`[ask-file-storage] 오래된 상세 파일 삭제: ${id}`)
+      } catch (error) {
+        console.warn(`[ask-file-storage] 상세 파일 삭제 실패 (${id}):`, error)
+      }
+    }
+  }
+}
+
+/**
+ * 노션 DB에 저장 (백그라운드)
+ */
+export async function saveToNotion(post: NotionData, body: any) {
+  try {
+    const { notion: notionConfig } = useRuntimeConfig()
+    const notion = createNotionClient()
+    
+    if (!notionConfig.askDatabaseId) {
+      throw new Error('NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
+    }
+    
+    // 데이터베이스 ID 찾기 (기존 로직과 동일)
+    let actualDatabaseId = notionConfig.askDatabaseId
+    
+    try {
+      await notion.databases.retrieve({ database_id: actualDatabaseId })
+    } catch (dbInfoError: any) {
+      if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
+        const page = await notion.pages.retrieve({ page_id: actualDatabaseId })
+        const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
+        const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+        
+        if (databaseBlock) {
+          actualDatabaseId = (databaseBlock as any).id
+          await notion.databases.retrieve({ database_id: actualDatabaseId })
+        }
+      }
+    }
+    
+    // 필드 존재 여부 확인
+    let hasPublishedField = false
+    let hasViewCountField = false
+    try {
+      const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
+      // @ts-ignore
+      hasPublishedField = !!dbInfo?.properties?.['게시여부']
+      // @ts-ignore
+      hasViewCountField = !!dbInfo?.properties?.['조회수']
+    } catch (e) {
+      console.warn('데이터베이스 정보 조회 실패:', e)
+    }
+    
+    // 연락처 처리
+    const contactRichText = body.contact && body.contact.trim()
+      ? [{ text: { content: body.contact } }]
+      : []
+    
+    const properties: any = {
+      제목: {
+        type: 'title',
+        title: [{ text: { content: post.title || '' } }],
+      },
+      작성자: {
+        type: 'rich_text',
+        rich_text: [{ text: { content: post.author || '' } }],
+      },
+      이메일: {
+        type: 'email',
+        email: post.email,
+      },
+      연락처: {
+        type: 'rich_text',
+        rich_text: contactRichText,
+      },
+    }
+    
+    if (hasPublishedField) {
+      properties.게시여부 = { type: 'checkbox', checkbox: true }
+    }
+    
+    if (hasViewCountField) {
+      properties.조회수 = { type: 'number', number: 0 }
+    }
+    
+    await notion.pages.create({
+      parent: { database_id: actualDatabaseId },
+      properties,
+      children: [
+        {
+          object: 'block',
+          type: 'paragraph',
+          paragraph: {
+            rich_text: [{ type: 'text', text: { content: post.content || '' } }],
+          },
+        },
+      ],
+    })
+    
+    console.log(`[ask-file-storage] 노션 DB 저장 완료: ${post.id}`)
+    return true
+  } catch (error) {
+    console.error('[ask-file-storage] 노션 DB 저장 실패:', error)
+    return false
+  }
+}
+
+/**
+ * 이메일 전송 (백그라운드)
+ */
+export async function sendEmailNotification(post: NotionData, body: any) {
+  try {
+    const mailContent = `<p>- 작성자: ${post.author || ''}</p>
+      <p>- 작성자 이메일: ${post.email || ''}</p>
+      <p>- 작성자 전화번호: ${body.contact || '없음'}</p>
+      <p></p>
+      <p>${post.content || ''}</p>
+    `
+    const emailSubject = '폴스타인 기술/견적문의 : ' + post.title
+    
+    await sendEmail(emailSubject, mailContent)
+    console.log(`[ask-file-storage] 이메일 전송 완료: ${post.id}`)
+    return true
+  } catch (error) {
+    console.error('[ask-file-storage] 이메일 전송 실패:', error)
+    return false
+  }
+}

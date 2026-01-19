@@ -1,6 +1,6 @@
 import { NotionAskReqeust } from '~/composables/notion'
-import { createNotionClient } from '~/server/utils/notion'
-import { sendEmail } from '~/server/utils/email'
+import { appendToAskList, saveAskDetail, saveToNotion, sendEmailNotification } from '~/server/utils/ask-file-storage'
+import { randomUUID } from 'node:crypto'
 
 /**
  * 기술/견적 문의
@@ -26,9 +26,6 @@ export default defineEventHandler(async event => {
       console.error('⚠️ GOOGLE_SMTP_PASSWORD 환경 변수가 설정되지 않았습니다!')
     }
     
-    errorDetails = { step: 'create_notion_client' }
-    const notion = createNotionClient()
-    
     errorDetails = { step: 'read_body' }
     const body = (await readBody(event)) as NotionAskReqeust
 
@@ -52,187 +49,57 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Notion에 저장 (에러가 발생해도 이메일은 전송하도록 try-catch 분리)
-    errorDetails = { step: 'notion_save' }
-    let notionSaved = false
+    // 1. 정적 파일에 즉시 저장 (사용자 응답을 위해 동기 처리)
+    errorDetails = { step: 'static_file_save' }
+    const newId = randomUUID()
+    const now = new Date().toISOString()
+    
+    const newPost = {
+      id: newId,
+      title: body.title,
+      author: body.author,
+      email: body.email,
+      contact: body.contact || '',
+      content: body.content,
+      viewCnt: 0,
+      date: now,
+    }
+    
     try {
-      // 연락처가 비어있을 경우 빈 배열로 처리
-      const contactRichText = body.contact && body.contact.trim()
-        ? [
-            {
-              text: {
-                content: body.contact,
-              },
-            },
-          ]
-        : []
-      
-      if (!notionConfig.askDatabaseId) {
-        throw new Error('NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
-      }
-      
-      // 데이터베이스 정보 조회 (속성 확인) - 페이지인 경우 자식 데이터베이스 찾기
-      let actualDatabaseId = notionConfig.askDatabaseId
-      
-      try {
-        await notion.databases.retrieve({
-          database_id: actualDatabaseId,
-        })
-      } catch (dbInfoError: any) {
-        // 페이지인 경우, 자식 데이터베이스 찾기
-        if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
-          try {
-            // 페이지를 가져와서 자식 블록 확인
-            await notion.pages.retrieve({ page_id: actualDatabaseId })
-            
-            // 페이지의 자식 블록 조회
-            const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
-            
-            // 데이터베이스 블록 찾기
-            const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
-            
-            if (databaseBlock) {
-              const blockId = (databaseBlock as any).id
-              actualDatabaseId = blockId
-              
-              // 실제 데이터베이스 ID로 다시 조회
-              await notion.databases.retrieve({
-                database_id: actualDatabaseId,
-              })
-            } else {
-              throw new Error('페이지 내에 자식 데이터베이스를 찾을 수 없습니다.')
-            }
-          } catch (childDbError) {
-            throw childDbError
-          }
-        } else {
-          // 다른 종류의 에러는 그대로 throw
-          throw dbInfoError
-        }
-      }
-      
-      // 데이터베이스 스키마 확인하여 필드 존재 여부 확인
-      let hasPublishedField = false
-      let hasViewCountField = false
-      try {
-        const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
-        // @ts-ignore
-        hasPublishedField = !!dbInfo?.properties?.['게시여부']
-        // @ts-ignore
-        hasViewCountField = !!dbInfo?.properties?.['조회수']
-      } catch (e) {
-        console.warn('데이터베이스 정보 조회 실패:', e)
-      }
-      
-      // API 요청 본문 구성 (실제 데이터베이스 ID 사용)
-      const properties: any = {
-        제목: {
-          type: 'title',
-          title: [
-            {
-              text: {
-                content: body.title || '',
-              },
-            },
-          ],
-        },
-        작성자: {
-          type: 'rich_text',
-          rich_text: [
-            {
-              text: {
-                content: body.author || '',
-              },
-            },
-          ],
-        },
-        이메일: {
-          type: 'email',
-          email: body.email,
-        },
-        연락처: {
-          type: 'rich_text',
-          rich_text: contactRichText,
-        },
-      }
-      
-      // 게시여부 필드가 있으면 추가
-      if (hasPublishedField) {
-        properties.게시여부 = {
-          type: 'checkbox',
-          checkbox: true, // 게시판 형태로 만들기 위해 기본값을 true로 설정
-        }
-      }
-      
-      // 조회수 필드가 있으면 추가
-      if (hasViewCountField) {
-        properties.조회수 = {
-          type: 'number',
-          number: 0,
-        }
-      }
-      
-      const requestBody = {
-        parent: {
-          database_id: actualDatabaseId,
-        },
-        properties,
-        children: [
-          {
-            object: 'block',
-            type: 'paragraph',
-            paragraph: {
-              rich_text: [
-                {
-                  type: 'text',
-                  text: {
-                    content: body.content || '',
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      }
-      
-      await notion.pages.create(requestBody)
-      notionSaved = true
-    } catch (notionError) {
-      console.error('Notion 저장 오류:', notionError instanceof Error ? notionError.message : String(notionError))
-      // Notion 저장 실패해도 이메일은 전송하도록 계속 진행
+      await appendToAskList(newPost)
+      await saveAskDetail(newPost)
+    } catch (fileError) {
+      console.error('정적 파일 저장 오류:', fileError)
+      throw createError({
+        statusCode: 500,
+        message: '문의 등록 중 오류가 발생하였습니다.',
+      })
     }
-
-    // 이메일 전송 (에러가 발생해도 Notion 저장은 성공했을 수 있으므로 try-catch 분리)
-    errorDetails = { step: 'email_send' }
-    let emailSent = false
-    try {
-      let mailContent = `<p>- 작성자: ${body.author || ''}</p>
-      <p>- 작성자 이메일: ${body.email || ''}</p>
-      <p>- 작성자 전화번호: ${body.contact || '없음'}</p>
-      <p></p>
-      <p>${body.content || ''}</p>
-      `
-      const emailSubject = '폴스타인 기술/견적문의 : ' + body.title
-
-      await sendEmail(emailSubject, mailContent)
-      emailSent = true
-    } catch (emailError) {
-      console.error('이메일 전송 오류:', emailError instanceof Error ? emailError.message : String(emailError))
-      // 이메일 전송 실패해도 Notion 저장은 성공했을 수 있으므로 에러를 throw하지 않음
+    
+    // 2. 사용자에게 즉시 응답
+    const response = {
+      success: true,
+      message: '문의가 성공적으로 등록되었습니다.',
+      id: newId,
     }
-
-    // Notion 저장과 이메일 전송 중 하나라도 성공했다면 성공으로 처리
-    if (notionSaved || emailSent) {
-      return {
-        success: true,
-        message: '문의가 성공적으로 등록되었습니다.',
-        notionSaved,
-        emailSent,
-      }
-    } else {
-      // 둘 다 실패한 경우에만 에러
-      throw new Error('Notion 저장과 이메일 전송 모두 실패했습니다.')
-    }
+    
+    // 3. 백그라운드 처리 (비동기, 사용자 응답 기다리지 않음)
+    Promise.all([
+      saveToNotion(newPost, body).catch(err => {
+        console.error('노션 저장 실패 (백그라운드):', err)
+        return false
+      }),
+      sendEmailNotification(newPost, body).catch(err => {
+        console.error('이메일 전송 실패 (백그라운드):', err)
+        return false
+      }),
+    ]).then(([notionSaved, emailSent]) => {
+      console.log(`[ask.post] 백그라운드 처리 완료 - 노션: ${notionSaved}, 이메일: ${emailSent}`)
+    }).catch(err => {
+      console.error('[ask.post] 백그라운드 처리 오류:', err)
+    })
+    
+    return response
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     const isDev = process.env.NODE_ENV === 'development' || process.dev

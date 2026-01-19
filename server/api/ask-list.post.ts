@@ -1,10 +1,56 @@
-import { createBoardListApi } from '~/server/utils/notion'
 import { createNotionClient } from '~/server/utils/notion'
+import { readFileSync, existsSync } from 'node:fs'
+import { resolve } from 'pathe'
+import type { NotionData, NotionListResponse } from '~/composables/notion'
+
+const MAX_STATIC_ITEMS = 50 // 최신 50개만 정적 파일에 저장
+
+// 정적 파일 경로
+const getAskListPath = () => resolve(process.cwd(), 'data/ask.json')
 
 /**
- * 기술/견적 문의 목록 조회
+ * 기술/견적 문의 목록 조회 (하이브리드 방식)
+ * - 최신 50개: 정적 파일에서 읽기 (빠름)
+ * - 51개 이상: 노션 API에서 읽기 (느리지만 필요할 때만)
  */
 export default defineEventHandler(async event => {
+  const body = (await readBody(event)) || {}
+  const page = Number(body.page) || 1
+  const pageSize = Number(body.pageSize) || 10
+  const offset = (page - 1) * pageSize
+  
+  // 정적 파일 읽기
+  const filePath = getAskListPath()
+  let staticData: NotionListResponse<NotionData> & { totalCount?: number } = { list: [], totalCount: 0 }
+  
+  if (existsSync(filePath)) {
+    try {
+      const content = readFileSync(filePath, 'utf-8')
+      staticData = JSON.parse(content)
+    } catch (e) {
+      console.warn('정적 파일 읽기 실패:', e)
+    }
+  }
+  
+  const staticList = staticData.list || []
+  const totalCount = staticData.totalCount || staticList.length
+  
+  // 페이지 1-5 (1-50개)인 경우: 정적 파일에서 반환
+  if (offset < MAX_STATIC_ITEMS) {
+    const endIndex = Math.min(offset + pageSize, MAX_STATIC_ITEMS)
+    const pageData = staticList.slice(offset, endIndex)
+    
+    return {
+      list: pageData,
+      totalCount,
+      currentPage: page,
+      pageSize,
+      hasMore: offset + pageSize < totalCount,
+      source: 'static',
+    }
+  }
+  
+  // 페이지 6 이상 (51개 이상): 노션에서 가져오기
   const { notion: notionConfig } = useRuntimeConfig()
   
   if (!notionConfig.askDatabaseId) {
@@ -14,54 +60,71 @@ export default defineEventHandler(async event => {
     })
   }
   
-  // ask.post.ts와 동일한 로직으로 실제 데이터베이스 ID 찾기
   const notion = createNotionClient()
   let actualDatabaseId = notionConfig.askDatabaseId
   
+  // 데이터베이스 ID 찾기
   try {
-    await notion.databases.retrieve({
-      database_id: actualDatabaseId,
-    })
+    await notion.databases.retrieve({ database_id: actualDatabaseId })
   } catch (dbInfoError: any) {
-    // 페이지인 경우, 자식 데이터베이스 찾기
     if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
       try {
-        // 페이지를 가져와서 자식 블록 확인
         await notion.pages.retrieve({ page_id: actualDatabaseId })
-        
-        // 페이지의 자식 블록 조회
         const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
-        
-        // 데이터베이스 블록 찾기
         const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
         
         if (databaseBlock) {
-          const blockId = (databaseBlock as any).id
-          actualDatabaseId = blockId
-          
-          // 실제 데이터베이스 ID로 다시 조회
-          await notion.databases.retrieve({
-            database_id: actualDatabaseId,
-          })
-        } else {
-          throw new Error('페이지 내에 자식 데이터베이스를 찾을 수 없습니다.')
+          actualDatabaseId = (databaseBlock as any).id
+          await notion.databases.retrieve({ database_id: actualDatabaseId })
         }
       } catch (childDbError) {
         throw childDbError
       }
     } else {
-      // 다른 종류의 에러는 그대로 throw
       throw dbInfoError
     }
   }
   
-  try {
-    return await createBoardListApi(event, actualDatabaseId)
-  } catch (error) {
-    console.error('ask-list API 오류:', error)
-    throw createError({
-      statusCode: 500,
-      message: error instanceof Error ? error.message : '문의 목록 조회 중 오류가 발생했습니다.',
-    })
+  // 노션에서 해당 페이지 데이터 가져오기
+  // 노션은 cursor 기반 페이지네이션을 사용하므로, offset을 cursor로 변환해야 함
+  // 하지만 노션 API는 cursor만 지원하므로, 처음부터 순회하거나 다른 방법 필요
+  
+  // 간단한 방법: 노션에서 page_size만큼 가져오고, 필요하면 여러 번 호출
+  // 하지만 이건 비효율적이므로, 일단 첫 50개 이후 데이터를 가져오는 방식으로
+  
+  const result = await notion.databases.query({
+    database_id: actualDatabaseId,
+    page_size: pageSize,
+    start_cursor: body.startCursor, // 이전 페이지의 cursor
+    sorts: [
+      {
+        timestamp: 'created_time',
+        direction: 'descending',
+      },
+    ],
+  })
+  
+  // 노션 데이터를 우리 형식으로 변환
+  const notionList: NotionData[] = result.results.map((row: any) => {
+    const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+    return {
+      id: row.id,
+      title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+      author: row?.properties?.['작성자']?.rich_text?.[0]?.plain_text || '',
+      email: row?.properties?.['이메일']?.email || '',
+      contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
+      viewCnt: row?.properties?.['조회수']?.number || 0,
+      date: dateValue,
+    }
+  })
+  
+  return {
+    list: notionList,
+    totalCount,
+    currentPage: page,
+    pageSize,
+    hasMore: !!result.next_cursor,
+    nextCursor: result.next_cursor,
+    source: 'notion',
   }
 })
