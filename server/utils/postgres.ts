@@ -169,19 +169,11 @@ async function incrementTotalCount() {
 
 /**
  * totalCount 조회
+ * 항상 실제 ask_posts 테이블의 개수를 반환 (정확성 보장)
  */
 export async function getTotalCount(): Promise<number> {
   try {
-    const result = await sql`
-      SELECT value FROM ask_metadata
-      WHERE key = 'totalCount'
-    `
-    
-    if (result.rows.length > 0) {
-      return parseInt(result.rows[0].value) || 0
-    }
-    
-    // 없으면 실제 글 개수로 계산
+    // 항상 실제 글 개수로 계산 (메타데이터는 부정확할 수 있음)
     const countResult = await sql`
       SELECT COUNT(*) as count FROM ask_posts
     `
