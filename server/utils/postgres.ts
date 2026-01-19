@@ -208,16 +208,39 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
       OFFSET ${offset}
     `
     
-    const list: NotionData[] = result.rows.map(row => ({
-      id: row.id,
-      title: row.title,
-      author: row.author,
-      email: row.email,
-      contact: row.contact || '',
-      company: row.company || '',
-      content: row.content,
-      date: row.date,
-    }))
+    const list: NotionData[] = result.rows.map(row => {
+      // 디버깅: Postgres에서 가져온 날짜 값 확인
+      const rawDate = row.date
+      const dateType = typeof rawDate
+      const dateString = rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
+      console.log('[postgres][DEBUG] 날짜 조회:', {
+        id: row.id,
+        title: row.title,
+        rawDate,
+        dateType,
+        dateString,
+        isDateInstance: rawDate instanceof Date,
+        dateValue: rawDate instanceof Date ? {
+          year: rawDate.getFullYear(),
+          month: rawDate.getMonth() + 1,
+          day: rawDate.getDate(),
+          hours: rawDate.getHours(),
+          minutes: rawDate.getMinutes(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        } : null,
+      })
+      
+      return {
+        id: row.id,
+        title: row.title,
+        author: row.author,
+        email: row.email,
+        contact: row.contact || '',
+        company: row.company || '',
+        content: row.content,
+        date: row.date,
+      }
+    })
     
     const totalCount = await getTotalCount()
     const hasMore = offset + pageSize < totalCount
@@ -253,6 +276,28 @@ export async function getAskDetail(id: string): Promise<NotionData | null> {
     }
     
     const row = result.rows[0]
+    
+    // 디버깅: Postgres에서 가져온 날짜 값 확인 (상세 조회)
+    const rawDate = row.date
+    const dateType = typeof rawDate
+    const dateString = rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
+    console.log('[postgres][DEBUG] 날짜 조회 (상세):', {
+      id: row.id,
+      title: row.title,
+      rawDate,
+      dateType,
+      dateString,
+      isDateInstance: rawDate instanceof Date,
+      dateValue: rawDate instanceof Date ? {
+        year: rawDate.getFullYear(),
+        month: rawDate.getMonth() + 1,
+        day: rawDate.getDate(),
+        hours: rawDate.getHours(),
+        minutes: rawDate.getMinutes(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      } : null,
+    })
+    
     return {
       id: row.id,
       title: row.title,

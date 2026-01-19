@@ -50,7 +50,33 @@ function formatDate(dateString: string | undefined): string {
   if (!dateString) return ''
   
   try {
+    // 디버깅: 입력값 확인
+    console.log('[detail.vue][DEBUG] formatDate 입력:', {
+      dateString,
+      dateStringType: typeof dateString,
+      dateStringLength: dateString?.length,
+    })
+    
     const date = new Date(dateString)
+    
+    // 디버깅: Date 객체 생성 후 확인
+    console.log('[detail.vue][DEBUG] Date 객체 생성 후:', {
+      dateString,
+      dateISO: date.toISOString(),
+      dateUTC: date.toUTCString(),
+      dateLocal: date.toString(),
+      isValid: !isNaN(date.getTime()),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      utcYear: date.getUTCFullYear(),
+      utcMonth: date.getUTCMonth() + 1,
+      utcDay: date.getUTCDate(),
+      utcHours: date.getUTCHours(),
+      localYear: date.getFullYear(),
+      localMonth: date.getMonth() + 1,
+      localDay: date.getDate(),
+      localHours: date.getHours(),
+    })
+    
     if (isNaN(date.getTime())) return dateString
     
     const year = date.getFullYear()
@@ -59,8 +85,22 @@ function formatDate(dateString: string | undefined): string {
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
     
-    return `${year}-${month}-${day} ${hours}:${minutes}`
+    const formatted = `${year}-${month}-${day} ${hours}:${minutes}`
+    
+    // 디버깅: 최종 포맷된 결과
+    console.log('[detail.vue][DEBUG] formatDate 결과:', {
+      dateString,
+      formatted,
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+    })
+    
+    return formatted
   } catch (e) {
+    console.error('[detail.vue][DEBUG] formatDate 에러:', e, { dateString })
     return dateString
   }
 }

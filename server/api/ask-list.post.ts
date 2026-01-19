@@ -66,6 +66,23 @@ export default defineEventHandler(async event => {
                     const messageField = row?.properties?.['메세지']?.rich_text?.[0]?.plain_text || ''
                     const content = messageField || await getNotionMarkdownContent(row.id)
                     
+                    const dateProperty = row?.properties?.['작성일']?.date
+                    const createdTime = row?.created_time
+                    
+                    // 디버깅: Notion에서 가져온 날짜 값 확인 (마이그레이션용)
+                    console.log('[ask-list][DEBUG] Notion 날짜 조회 (Postgres 저장용):', {
+                      id: row.id,
+                      title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+                      dateProperty: {
+                        start: dateProperty?.start,
+                        end: dateProperty?.end,
+                        time_zone: dateProperty?.time_zone,
+                      },
+                      createdTime,
+                      finalDateValue: dateValue,
+                      dateValueType: typeof dateValue,
+                    })
+                    
                     const post = {
                       id: row.id,
                       title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
@@ -92,6 +109,23 @@ export default defineEventHandler(async event => {
               // 마이그레이션 중이므로 Notion 데이터를 즉시 반환
               const notionList: NotionData[] = notionResult.results.map((row: any) => {
                 const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+                const dateProperty = row?.properties?.['작성일']?.date
+                const createdTime = row?.created_time
+                
+                // 디버깅: Notion에서 가져온 날짜 값 확인
+                console.log('[ask-list][DEBUG] Notion 날짜 조회 (마이그레이션):', {
+                  id: row.id,
+                  title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+                  dateProperty: {
+                    start: dateProperty?.start,
+                    end: dateProperty?.end,
+                    time_zone: dateProperty?.time_zone,
+                  },
+                  createdTime,
+                  finalDateValue: dateValue,
+                  dateValueType: typeof dateValue,
+                })
+                
                 return {
                   id: row.id,
                   title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
@@ -175,6 +209,23 @@ export default defineEventHandler(async event => {
         
         const notionList: NotionData[] = result.results.map((row: any) => {
           const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+          const dateProperty = row?.properties?.['작성일']?.date
+          const createdTime = row?.created_time
+          
+          // 디버깅: Notion에서 가져온 날짜 값 확인
+          console.log('[ask-list][DEBUG] Notion 날짜 조회 (폴백):', {
+            id: row.id,
+            title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+            dateProperty: {
+              start: dateProperty?.start,
+              end: dateProperty?.end,
+              time_zone: dateProperty?.time_zone,
+            },
+            createdTime,
+            finalDateValue: dateValue,
+            dateValueType: typeof dateValue,
+          })
+          
           return {
             id: row.id,
             title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
