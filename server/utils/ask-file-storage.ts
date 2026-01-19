@@ -185,18 +185,6 @@ export async function saveToNotion(post: NotionData, body: any) {
       }
     }
     
-    // 필드 존재 여부 확인
-    console.log('[ask-file-storage] 데이터베이스 스키마 확인 시작')
-    let hasPublishedField = false
-    try {
-      const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
-      // @ts-ignore
-      hasPublishedField = !!dbInfo?.properties?.['게시여부']
-      console.log('[ask-file-storage] 스키마 확인 완료:', { hasPublishedField })
-    } catch (e) {
-      console.warn('[ask-file-storage] 데이터베이스 정보 조회 실패:', e)
-    }
-    
     // 연락처 처리
     const contactRichText = body.contact && body.contact.trim()
       ? [{ text: { content: body.contact } }]
@@ -205,6 +193,11 @@ export async function saveToNotion(post: NotionData, body: any) {
     // 회사/소속 처리
     const companyRichText = body.company && body.company.trim()
       ? [{ text: { content: body.company } }]
+      : []
+    
+    // 메세지(본문) 처리
+    const messageRichText = post.content && post.content.trim()
+      ? [{ text: { content: post.content || '' } }]
       : []
     
     const properties: any = {
@@ -228,10 +221,10 @@ export async function saveToNotion(post: NotionData, body: any) {
         type: 'rich_text',
         rich_text: companyRichText,
       },
-    }
-    
-    if (hasPublishedField) {
-      properties.게시여부 = { type: 'checkbox', checkbox: true }
+      메세지: {
+        type: 'rich_text',
+        rich_text: messageRichText,
+      },
     }
     
     console.log('[ask-file-storage] Notion 페이지 생성 시작:', { postId: post.id, title: post.title })

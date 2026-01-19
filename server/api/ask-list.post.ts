@@ -62,7 +62,9 @@ export default defineEventHandler(async event => {
                 notionResult.results.map(async (row: any) => {
                   try {
                     const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
-                    const content = await getNotionMarkdownContent(row.id)
+                    // 메세지 필드가 있으면 우선 사용, 없으면 페이지 본문 가져오기
+                    const messageField = row?.properties?.['메세지']?.rich_text?.[0]?.plain_text || ''
+                    const content = messageField || await getNotionMarkdownContent(row.id)
                     
                     const post = {
                       id: row.id,
