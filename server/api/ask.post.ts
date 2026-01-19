@@ -85,39 +85,27 @@ export default defineEventHandler(async event => {
       id: newId,
     }
     
-    // 3. 백그라운드 작업을 별도 API로 호출 (사용자 응답 기다리지 않음)
+    // 3. 백그라운드 작업을 직접 함수로 호출 (HTTP 요청 없이 - Vercel Deployment Protection 회피)
     console.log('[ask.post] 백그라운드 작업 시작:', newId)
     
-    // SITE_URL 환경 변수 확인
-    const siteUrl = process.env.SITE_URL || (process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000')
-    const backgroundUrl = `${siteUrl}/api/ask-background`
-    console.log('[ask.post] 백그라운드 API URL:', backgroundUrl)
-    console.log('[ask.post] 환경 변수:', {
-      hasSiteUrl: !!process.env.SITE_URL,
-      hasVercelUrl: !!process.env.VERCEL_URL,
-      vercelUrl: process.env.VERCEL_URL,
-      finalSiteUrl: siteUrl,
-    })
-    
-    // $fetch로 별도 API 호출 (await하지 않음 - fire and forget)
-    $fetch(backgroundUrl, {
-      method: 'POST',
-      body: {
-        post: newPost,
-        originalBody: body,
-      },
-    })
-      .then(result => {
-        console.log('[ask.post] 백그라운드 작업 완료:', result)
+    // 백그라운드 작업을 직접 함수로 호출 (await하지 않음 - fire and forget)
+    // HTTP 요청을 사용하면 Vercel Preview Deployment의 인증 페이지로 리다이렉트되어 401 에러 발생
+    Promise.all([
+      saveToNotion(newPost, body),
+      sendEmailNotification(newPost, body),
+    ])
+      .then(([notionResult, emailResult]) => {
+        console.log('[ask.post] 백그라운드 작업 완료:', {
+          postId: newId,
+          notionSaved: notionResult,
+          emailSent: emailResult,
+        })
       })
       .catch(err => {
-        console.error('[ask.post] 백그라운드 API 호출 실패:', {
+        console.error('[ask.post] 백그라운드 작업 실패:', {
+          postId: newId,
           message: err instanceof Error ? err.message : String(err),
           stack: err instanceof Error ? err.stack : undefined,
-          data: (err as any)?.data,
-          status: (err as any)?.status,
         })
       })
     
