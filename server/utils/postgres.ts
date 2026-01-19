@@ -12,8 +12,16 @@ import type { NotionData } from '~/composables/notion'
  * Postgres 연결 확인
  */
 function checkPostgresConnection() {
-  if (!process.env.POSTGRES_URL && !process.env.VERCEL) {
+  // Vercel Postgres 환경 변수 확인
+  const hasPostgresUrl = !!(
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING
+  )
+  
+  if (!hasPostgresUrl) {
     console.warn('[postgres] POSTGRES_URL 환경 변수가 설정되지 않았습니다.')
+    console.warn('[postgres] Vercel 대시보드 → Storage → polstarin-db → Connection String 확인 필요')
     return false
   }
   return true
@@ -27,6 +35,7 @@ function checkPostgresConnection() {
 export async function initAskTable() {
   if (!checkPostgresConnection()) {
     console.warn('[postgres] Postgres 연결 정보가 없어 테이블 초기화를 건너뜁니다.')
+    console.warn('[postgres] Vercel 대시보드에서 환경 변수를 확인해주세요.')
     return
   }
   
