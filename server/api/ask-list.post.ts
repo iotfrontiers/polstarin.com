@@ -16,6 +16,107 @@ export default defineEventHandler(async event => {
     try {
       const result = await getAskList(page, pageSize)
       
+      // Postgres가 비어있고 첫 페이지일 때: Notion에서 데이터 가져와서 Postgres에 저장
+      if (result.list.length === 0 && result.totalCount === 0 && page === 1) {
+        console.log('[ask-list] Postgres가 비어있어 Notion에서 데이터 마이그레이션 시도')
+        
+        try {
+          const { notion: notionConfig } = useRuntimeConfig()
+          if (notionConfig.askDatabaseId) {
+            const notion = createNotionClient()
+            let actualDatabaseId = notionConfig.askDatabaseId
+            
+            // 데이터베이스 ID 찾기
+            try {
+              await notion.databases.retrieve({ database_id: actualDatabaseId })
+            } catch (dbInfoError: any) {
+              if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
+                const pageInfo = await notion.pages.retrieve({ page_id: actualDatabaseId })
+                const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
+                const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+                
+                if (databaseBlock) {
+                  actualDatabaseId = (databaseBlock as any).id
+                }
+              }
+            }
+            
+            // Notion에서 최신 50개 가져오기
+            const notionResult = await notion.databases.query({
+              database_id: actualDatabaseId,
+              page_size: 50,
+              sorts: [
+                {
+                  timestamp: 'created_time',
+                  direction: 'descending',
+                },
+              ],
+            })
+            
+            // Postgres에 저장 (비동기로, 사용자 응답을 막지 않음)
+            if (notionResult.results.length > 0) {
+              const { insertAskPost } = await import('~/server/utils/postgres')
+              const { getNotionMarkdownContent } = await import('~/server/utils/notion')
+              
+              Promise.all(
+                notionResult.results.map(async (row: any) => {
+                  try {
+                    const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+                    const content = await getNotionMarkdownContent(row.id)
+                    
+                    const post = {
+                      id: row.id,
+                      title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+                      author: row?.properties?.['작성자']?.rich_text?.[0]?.plain_text || '',
+                      email: row?.properties?.['이메일']?.email || '',
+                      contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
+                      content: content,
+                      viewCnt: row?.properties?.['조회수']?.number || 0,
+                      date: dateValue,
+                    }
+                    
+                    await insertAskPost(post)
+                  } catch (e) {
+                    console.warn(`[ask-list] Notion 데이터 마이그레이션 실패 (${row.id}):`, e)
+                  }
+                })
+              ).then(() => {
+                console.log(`[ask-list] Notion에서 ${notionResult.results.length}개 글을 Postgres로 마이그레이션 완료`)
+              }).catch(err => {
+                console.error('[ask-list] Notion 데이터 마이그레이션 오류:', err)
+              })
+              
+              // 마이그레이션 중이므로 Notion 데이터를 즉시 반환
+              const notionList: NotionData[] = notionResult.results.map((row: any) => {
+                const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+                return {
+                  id: row.id,
+                  title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+                  author: row?.properties?.['작성자']?.rich_text?.[0]?.plain_text || '',
+                  email: row?.properties?.['이메일']?.email || '',
+                  contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
+                  viewCnt: row?.properties?.['조회수']?.number || 0,
+                  date: dateValue,
+                }
+              })
+              
+              return {
+                list: notionList,
+                totalCount: notionList.length,
+                currentPage: page,
+                pageSize,
+                hasMore: !!notionResult.next_cursor,
+                nextCursor: notionResult.next_cursor,
+                source: 'notion-migration',
+              }
+            }
+          }
+        } catch (migrationError) {
+          console.error('[ask-list] Notion 마이그레이션 실패:', migrationError)
+          // 마이그레이션 실패해도 빈 배열 반환
+        }
+      }
+      
       return {
         list: result.list,
         totalCount: result.totalCount,
