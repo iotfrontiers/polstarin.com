@@ -98,6 +98,11 @@ export const createBoardListApi = async (event: any, databaseId: string) => {
       hasPublishedField = !!dbInfo?.properties?.['게시여부']
       // @ts-ignore
       hasDateField = !!dbInfo?.properties?.['작성일']
+      console.log('[DEBUG] 데이터베이스 필드 확인:', {
+        hasPublishedField,
+        hasDateField,
+        properties: Object.keys(dbInfo?.properties || {}),
+      })
     } catch (e) {
       console.warn('데이터베이스 정보 조회 실패:', e)
     }
@@ -124,25 +129,56 @@ export const createBoardListApi = async (event: any, databaseId: string) => {
       direction: 'descending',
     })
     
-    const result = await notion.databases.query({
+    const queryParams: any = {
       database_id: databaseId,
       page_size: body.pageSize || 100,
       start_cursor: body.startCursor || undefined,
-      ...(filter ? { filter } : {}),
       sorts,
+    }
+    
+    if (filter) {
+      queryParams.filter = filter
+    }
+    
+    console.log('[DEBUG] 노션 데이터베이스 쿼리:', {
+      databaseId,
+      hasFilter: !!filter,
+      pageSize: queryParams.page_size,
+    })
+    
+    const result = await notion.databases.query(queryParams)
+    
+    console.log('[DEBUG] 노션 쿼리 결과:', {
+      resultCount: result.results.length,
+      hasMore: !!result.next_cursor,
     })
 
     const noticeList: NotionData[] = []
     result.results.forEach((row: any) => {
       // 작성일 필드가 있으면 사용하고, 없으면 created_time 사용
       const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+      const title = row?.properties?.['제목']?.title?.[0]?.['plain_text'] || ''
+      const author = row?.properties?.['작성자']?.['rich_text']?.[0]?.['plain_text'] || ''
+      
+      console.log('[DEBUG] 게시글 데이터:', {
+        id: row.id,
+        title,
+        author,
+        dateValue,
+      })
+      
       noticeList.push({
         id: row.id as string,
-        title: row?.properties?.['제목']?.title[0]?.['plain_text'] as string,
-        author: row?.properties?.['작성자']?.['rich_text'][0]?.['plain_text'] as string,
+        title,
+        author,
         viewCnt: row?.properties?.['조회수']?.number || 0,
         date: dateValue,
       })
+    })
+    
+    console.log('[DEBUG] 최종 게시글 목록:', {
+      count: noticeList.length,
+      titles: noticeList.map(item => item.title),
     })
 
     return {
@@ -150,7 +186,9 @@ export const createBoardListApi = async (event: any, databaseId: string) => {
       list: noticeList,
     } as NotionListResponse<NotionData>
   } catch (e) {
-    console.error(e)
+    console.error('createBoardListApi 오류:', e)
+    console.error('오류 상세:', e instanceof Error ? e.message : String(e))
+    console.error('스택:', e instanceof Error ? e.stack : undefined)
     return {
       list: [],
     }
