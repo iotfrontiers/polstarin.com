@@ -87,20 +87,41 @@ export default defineEventHandler(async event => {
     }
     
     // 3. 백그라운드 처리 (비동기, 사용자 응답 기다리지 않음)
-    Promise.all([
-      saveToNotion(newPost, body).catch(err => {
-        console.error('노션 저장 실패 (백그라운드):', err)
-        return false
-      }),
-      sendEmailNotification(newPost, body).catch(err => {
-        console.error('이메일 전송 실패 (백그라운드):', err)
-        return false
-      }),
-    ]).then(([notionSaved, emailSent]) => {
-      console.log(`[ask.post] 백그라운드 처리 완료 - 노션: ${notionSaved}, 이메일: ${emailSent}`)
-    }).catch(err => {
-      console.error('[ask.post] 백그라운드 처리 오류:', err)
-    })
+    // Vercel 서버리스 환경에서 백그라운드 작업이 실행되도록 event.waitUntil 사용
+    if (event.waitUntil) {
+      event.waitUntil(
+        Promise.all([
+          saveToNotion(newPost, body).catch(err => {
+            console.error('[ask.post] 노션 저장 실패 (백그라운드):', err)
+            return false
+          }),
+          sendEmailNotification(newPost, body).catch(err => {
+            console.error('[ask.post] 이메일 전송 실패 (백그라운드):', err)
+            return false
+          }),
+        ]).then(([notionSaved, emailSent]) => {
+          console.log(`[ask.post] 백그라운드 처리 완료 - 노션: ${notionSaved}, 이메일: ${emailSent}`)
+        }).catch(err => {
+          console.error('[ask.post] 백그라운드 처리 오류:', err)
+        })
+      )
+    } else {
+      // waitUntil이 없으면 일반 Promise로 실행 (로컬 환경 등)
+      Promise.all([
+        saveToNotion(newPost, body).catch(err => {
+          console.error('[ask.post] 노션 저장 실패 (백그라운드):', err)
+          return false
+        }),
+        sendEmailNotification(newPost, body).catch(err => {
+          console.error('[ask.post] 이메일 전송 실패 (백그라운드):', err)
+          return false
+        }),
+      ]).then(([notionSaved, emailSent]) => {
+        console.log(`[ask.post] 백그라운드 처리 완료 - 노션: ${notionSaved}, 이메일: ${emailSent}`)
+      }).catch(err => {
+        console.error('[ask.post] 백그라운드 처리 오류:', err)
+      })
+    }
     
     return response
   } catch (error) {
