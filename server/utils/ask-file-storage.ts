@@ -202,6 +202,11 @@ export async function saveToNotion(post: NotionData, body: any) {
       ? [{ text: { content: body.contact } }]
       : []
     
+    // 회사/소속 처리
+    const companyRichText = body.company && body.company.trim()
+      ? [{ text: { content: body.company } }]
+      : []
+    
     const properties: any = {
       제목: {
         type: 'title',
@@ -218,6 +223,10 @@ export async function saveToNotion(post: NotionData, body: any) {
       연락처: {
         type: 'rich_text',
         rich_text: contactRichText,
+      },
+      '회사/소속': {
+        type: 'rich_text',
+        rich_text: companyRichText,
       },
     }
     
@@ -274,6 +283,7 @@ export async function sendEmailNotification(post: NotionData, body: any) {
     
     console.log('[ask-file-storage] 이메일 내용 생성 시작')
     const mailContent = `<p>- 작성자: ${post.author || ''}</p>
+      <p>- 회사/소속: ${body.company || '없음'}</p>
       <p>- 작성자 이메일: ${post.email || ''}</p>
       <p>- 작성자 전화번호: ${body.contact || '없음'}</p>
       <p></p>

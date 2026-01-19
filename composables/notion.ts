@@ -71,6 +71,11 @@ interface NotionData {
    * 연락처
    */
   contact?: string
+
+  /**
+   * 회사/소속
+   */
+  company?: string
 }
 
 /**
@@ -97,6 +102,7 @@ interface NotionAskReqeust {
   author?: string
   email?: string
   contact?: string
+  company?: string
   content?: string
 }
 

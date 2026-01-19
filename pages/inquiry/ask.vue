@@ -7,7 +7,7 @@
       </colgroup>
       <tbody>
         <tr>
-          <th>성함</th>
+          <th>작성자</th>
           <td>
             <VTextField
               variant="outlined"
@@ -20,11 +20,23 @@
               :rules="[
                 value => {
                   if (!value) {
-                    return '성함을 입력해주세요.'
+                    return '작성자를 입력해주세요.'
                   }
                   return true
                 },
               ]"
+            ></VTextField>
+          </td>
+        </tr>
+        <tr>
+          <th>회사/소속</th>
+          <td>
+            <VTextField
+              variant="outlined"
+              hideDetails="auto"
+              density="compact"
+              v-model="inputData.company"
+              placeholder="선택 입력"
             ></VTextField>
           </td>
         </tr>
@@ -119,6 +131,7 @@ function init() {
   useDeepMerge(inputData, {
     author: '',
     contact: '',
+    company: '',
     content: '',
     email: '',
     title: '',
