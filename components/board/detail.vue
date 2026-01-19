@@ -19,8 +19,7 @@
           {{ noticeInfo.contact }}
         </div>
         <div class="d-flex mt-2">
-          <div><VIcon icon="mdi-account-eye" class="mr-2" size="small" />{{ noticeInfo.viewCnt || 0 }}</div>
-          <div class="ml-5"><VIcon icon="mdi-calendar-clock" class="mr-2" size="small" />{{ formatDate(noticeInfo.date) }}</div>
+          <div><VIcon icon="mdi-calendar-clock" class="mr-2" size="small" />{{ formatDate(noticeInfo.date) }}</div>
         </div>
       </div>
     </div>

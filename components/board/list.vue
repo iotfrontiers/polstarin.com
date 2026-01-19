@@ -105,20 +105,13 @@ const headers = computed(() => {
       sortable: false,
     },
     {
-      title: '조회',
-      key: 'viewCnt',
-      align: 'center',
-      width: 100,
-      sortable: false,
-    },
-    {
       title: '작성일',
       key: 'date',
       align: 'center',
       width: 150,
       sortable: false,
     },
-  ].filter(header => (!mobile.value ? true : ['title', 'viewCnt'].includes(header.key)))
+  ].filter(header => (!mobile.value ? true : ['title'].includes(header.key)))
 })
 </script>
 
