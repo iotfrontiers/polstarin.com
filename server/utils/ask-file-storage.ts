@@ -7,9 +7,9 @@ import { sendEmail } from './email'
 const MAX_STATIC_ITEMS = 50 // 최신 50개만 정적 파일에 저장
 
 // 파일 경로
-const getAskListPath = () => resolve(process.cwd(), 'data/ask.json')
-const getAskDetailDir = () => resolve(process.cwd(), 'public/data/ask')
-const getAskDetailPath = (id: string) => resolve(getAskDetailDir(), `${id}.json`)
+export const getAskListPath = () => resolve(process.cwd(), 'data/ask.json')
+export const getAskDetailDir = () => resolve(process.cwd(), 'public/data/ask')
+export const getAskDetailPath = (id: string) => resolve(getAskDetailDir(), `${id}.json`)
 
 /**
  * 정적 파일에 새 글 추가 (최신 50개만 유지)

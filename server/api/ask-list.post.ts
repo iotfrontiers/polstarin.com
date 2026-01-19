@@ -1,12 +1,10 @@
 import { createNotionClient } from '~/server/utils/notion'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs'
 import { resolve } from 'pathe'
 import type { NotionData, NotionListResponse } from '~/composables/notion'
+import { getAskListPath, getAskDetailDir, getAskDetailPath } from '~/server/utils/ask-file-storage'
 
 const MAX_STATIC_ITEMS = 50 // 최신 50개만 정적 파일에 저장
-
-// 정적 파일 경로
-const getAskListPath = () => resolve(process.cwd(), 'data/ask.json')
 
 /**
  * 기술/견적 문의 목록 조회 (하이브리드 방식)
@@ -35,17 +33,171 @@ export default defineEventHandler(async event => {
   const staticList = staticData.list || []
   const totalCount = staticData.totalCount || staticList.length
   
+  // 정적 파일이 비어있거나 데이터가 없을 때: 노션에서 최신 50개 가져와서 정적 파일에 저장
+  if (staticList.length === 0 && page === 1) {
+    // 노션에서 최신 50개 가져오기
+    const { notion: notionConfig } = useRuntimeConfig()
+    
+    if (notionConfig.askDatabaseId) {
+      try {
+        const notion = createNotionClient()
+        let actualDatabaseId = notionConfig.askDatabaseId
+        
+        // 데이터베이스 ID 찾기
+        try {
+          await notion.databases.retrieve({ database_id: actualDatabaseId })
+        } catch (dbInfoError: any) {
+          if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
+            try {
+              await notion.pages.retrieve({ page_id: actualDatabaseId })
+              const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
+              const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
+              
+              if (databaseBlock) {
+                actualDatabaseId = (databaseBlock as any).id
+                await notion.databases.retrieve({ database_id: actualDatabaseId })
+              }
+            } catch (childDbError) {
+              // 에러 무시하고 계속 진행
+            }
+          }
+        }
+        
+        // 필드 존재 여부 확인
+        let hasPublishedField = false
+        let hasDateField = false
+        try {
+          const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
+          // @ts-ignore
+          hasPublishedField = !!dbInfo?.properties?.['게시여부']
+          // @ts-ignore
+          hasDateField = !!dbInfo?.properties?.['작성일']
+        } catch (e) {
+          // 에러 무시
+        }
+        
+        // 필터 및 정렬 설정
+        const filter = hasPublishedField
+          ? {
+              property: '게시여부',
+              checkbox: { equals: true },
+            }
+          : undefined
+        
+        const sorts: any[] = []
+        if (hasDateField) {
+          sorts.push({
+            property: '작성일',
+            direction: 'descending',
+          })
+        }
+        sorts.push({
+          timestamp: 'created_time',
+          direction: 'descending',
+        })
+        
+        // 노션에서 최신 50개 가져오기
+        const queryParams: any = {
+          database_id: actualDatabaseId,
+          page_size: MAX_STATIC_ITEMS,
+          sorts,
+        }
+        
+        if (filter) {
+          queryParams.filter = filter
+        }
+        
+        const result = await notion.databases.query(queryParams)
+        
+        // 정적 파일에 저장할 데이터 변환
+        const notionList: NotionData[] = []
+        for (const row of result.results) {
+          const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+          const post: NotionData = {
+            id: row.id,
+            title: row?.properties?.['제목']?.title?.[0]?.plain_text || '',
+            author: row?.properties?.['작성자']?.rich_text?.[0]?.plain_text || '',
+            email: row?.properties?.['이메일']?.email || '',
+            contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
+            viewCnt: row?.properties?.['조회수']?.number || 0,
+            date: dateValue,
+            content: '', // 목록에서는 content 불필요
+          }
+          
+          notionList.push(post)
+        }
+        
+        // 기존 파일에 덮어쓰기 (목록만)
+        const filePath = getAskListPath()
+        const dir = resolve(process.cwd(), 'data')
+        if (!existsSync(dir)) {
+          mkdirSync(dir, { recursive: true })
+        }
+        
+        // 전체 개수 확인 (노션에 50개 미만일 수도 있음)
+        const actualTotalCount = notionList.length
+        
+        writeFileSync(
+          filePath,
+          JSON.stringify(
+            {
+              list: notionList,
+              totalCount: actualTotalCount, // 실제 가져온 개수 (50개 미만일 수도 있음)
+              lastUpdated: new Date().toISOString(),
+            },
+            null,
+            2
+          ),
+          'utf-8'
+        )
+        
+        // 상세 파일도 저장 (비동기로)
+        const detailDir = getAskDetailDir()
+        if (!existsSync(detailDir)) {
+          mkdirSync(detailDir, { recursive: true })
+        }
+        
+        // 상세 파일은 백그라운드로 저장 (마크다운 변환 필요)
+        Promise.all(
+          notionList.map(async post => {
+            try {
+              const { getNotionMarkdownContent } = await import('~/server/utils/notion')
+              const content = await getNotionMarkdownContent(post.id!)
+              const detailPost = { ...post, content }
+              
+              const detailPath = getAskDetailPath(post.id!)
+              writeFileSync(detailPath, JSON.stringify(detailPost, null, 2), 'utf-8')
+            } catch (e) {
+              console.warn(`상세 파일 저장 실패 (${post.id}):`, e)
+            }
+          })
+        ).catch(err => {
+          console.error('상세 파일 저장 오류:', err)
+        })
+        
+        // 정적 파일 데이터 업데이트
+        staticData.list = notionList
+        staticData.totalCount = actualTotalCount
+        
+        console.log(`[ask-list] 노션에서 ${notionList.length}개 글을 정적 파일로 마이그레이션 완료`)
+      } catch (migrationError) {
+        console.error('[ask-list] 정적 파일 마이그레이션 실패:', migrationError)
+        // 마이그레이션 실패해도 계속 진행 (노션에서 가져오기)
+      }
+    }
+  }
+  
   // 페이지 1-5 (1-50개)인 경우: 정적 파일에서 반환
-  if (offset < MAX_STATIC_ITEMS) {
+  if (offset < MAX_STATIC_ITEMS && staticData.list && staticData.list.length > 0) {
     const endIndex = Math.min(offset + pageSize, MAX_STATIC_ITEMS)
-    const pageData = staticList.slice(offset, endIndex)
+    const pageData = staticData.list.slice(offset, endIndex)
     
     return {
       list: pageData,
-      totalCount,
+      totalCount: staticData.totalCount || staticData.list.length,
       currentPage: page,
       pageSize,
-      hasMore: offset + pageSize < totalCount,
+      hasMore: offset + pageSize < (staticData.totalCount || staticData.list.length),
       source: 'static',
     }
   }
