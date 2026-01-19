@@ -15,7 +15,7 @@
             문의 작성
           </VBtn>
         </div>
-        <BoardList :listData="askList" detailPageUrl="/ask/" />
+        <BoardList v-if="askList" :listData="askList" detailPageUrl="/ask/" />
       </div>
     </VRow>
   </VContainer>

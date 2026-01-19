@@ -34,29 +34,30 @@ const currentPage = ref(1)
 const pageSize = ref(100)
 const noticeData = ref<NotionListResponse<NotionData>>()
 
-async function loadNotice() {
-  await useLoadingTask(async () => {
-    try {
-      // noticeData.value = await $fetch(props.apiUrl, {
-      //   method: 'post',
-      //   body: {
-      //     pageSize: pageSize.value,
-      //   },
-      // })
+function updateNoticeData() {
+  if (!props.listData) {
+    noticeData.value = undefined
+    return
+  }
 
-      noticeData.value = props.listData
+  // props.listData가 ref인 경우 value를 가져옴
+  const data = props.listData?.value || props.listData
+  noticeData.value = data
 
-      let startNo = pageSize.value * (currentPage.value - 1)
-      noticeData.value?.list?.forEach(row => {
-        row.num = ++startNo
-      })
-    } catch (e) {
-      alert(COMMON_MESSAGES.DATA_RETRIEVE_ERROR)
-    }
+  let startNo = pageSize.value * (currentPage.value - 1)
+  noticeData.value?.list?.forEach(row => {
+    row.num = ++startNo
   })
 }
 
-loadNotice()
+// props.listData가 변경될 때마다 업데이트
+watch(() => props.listData, () => {
+  updateNoticeData()
+}, { immediate: true, deep: true })
+
+onMounted(() => {
+  updateNoticeData()
+})
 
 // for responsibiltiy
 const { xs: mobile } = useDisplay()
