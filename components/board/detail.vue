@@ -9,10 +9,18 @@
         <VIcon :size="70">mdi-account-circle</VIcon>
       </VAvatar>
       <div class="ml-4 d-flex flex-column profile">
-        <div>{{ noticeInfo.author }}</div>
-        <div class="d-flex">
-          <div><VIcon icon="mdi-account-eye" class="mr-2" />{{ noticeInfo.viewCnt }}</div>
-          <div class="ml-5"><VIcon icon="mdi-calendar-clock" class="mr-2" />{{ formatDate(noticeInfo.date) }}</div>
+        <div class="font-weight-bold">{{ noticeInfo.author }}</div>
+        <div v-if="noticeInfo.email" class="mt-1">
+          <VIcon icon="mdi-email" size="small" class="mr-1" />
+          <a :href="`mailto:${noticeInfo.email}`" class="text-decoration-none">{{ noticeInfo.email }}</a>
+        </div>
+        <div v-if="noticeInfo.contact" class="mt-1">
+          <VIcon icon="mdi-phone" size="small" class="mr-1" />
+          {{ noticeInfo.contact }}
+        </div>
+        <div class="d-flex mt-2">
+          <div><VIcon icon="mdi-account-eye" class="mr-2" size="small" />{{ noticeInfo.viewCnt || 0 }}</div>
+          <div class="ml-5"><VIcon icon="mdi-calendar-clock" class="mr-2" size="small" />{{ formatDate(noticeInfo.date) }}</div>
         </div>
       </div>
     </div>

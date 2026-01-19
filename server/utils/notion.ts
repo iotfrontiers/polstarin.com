@@ -255,6 +255,12 @@ export const createBoardDetailApi = async (event: H3Event) => {
     // @ts-ignore
     const dateValue = pageInfo?.properties?.['작성일']?.date?.start || pageInfo?.created_time
     
+    // 이메일과 연락처 가져오기
+    // @ts-ignore
+    const email = pageInfo?.properties?.['이메일']?.email || ''
+    // @ts-ignore
+    const contact = pageInfo?.properties?.['연락처']?.['rich_text']?.[0]?.['plain_text'] || ''
+    
     const data: NotionData = {
       id: pageInfo.id as string,
       // @ts-ignore
@@ -264,6 +270,8 @@ export const createBoardDetailApi = async (event: H3Event) => {
       // @ts-ignore
       viewCnt: pageInfo?.properties?.['조회수']?.number || 0,
       date: dateValue,
+      email,
+      contact,
 
       content: await getNotionMarkdownContent(id),
 

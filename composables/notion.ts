@@ -61,6 +61,16 @@ interface NotionData {
    * 링크 연결 URL
    */
   linkUrl?: string
+
+  /**
+   * 이메일
+   */
+  email?: string
+
+  /**
+   * 연락처
+   */
+  contact?: string
 }
 
 /**
