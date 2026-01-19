@@ -140,33 +140,53 @@ async function cleanupOldDetailFiles(removedIds: string[]) {
  * 노션 DB에 저장 (백그라운드)
  */
 export async function saveToNotion(post: NotionData, body: any) {
+  console.log('[ask-file-storage] saveToNotion 시작:', { postId: post.id, title: post.title })
+  
   try {
+    console.log('[ask-file-storage] 환경 변수 확인 시작')
     const { notion: notionConfig } = useRuntimeConfig()
-    const notion = createNotionClient()
     
     if (!notionConfig.askDatabaseId) {
+      console.error('[ask-file-storage] NOTION_ASK_DATABASE_ID 없음')
       throw new Error('NOTION_ASK_DATABASE_ID 환경 변수가 설정되지 않았습니다.')
     }
     
+    if (!notionConfig.apiSecret) {
+      console.error('[ask-file-storage] NOTION_API_SECRET 없음')
+      throw new Error('NOTION_API_SECRET 환경 변수가 설정되지 않았습니다.')
+    }
+    
+    console.log('[ask-file-storage] Notion 클라이언트 생성 시작')
+    const notion = createNotionClient()
+    console.log('[ask-file-storage] Notion 클라이언트 생성 완료')
+    
     // 데이터베이스 ID 찾기 (기존 로직과 동일)
     let actualDatabaseId = notionConfig.askDatabaseId
+    console.log('[ask-file-storage] 데이터베이스 ID 확인 시작:', actualDatabaseId.substring(0, 10) + '...')
     
     try {
       await notion.databases.retrieve({ database_id: actualDatabaseId })
+      console.log('[ask-file-storage] 데이터베이스 직접 접근 성공')
     } catch (dbInfoError: any) {
+      console.log('[ask-file-storage] 데이터베이스 직접 접근 실패, 페이지로 시도:', dbInfoError?.code)
       if (dbInfoError?.code === 'validation_error' && dbInfoError?.message?.includes('is a page, not a database')) {
+        console.log('[ask-file-storage] 페이지에서 자식 데이터베이스 찾기 시작')
         const page = await notion.pages.retrieve({ page_id: actualDatabaseId })
         const blocks = await notion.blocks.children.list({ block_id: actualDatabaseId })
         const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
         
         if (databaseBlock) {
           actualDatabaseId = (databaseBlock as any).id
+          console.log('[ask-file-storage] 자식 데이터베이스 찾음:', actualDatabaseId.substring(0, 10) + '...')
           await notion.databases.retrieve({ database_id: actualDatabaseId })
+        } else {
+          console.error('[ask-file-storage] 자식 데이터베이스를 찾을 수 없음')
         }
       }
     }
     
     // 필드 존재 여부 확인
+    console.log('[ask-file-storage] 데이터베이스 스키마 확인 시작')
     let hasPublishedField = false
     let hasViewCountField = false
     try {
@@ -175,8 +195,9 @@ export async function saveToNotion(post: NotionData, body: any) {
       hasPublishedField = !!dbInfo?.properties?.['게시여부']
       // @ts-ignore
       hasViewCountField = !!dbInfo?.properties?.['조회수']
+      console.log('[ask-file-storage] 스키마 확인 완료:', { hasPublishedField, hasViewCountField })
     } catch (e) {
-      console.warn('데이터베이스 정보 조회 실패:', e)
+      console.warn('[ask-file-storage] 데이터베이스 정보 조회 실패:', e)
     }
     
     // 연락처 처리
@@ -211,6 +232,7 @@ export async function saveToNotion(post: NotionData, body: any) {
       properties.조회수 = { type: 'number', number: 0 }
     }
     
+    console.log('[ask-file-storage] Notion 페이지 생성 시작:', { postId: post.id, title: post.title })
     await notion.pages.create({
       parent: { database_id: actualDatabaseId },
       properties,
@@ -229,6 +251,10 @@ export async function saveToNotion(post: NotionData, body: any) {
     return true
   } catch (error) {
     console.error('[ask-file-storage] 노션 DB 저장 실패:', error)
+    console.error('[ask-file-storage] 에러 상세:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return false
   }
 }
@@ -237,7 +263,23 @@ export async function saveToNotion(post: NotionData, body: any) {
  * 이메일 전송 (백그라운드)
  */
 export async function sendEmailNotification(post: NotionData, body: any) {
+  console.log('[ask-file-storage] sendEmailNotification 시작:', { postId: post.id, email: post.email })
+  
   try {
+    console.log('[ask-file-storage] 이메일 환경 변수 확인 시작')
+    const { email: emailConfig } = useRuntimeConfig()
+    
+    if (!emailConfig.googleSmtpUser) {
+      console.error('[ask-file-storage] GOOGLE_SMTP_USER 없음')
+      throw new Error('GOOGLE_SMTP_USER 환경 변수가 설정되지 않았습니다.')
+    }
+    
+    if (!emailConfig.googleSmtpPassword) {
+      console.error('[ask-file-storage] GOOGLE_SMTP_PASSWORD 없음')
+      throw new Error('GOOGLE_SMTP_PASSWORD 환경 변수가 설정되지 않았습니다.')
+    }
+    
+    console.log('[ask-file-storage] 이메일 내용 생성 시작')
     const mailContent = `<p>- 작성자: ${post.author || ''}</p>
       <p>- 작성자 이메일: ${post.email || ''}</p>
       <p>- 작성자 전화번호: ${body.contact || '없음'}</p>
@@ -246,11 +288,16 @@ export async function sendEmailNotification(post: NotionData, body: any) {
     `
     const emailSubject = '폴스타인 기술/견적문의 : ' + post.title
     
+    console.log('[ask-file-storage] 이메일 전송 시작:', { subject: emailSubject, postId: post.id })
     await sendEmail(emailSubject, mailContent)
     console.log(`[ask-file-storage] 이메일 전송 완료: ${post.id}`)
     return true
   } catch (error) {
     console.error('[ask-file-storage] 이메일 전송 실패:', error)
+    console.error('[ask-file-storage] 에러 상세:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return false
   }
 }

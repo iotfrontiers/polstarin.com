@@ -86,43 +86,54 @@ export default defineEventHandler(async event => {
       id: newId,
     }
     
-    // 3. 백그라운드 처리 (비동기, 사용자 응답 기다리지 않음)
-    // Vercel 서버리스 환경에서 백그라운드 작업이 실행되도록 event.waitUntil 사용
-    if (event.waitUntil) {
-      event.waitUntil(
-        Promise.all([
-          saveToNotion(newPost, body).catch(err => {
-            console.error('[ask.post] 노션 저장 실패 (백그라운드):', err)
-            return false
-          }),
-          sendEmailNotification(newPost, body).catch(err => {
-            console.error('[ask.post] 이메일 전송 실패 (백그라운드):', err)
-            return false
-          }),
-        ]).then(([notionSaved, emailSent]) => {
-          console.log(`[ask.post] 백그라운드 처리 완료 - 노션: ${notionSaved}, 이메일: ${emailSent}`)
-        }).catch(err => {
-          console.error('[ask.post] 백그라운드 처리 오류:', err)
-        })
-      )
-    } else {
-      // waitUntil이 없으면 일반 Promise로 실행 (로컬 환경 등)
-      Promise.all([
-        saveToNotion(newPost, body).catch(err => {
-          console.error('[ask.post] 노션 저장 실패 (백그라운드):', err)
-          return false
-        }),
-        sendEmailNotification(newPost, body).catch(err => {
-          console.error('[ask.post] 이메일 전송 실패 (백그라운드):', err)
-          return false
-        }),
-      ]).then(([notionSaved, emailSent]) => {
-        console.log(`[ask.post] 백그라운드 처리 완료 - 노션: ${notionSaved}, 이메일: ${emailSent}`)
-      }).catch(err => {
-        console.error('[ask.post] 백그라운드 처리 오류:', err)
-      })
-    }
+    // 3. 백그라운드 작업을 별도 API로 호출 (사용자 응답 기다리지 않음)
+    console.log('[ask.post] 백그라운드 작업 시작:', newId)
     
+    // SITE_URL 환경 변수 확인
+    const siteUrl = process.env.SITE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000'
+    const backgroundUrl = `${siteUrl}/api/ask-background`
+    console.log('[ask.post] 백그라운드 API URL:', backgroundUrl)
+    console.log('[ask.post] 환경 변수:', {
+      hasSiteUrl: !!process.env.SITE_URL,
+      hasVercelUrl: !!process.env.VERCEL_URL,
+      vercelUrl: process.env.VERCEL_URL,
+    })
+    
+    // fetch로 별도 API 호출 (await하지 않음 - fire and forget)
+    fetch(backgroundUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        post: newPost,
+        originalBody: body,
+      }),
+    })
+      .then(async res => {
+        console.log('[ask.post] 백그라운드 API 응답 상태:', res.status, res.statusText)
+        if (!res.ok) {
+          const errorText = await res.text()
+          console.error('[ask.post] 백그라운드 API 실패:', {
+            status: res.status,
+            statusText: res.statusText,
+            error: errorText,
+          })
+        } else {
+          const result = await res.json()
+          console.log('[ask.post] 백그라운드 작업 완료:', result)
+        }
+      })
+      .catch(err => {
+        console.error('[ask.post] 백그라운드 API 호출 실패:', {
+          message: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
+        })
+      })
+    
+    console.log('[ask.post] 사용자 응답 반환 (백그라운드 작업은 계속 진행됨):', newId)
     return response
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
