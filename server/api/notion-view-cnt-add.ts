@@ -8,14 +8,21 @@ export default defineEventHandler(async event => {
   })
 
   // @ts-ignore
-  const viewCnt = pageInfo?.properties?.['조회수']?.number || 0
-
-  notion.pages.update({
-    page_id: id,
-    properties: {
-      조회수: {
-        number: viewCnt + 1,
-      },
-    },
-  })
+  const viewCntField = pageInfo?.properties?.['조회수']
+  // 조회수 필드가 있을 때만 업데이트
+  if (viewCntField) {
+    const viewCnt = viewCntField?.number || 0
+    try {
+      await notion.pages.update({
+        page_id: id,
+        properties: {
+          조회수: {
+            number: viewCnt + 1,
+          },
+        },
+      })
+    } catch (e) {
+      console.warn('조회수 업데이트 실패:', e)
+    }
+  }
 })

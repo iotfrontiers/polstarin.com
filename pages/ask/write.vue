@@ -121,6 +121,7 @@ import type { NotionAskReqeust } from '~/composables/notion'
 import { VForm } from 'vuetify/components/VForm'
 import { VTextField } from 'vuetify/components/VTextField'
 
+const router = useRouter()
 const inputData: NotionAskReqeust = reactive({})
 const valid = ref(false)
 const form = ref<InstanceType<typeof VForm>>()
@@ -163,9 +164,9 @@ async function submit() {
   }
 
   alert(COMMON_MESSAGES.ASK_COMPLETED)
-  init()
+  // 작성 완료 후 목록 페이지로 이동
+  router.push('/ask')
 }
-
 onMounted(() => init())
 </script>
 <style lang="scss">

@@ -40,20 +40,23 @@ const router = useRouter()
 const noticeInfo = ref<NotionData>(null)
 async function loadDetail() {
   await useLoadingTask(async () => {
-    noticeInfo.value = await $fetch(`${props.apiUrl}/${route.params.id}.json`)
+    // API URL이 /api/로 시작하면 API 호출, 아니면 JSON 파일 읽기
+    if (props.apiUrl?.startsWith('/api/')) {
+      noticeInfo.value = await $fetch(props.apiUrl, {
+        params: {
+          id: route.params.id,
+          update: 'true',
+        },
+      })
+    } else {
+      noticeInfo.value = await $fetch(`${props.apiUrl}/${route.params.id}.json`)
 
-    $fetch('/api/notion-view-cnt-add', {
-      params: {
-        id: route.params.id,
-      },
-    })
-
-    // noticeInfo.value = await $fetch(props.apiUrl, {
-    //   params: {
-    //     id: route.params.id,
-    //     update: 'true',
-    //   },
-    // })
+      $fetch('/api/notion-view-cnt-add', {
+        params: {
+          id: route.params.id,
+        },
+      })
+    }
 
     if (!noticeInfo.value) {
       alert(COMMON_MESSAGES.DATA_NOT_FOUND_ERROR)

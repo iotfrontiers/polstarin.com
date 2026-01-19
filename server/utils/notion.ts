@@ -88,36 +88,60 @@ export const createBoardListApi = async (event: any, databaseId: string) => {
   try {
     const body: NotionPageRequest = (await readBody(event)) || {}
     const notion = createNotionClient()
+    
+    // 데이터베이스 스키마 확인하여 필드 존재 여부 확인
+    let hasPublishedField = false
+    let hasDateField = false
+    try {
+      const dbInfo = await notion.databases.retrieve({ database_id: databaseId })
+      // @ts-ignore
+      hasPublishedField = !!dbInfo?.properties?.['게시여부']
+      // @ts-ignore
+      hasDateField = !!dbInfo?.properties?.['작성일']
+    } catch (e) {
+      console.warn('데이터베이스 정보 조회 실패:', e)
+    }
+    
+    // 게시여부 필드가 있으면 필터 적용, 없으면 모든 항목 조회
+    const filter = hasPublishedField
+      ? {
+          property: '게시여부',
+          checkbox: {
+            equals: true,
+          },
+        }
+      : undefined
+    
+    const sorts: any[] = []
+    if (hasDateField) {
+      sorts.push({
+        property: '작성일',
+        direction: 'descending',
+      })
+    }
+    sorts.push({
+      timestamp: 'created_time',
+      direction: 'descending',
+    })
+    
     const result = await notion.databases.query({
       database_id: databaseId,
       page_size: body.pageSize || 100,
       start_cursor: body.startCursor || undefined,
-      filter: {
-        property: '게시여부',
-        checkbox: {
-          equals: true,
-        },
-      },
-      sorts: [
-        {
-          property: '작성일',
-          direction: 'descending',
-        },
-        {
-          timestamp: 'created_time',
-          direction: 'descending',
-        },
-      ],
+      ...(filter ? { filter } : {}),
+      sorts,
     })
 
     const noticeList: NotionData[] = []
     result.results.forEach((row: any) => {
+      // 작성일 필드가 있으면 사용하고, 없으면 created_time 사용
+      const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
       noticeList.push({
         id: row.id as string,
         title: row?.properties?.['제목']?.title[0]?.['plain_text'] as string,
         author: row?.properties?.['작성자']?.['rich_text'][0]?.['plain_text'] as string,
-        viewCnt: row?.properties?.['조회수']?.number as number,
-        date: row?.properties?.['작성일']?.date?.start as string,
+        viewCnt: row?.properties?.['조회수']?.number || 0,
+        date: dateValue,
       })
     })
 
@@ -150,20 +174,29 @@ export const createBoardDetailApi = async (event: H3Event) => {
 
     if (updateView) {
       // @ts-ignore
-      const viewCnt = pageInfo?.properties?.['조회수']?.number || 0
-
-      notion.pages.update({
-        page_id: id,
-        properties: {
-          조회수: {
-            number: viewCnt + 1,
-          },
-        },
-      })
+      const viewCntField = pageInfo?.properties?.['조회수']
+      // 조회수 필드가 있을 때만 업데이트
+      if (viewCntField) {
+        const viewCnt = viewCntField?.number || 0
+        try {
+          await notion.pages.update({
+            page_id: id,
+            properties: {
+              조회수: {
+                number: viewCnt + 1,
+              },
+            },
+          })
+        } catch (e) {
+          console.warn('조회수 업데이트 실패:', e)
+        }
+      }
     }
 
+    // 게시여부 필드가 있고 false인 경우에만 에러 발생
     // @ts-ignore
-    if (pageInfo?.properties?.['게시여부']?.checkbox !== true) {
+    const publishedField = pageInfo?.properties?.['게시여부']
+    if (publishedField && publishedField?.checkbox !== true) {
       throw new Error('Not Found Page')
     }
 
@@ -180,6 +213,10 @@ export const createBoardDetailApi = async (event: H3Event) => {
     //   return JSON.parse(readFileSync(cacheFilePath, { encoding: 'utf-8' })) as NotionData
     // }
 
+    // 작성일 필드가 있으면 사용하고, 없으면 created_time 사용
+    // @ts-ignore
+    const dateValue = pageInfo?.properties?.['작성일']?.date?.start || pageInfo?.created_time
+    
     const data: NotionData = {
       id: pageInfo.id as string,
       // @ts-ignore
@@ -187,9 +224,8 @@ export const createBoardDetailApi = async (event: H3Event) => {
       // @ts-ignore
       author: pageInfo?.properties?.['작성자']?.['rich_text'][0]?.['plain_text'] as string,
       // @ts-ignore
-      viewCnt: pageInfo?.properties?.['조회수']?.number as number,
-      // @ts-ignore
-      date: pageInfo?.properties?.['작성일']?.date?.start as string,
+      viewCnt: pageInfo?.properties?.['조회수']?.number || 0,
+      date: dateValue,
 
       content: await getNotionMarkdownContent(id),
 

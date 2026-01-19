@@ -111,41 +111,72 @@ export default defineEventHandler(async event => {
         }
       }
       
+      // 데이터베이스 스키마 확인하여 필드 존재 여부 확인
+      let hasPublishedField = false
+      let hasViewCountField = false
+      try {
+        const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
+        // @ts-ignore
+        hasPublishedField = !!dbInfo?.properties?.['게시여부']
+        // @ts-ignore
+        hasViewCountField = !!dbInfo?.properties?.['조회수']
+      } catch (e) {
+        console.warn('데이터베이스 정보 조회 실패:', e)
+      }
+      
       // API 요청 본문 구성 (실제 데이터베이스 ID 사용)
+      const properties: any = {
+        제목: {
+          type: 'title',
+          title: [
+            {
+              text: {
+                content: body.title || '',
+              },
+            },
+          ],
+        },
+        작성자: {
+          type: 'rich_text',
+          rich_text: [
+            {
+              text: {
+                content: body.author || '',
+              },
+            },
+          ],
+        },
+        이메일: {
+          type: 'email',
+          email: body.email,
+        },
+        연락처: {
+          type: 'rich_text',
+          rich_text: contactRichText,
+        },
+      }
+      
+      // 게시여부 필드가 있으면 추가
+      if (hasPublishedField) {
+        properties.게시여부 = {
+          type: 'checkbox',
+          checkbox: true, // 게시판 형태로 만들기 위해 기본값을 true로 설정
+        }
+      }
+      
+      // 조회수 필드가 있으면 추가
+      if (hasViewCountField) {
+        properties.조회수 = {
+          type: 'number',
+          number: 0,
+        }
+      }
+      
       const requestBody = {
         parent: {
           database_id: actualDatabaseId,
         },
-        properties: {
-          제목: {
-            type: 'title',
-            title: [
-              {
-                text: {
-                  content: body.title || '',
-                },
-              },
-            ],
-          },
-          작성자: {
-            type: 'rich_text',
-            rich_text: [
-              {
-                text: {
-                  content: body.author || '',
-                },
-              },
-            ],
-          },
-          이메일: {
-            type: 'email',
-            email: body.email,
-          },
-          연락처: {
-            type: 'rich_text',
-            rich_text: contactRichText,
-          },
-        },
+        properties,
         children: [
           {
             object: 'block',
