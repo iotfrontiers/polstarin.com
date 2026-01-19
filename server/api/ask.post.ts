@@ -5,7 +5,8 @@ import { randomUUID } from 'node:crypto'
 
 /**
  * 기술/견적 문의
- * Postgres에 즉시 저장 → 사용자 응답 → 백그라운드에서 Notion 저장 및 이메일 전송
+ * Postgres 저장 → Notion 저장 → 이메일 전송 → 사용자 응답
+ * 모든 작업을 동기적으로 처리하여 Vercel 서버리스 환경에서도 안정적으로 동작
  */
 export default defineEventHandler(async event => {
   let errorDetails: any = { step: 'init' }
@@ -65,7 +66,7 @@ export default defineEventHandler(async event => {
       date: now,
     }
     
-    // 1. Postgres에 즉시 저장 (사용자 응답을 위해 동기 처리)
+    // 1. Postgres에 저장
     errorDetails = { step: 'postgres_save' }
     try {
       await insertAskPost(newPost)
@@ -78,39 +79,53 @@ export default defineEventHandler(async event => {
       })
     }
     
-    // 2. 사용자에게 즉시 응답
-    const response = {
+    // 2. Notion에 저장
+    errorDetails = { step: 'notion_save' }
+    let notionSaved = false
+    try {
+      console.log('[ask.post] Notion 저장 시작:', newId)
+      notionSaved = await saveToNotion(newPost, body)
+      if (notionSaved) {
+        console.log(`[ask.post] Notion 저장 완료: ${newId}`)
+      } else {
+        console.warn(`[ask.post] Notion 저장 실패 (false 반환): ${newId}`)
+      }
+    } catch (notionError) {
+      console.error('[ask.post] Notion 저장 중 에러 발생:', notionError)
+      // Notion 저장 실패해도 계속 진행 (이메일 전송은 시도)
+    }
+    
+    // 3. 이메일 전송
+    errorDetails = { step: 'email_send' }
+    let emailSent = false
+    try {
+      console.log('[ask.post] 이메일 전송 시작:', newId)
+      emailSent = await sendEmailNotification(newPost, body)
+      if (emailSent) {
+        console.log(`[ask.post] 이메일 전송 완료: ${newId}`)
+      } else {
+        console.warn(`[ask.post] 이메일 전송 실패 (false 반환): ${newId}`)
+      }
+    } catch (emailError) {
+      console.error('[ask.post] 이메일 전송 중 에러 발생:', emailError)
+      // 이메일 전송 실패해도 사용자에게는 성공 응답 (Postgres 저장은 완료됨)
+    }
+    
+    // 4. 사용자에게 응답
+    console.log('[ask.post] 모든 작업 완료:', {
+      postId: newId,
+      postgresSaved: true,
+      notionSaved,
+      emailSent,
+    })
+    
+    return {
       success: true,
       message: '문의가 성공적으로 등록되었습니다.',
       id: newId,
+      notionSaved,
+      emailSent,
     }
-    
-    // 3. 백그라운드 작업을 직접 함수로 호출 (HTTP 요청 없이 - Vercel Deployment Protection 회피)
-    console.log('[ask.post] 백그라운드 작업 시작:', newId)
-    
-    // 백그라운드 작업을 직접 함수로 호출 (await하지 않음 - fire and forget)
-    // HTTP 요청을 사용하면 Vercel Preview Deployment의 인증 페이지로 리다이렉트되어 401 에러 발생
-    Promise.all([
-      saveToNotion(newPost, body),
-      sendEmailNotification(newPost, body),
-    ])
-      .then(([notionResult, emailResult]) => {
-        console.log('[ask.post] 백그라운드 작업 완료:', {
-          postId: newId,
-          notionSaved: notionResult,
-          emailSent: emailResult,
-        })
-      })
-      .catch(err => {
-        console.error('[ask.post] 백그라운드 작업 실패:', {
-          postId: newId,
-          message: err instanceof Error ? err.message : String(err),
-          stack: err instanceof Error ? err.stack : undefined,
-        })
-      })
-    
-    console.log('[ask.post] 사용자 응답 반환 (백그라운드 작업은 계속 진행됨):', newId)
-    return response
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     const isDev = process.env.NODE_ENV === 'development' || process.dev
