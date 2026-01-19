@@ -185,6 +185,18 @@ export async function saveToNotion(post: NotionData, body: any) {
       }
     }
     
+    // 필드 존재 여부 확인
+    console.log('[ask-file-storage] 데이터베이스 스키마 확인 시작')
+    let hasDateField = false
+    try {
+      const dbInfo = await notion.databases.retrieve({ database_id: actualDatabaseId })
+      // @ts-ignore
+      hasDateField = !!dbInfo?.properties?.['작성일']
+      console.log('[ask-file-storage] 스키마 확인 완료:', { hasDateField })
+    } catch (e) {
+      console.warn('[ask-file-storage] 데이터베이스 정보 조회 실패:', e)
+    }
+    
     // 연락처 처리
     const contactRichText = body.contact && body.contact.trim()
       ? [{ text: { content: body.contact } }]
@@ -225,6 +237,16 @@ export async function saveToNotion(post: NotionData, body: any) {
         type: 'rich_text',
         rich_text: messageRichText,
       },
+    }
+    
+    // 작성일 필드가 있으면 추가
+    if (hasDateField && post.date) {
+      properties.작성일 = {
+        type: 'date',
+        date: {
+          start: post.date,
+        },
+      }
     }
     
     console.log('[ask-file-storage] Notion 페이지 생성 시작:', { postId: post.id, title: post.title })

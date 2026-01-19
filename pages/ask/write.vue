@@ -63,6 +63,10 @@
                 <td><VTextField variant="outlined" hideDetails="auto" density="compact" v-model="inputData.contact"></VTextField></td>
               </tr>
               <tr>
+                <th>회사/소속</th>
+                <td><VTextField variant="outlined" hideDetails="auto" density="compact" v-model="inputData.company"></VTextField></td>
+              </tr>
+              <tr>
                 <th>제목</th>
                 <td>
                   <VTextField
@@ -130,6 +134,7 @@ function init() {
   useDeepMerge(inputData, {
     author: '',
     contact: '',
+    company: '',
     content: '',
     email: '',
     title: '',
