@@ -6,9 +6,25 @@ import { sendEmail } from './email'
 
 const MAX_STATIC_ITEMS = 50 // 최신 50개만 정적 파일에 저장
 
-// 파일 경로
-export const getAskListPath = () => resolve(process.cwd(), 'data/ask.json')
-export const getAskDetailDir = () => resolve(process.cwd(), 'public/data/ask')
+// 파일 경로 (Vercel 환경에서는 /tmp 사용)
+const getDataDir = () => {
+  // Vercel 환경 체크
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return '/tmp/data'
+  }
+  return resolve(process.cwd(), 'data')
+}
+
+const getPublicDataDir = () => {
+  // Vercel 환경에서는 /tmp 사용
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return '/tmp/public/data/ask'
+  }
+  return resolve(process.cwd(), 'public/data/ask')
+}
+
+export const getAskListPath = () => resolve(getDataDir(), 'ask.json')
+export const getAskDetailDir = () => getPublicDataDir()
 export const getAskDetailPath = (id: string) => resolve(getAskDetailDir(), `${id}.json`)
 
 /**

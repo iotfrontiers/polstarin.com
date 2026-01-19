@@ -1,9 +1,11 @@
 import { NotionAskReqeust } from '~/composables/notion'
-import { appendToAskList, saveAskDetail, saveToNotion, sendEmailNotification } from '~/server/utils/ask-file-storage'
+import { insertAskPost } from '~/server/utils/postgres'
+import { saveToNotion, sendEmailNotification } from '~/server/utils/ask-file-storage'
 import { randomUUID } from 'node:crypto'
 
 /**
  * 기술/견적 문의
+ * Postgres에 즉시 저장 → 사용자 응답 → 백그라운드에서 Notion 저장 및 이메일 전송
  */
 export default defineEventHandler(async event => {
   let errorDetails: any = { step: 'init' }
@@ -49,8 +51,7 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // 1. 정적 파일에 즉시 저장 (사용자 응답을 위해 동기 처리)
-    errorDetails = { step: 'static_file_save' }
+    errorDetails = { step: 'generate_id' }
     const newId = randomUUID()
     const now = new Date().toISOString()
     
@@ -65,11 +66,13 @@ export default defineEventHandler(async event => {
       date: now,
     }
     
+    // 1. Postgres에 즉시 저장 (사용자 응답을 위해 동기 처리)
+    errorDetails = { step: 'postgres_save' }
     try {
-      await appendToAskList(newPost)
-      await saveAskDetail(newPost)
-    } catch (fileError) {
-      console.error('정적 파일 저장 오류:', fileError)
+      await insertAskPost(newPost)
+      console.log(`[ask.post] Postgres 저장 완료: ${newId}`)
+    } catch (postgresError) {
+      console.error('[ask.post] Postgres 저장 실패:', postgresError)
       throw createError({
         statusCode: 500,
         message: '문의 등록 중 오류가 발생하였습니다.',

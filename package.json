@@ -57,6 +57,7 @@
   "dependencies": {
     "@netlify/functions": "^2.4.1",
     "@vercel/analytics": "^1.1.1",
+    "@vercel/postgres": "^0.5.1",
     "auto-version-js": "^0.3.10",
     "axios": "^1.6.2",
     "cloudinary": "^1.41.0",
