@@ -35,7 +35,7 @@
 import type { NotionListResponse, NotionData } from '~/composables/notion'
 
 const currentPage = ref(1)
-const pageSize = ref(50) // 최대 50개까지 조회 가능
+const pageSize = ref(10)
 const askList = ref<NotionListResponse<NotionData>>()
 const totalCount = ref(0)
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value))
