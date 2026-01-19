@@ -64,7 +64,14 @@ async function loadAskList() {
         list: response.list,
         nextCursor: response.nextCursor,
       }
-      totalCount.value = response.totalCount || 0
+      totalCount.value = response.totalCount || response.list?.length || 0
+
+      console.log('[ask/index] API 응답:', {
+        listCount: response.list?.length,
+        totalCount: response.totalCount,
+        finalTotalCount: totalCount.value,
+        totalPages: Math.ceil(totalCount.value / pageSize.value),
+      })
 
       // 번호 매기기
       const startNo = (currentPage.value - 1) * pageSize.value + 1

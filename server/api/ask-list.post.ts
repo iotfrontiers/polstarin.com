@@ -203,7 +203,17 @@ export default defineEventHandler(async event => {
     const endIndex = Math.min(offset + pageSize, MAX_STATIC_ITEMS)
     const pageData = staticData.list.slice(offset, endIndex)
     
-    const finalTotalCount = totalCount || staticData.list.length
+    // totalCount가 없거나 0이면 실제 리스트 개수를 사용
+    const finalTotalCount = totalCount > 0 ? totalCount : staticData.list.length
+    
+    console.log('[ask-list] 정적 파일 반환:', {
+      offset,
+      pageSize,
+      listLength: staticData.list.length,
+      totalCount,
+      finalTotalCount,
+      pageDataLength: pageData.length,
+    })
     
     return {
       list: pageData,
