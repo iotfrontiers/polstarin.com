@@ -9,14 +9,14 @@
         <VIcon :size="70">mdi-account-circle</VIcon>
       </VAvatar>
       <div class="ml-4 d-flex flex-column profile">
-        <div class="font-weight-bold">{{ noticeInfo.author }}</div>
+        <div class="font-weight-bold">{{ maskName(noticeInfo.author) }}</div>
         <div v-if="noticeInfo.email" class="mt-1">
           <VIcon icon="mdi-email" size="small" class="mr-1" />
-          <a :href="`mailto:${noticeInfo.email}`" class="text-decoration-none">{{ noticeInfo.email }}</a>
+          <a :href="`mailto:${noticeInfo.email}`" class="text-decoration-none">{{ maskEmail(noticeInfo.email) }}</a>
         </div>
         <div v-if="noticeInfo.contact" class="mt-1">
           <VIcon icon="mdi-phone" size="small" class="mr-1" />
-          {{ noticeInfo.contact }}
+          {{ maskPhone(noticeInfo.contact) }}
         </div>
         <div class="d-flex mt-2">
           <div><VIcon icon="mdi-calendar-clock" class="mr-2" size="small" />{{ formatDate(noticeInfo.date) }}</div>
@@ -45,6 +45,65 @@ const props = withDefaults(
 const route = useRoute()
 const router = useRouter()
 const noticeInfo = ref<NotionData>(null)
+
+/**
+ * 이름 마스킹 (첫 글자만 보이고 나머지는 *)
+ * 예: "김현수" → "김**"
+ */
+function maskName(name: string | undefined): string {
+  if (!name) return ''
+  if (name.length <= 1) return name
+  if (name.length === 2) return name[0] + '*'
+  return name[0] + '*'.repeat(name.length - 1)
+}
+
+/**
+ * 이메일 마스킹 (@ 앞 부분 일부만 보이고 나머지는 *)
+ * 예: "hskim.maint@yeongnam-jg.example" → "hsk***@yeongnam-jg.example"
+ */
+function maskEmail(email: string | undefined): string {
+  if (!email) return ''
+  const atIndex = email.indexOf('@')
+  if (atIndex === -1) return email
+  
+  const localPart = email.substring(0, atIndex)
+  const domainPart = email.substring(atIndex)
+  
+  if (localPart.length <= 3) {
+    return '*'.repeat(localPart.length) + domainPart
+  }
+  
+  return localPart.substring(0, 3) + '*'.repeat(localPart.length - 3) + domainPart
+}
+
+/**
+ * 전화번호 마스킹 (중간 4자리만 *)
+ * 예: "010-8934-2716" → "010-****-2716"
+ * 예: "01089342716" → "010****2716"
+ */
+function maskPhone(phone: string | undefined): string {
+  if (!phone) return ''
+  
+  // 하이픈 제거
+  const digitsOnly = phone.replace(/[^0-9]/g, '')
+  
+  if (digitsOnly.length < 7) return phone
+  
+  // 전화번호 형식에 따라 마스킹
+  if (digitsOnly.length === 10) {
+    // 010-1234-5678 형식
+    return digitsOnly.substring(0, 3) + '-' + '*'.repeat(4) + '-' + digitsOnly.substring(7)
+  } else if (digitsOnly.length === 11) {
+    // 010-1234-5678 형식 (11자리)
+    return digitsOnly.substring(0, 3) + '-' + '*'.repeat(4) + '-' + digitsOnly.substring(7)
+  } else {
+    // 기타 형식: 중간 부분 마스킹
+    const start = digitsOnly.substring(0, 3)
+    const end = digitsOnly.substring(digitsOnly.length - 4)
+    const middle = '*'.repeat(digitsOnly.length - 7)
+    return start + middle + end
+  }
+}
 
 function formatDate(dateString: string | undefined): string {
   if (!dateString) return ''
