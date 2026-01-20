@@ -8,6 +8,7 @@ import type { NotionData } from '~/composables/notion'
 export default defineEventHandler(async event => {
   const query = getQuery(event)
   const id = query['id'] as string
+  const password = query['password'] as string | undefined
   
   if (!id) {
     throw createError({
@@ -27,7 +28,20 @@ export default defineEventHandler(async event => {
       })
     }
     
-    return detailData
+    // 비밀번호가 설정되어 있으면 확인
+    if (detailData.password && detailData.password.trim()) {
+      if (!password || password !== detailData.password) {
+        throw createError({
+          statusCode: 401,
+          message: '비밀번호가 일치하지 않습니다.',
+        })
+      }
+    }
+    
+    // 비밀번호는 응답에서 제거 (보안)
+    const { password: _, ...responseData } = detailData
+    
+    return responseData
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     

@@ -1,4 +1,30 @@
 <template>
+  <!-- 비밀번호 입력 다이얼로그 -->
+  <VDialog v-model="passwordDialog" max-width="400" persistent>
+    <VCard>
+      <VCardTitle>비밀번호 입력</VCardTitle>
+      <VCardText>
+        <VTextField
+          v-model="inputPassword"
+          type="password"
+          label="비밀번호"
+          placeholder="영문, 숫자 4자"
+          maxlength="4"
+          variant="outlined"
+          density="compact"
+          @keyup.enter="checkPassword"
+          autofocus
+        />
+        <div v-if="passwordError" class="error-text mt-2">{{ passwordError }}</div>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn @click="checkPassword" color="primary">확인</VBtn>
+        <VBtn @click="cancelPassword" variant="text">취소</VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
   <div class="detail-box" v-if="noticeInfo">
     <div class="d-flex flex-row-reverse">
       <VBtn icon="mdi-microsoft-xbox-controller-menu" theme="light" class="v-btn--blank" @click="() => $router.push(props.listPageUrl)"></VBtn>
@@ -45,6 +71,9 @@ const props = withDefaults(
 const route = useRoute()
 const router = useRouter()
 const noticeInfo = ref<NotionData>(null)
+const passwordDialog = ref(false)
+const inputPassword = ref('')
+const passwordError = ref('')
 
 /**
  * 이름 마스킹 (첫 글자만 보이고 나머지는 *)
@@ -147,31 +176,74 @@ function formatDate(dateString: string | undefined): string {
   }
 }
 
-async function loadDetail() {
+async function loadDetail(password?: string) {
   await useLoadingTask(async () => {
-    // API URL이 /api/로 시작하면 API 호출, 아니면 JSON 파일 읽기
-    if (props.apiUrl?.startsWith('/api/')) {
-      noticeInfo.value = await $fetch(props.apiUrl, {
-        params: {
+    try {
+      // API URL이 /api/로 시작하면 API 호출, 아니면 JSON 파일 읽기
+      if (props.apiUrl?.startsWith('/api/')) {
+        const params: any = {
           id: route.params.id,
           update: 'true',
-        },
-      })
-    } else {
-      noticeInfo.value = await $fetch(`${props.apiUrl}/${route.params.id}.json`)
+        }
+        if (password) {
+          params.password = password
+        }
+        
+        noticeInfo.value = await $fetch(props.apiUrl, {
+          params,
+        })
+      } else {
+        noticeInfo.value = await $fetch(`${props.apiUrl}/${route.params.id}.json`)
 
-      $fetch('/api/notion-view-cnt-add', {
-        params: {
-          id: route.params.id,
-        },
-      })
-    }
+        $fetch('/api/notion-view-cnt-add', {
+          params: {
+            id: route.params.id,
+          },
+        })
+      }
 
-    if (!noticeInfo.value) {
-      alert(COMMON_MESSAGES.DATA_NOT_FOUND_ERROR)
-      router.back()
+      if (!noticeInfo.value) {
+        alert(COMMON_MESSAGES.DATA_NOT_FOUND_ERROR)
+        router.back()
+      } else {
+        // 성공적으로 로드되면 비밀번호 다이얼로그 닫기
+        passwordDialog.value = false
+        passwordError.value = ''
+        inputPassword.value = ''
+      }
+    } catch (error: any) {
+      // 401 에러면 비밀번호가 필요한 경우
+      if (error?.statusCode === 401 || error?.data?.statusCode === 401) {
+        passwordDialog.value = true
+        passwordError.value = error?.message || '비밀번호가 일치하지 않습니다.'
+      } else {
+        alert(COMMON_MESSAGES.DATA_NOT_FOUND_ERROR)
+        router.back()
+      }
     }
   })
+}
+
+function checkPassword() {
+  if (!inputPassword.value || inputPassword.value.length !== 4) {
+    passwordError.value = '비밀번호는 4자리여야 합니다.'
+    return
+  }
+  
+  if (!/^[A-Za-z0-9]{4}$/.test(inputPassword.value)) {
+    passwordError.value = '영문과 숫자만 입력 가능합니다.'
+    return
+  }
+  
+  passwordError.value = ''
+  loadDetail(inputPassword.value)
+}
+
+function cancelPassword() {
+  passwordDialog.value = false
+  inputPassword.value = ''
+  passwordError.value = ''
+  router.push(props.listPageUrl)
 }
 
 onMounted(() => loadDetail())
@@ -191,5 +263,10 @@ onMounted(() => loadDetail())
   .profile {
     font-size: 1rem;
   }
+}
+
+.error-text {
+  color: #d32f2f;
+  font-size: 14px;
 }
 </style>

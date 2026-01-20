@@ -48,6 +48,7 @@ export async function initAskTable() {
         email TEXT NOT NULL,
         contact TEXT DEFAULT '',
         company TEXT DEFAULT '',
+        password TEXT DEFAULT '',
         content TEXT NOT NULL,
         date TIMESTAMP NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
@@ -81,6 +82,18 @@ export async function initAskTable() {
       console.log('[postgres] company 컬럼 확인:', error instanceof Error ? error.message : String(error))
     }
     
+    // 기존 테이블에 password 컬럼 추가 (없으면)
+    try {
+      await sql`
+        ALTER TABLE ask_posts 
+        ADD COLUMN IF NOT EXISTS password TEXT DEFAULT ''
+      `
+      console.log('[postgres] password 컬럼 확인/추가 완료')
+    } catch (error) {
+      // 컬럼이 이미 있거나 다른 에러는 무시
+      console.log('[postgres] password 컬럼 확인:', error instanceof Error ? error.message : String(error))
+    }
+    
     console.log('[postgres] ask_posts 테이블 초기화 완료')
   } catch (error) {
     console.error('[postgres] 테이블 초기화 실패:', error)
@@ -101,14 +114,15 @@ export async function insertAskPost(post: NotionData) {
   
   try {
     await sql`
-      INSERT INTO ask_posts (id, title, author, email, contact, company, content, date)
-      VALUES (${post.id}, ${post.title}, ${post.author}, ${post.email}, ${post.contact || ''}, ${post.company || ''}, ${post.content}, ${post.date})
+      INSERT INTO ask_posts (id, title, author, email, contact, company, password, content, date)
+      VALUES (${post.id}, ${post.title}, ${post.author}, ${post.email}, ${post.contact || ''}, ${post.company || ''}, ${post.password || ''}, ${post.content}, ${post.date})
       ON CONFLICT (id) DO UPDATE SET
         title = EXCLUDED.title,
         author = EXCLUDED.author,
         email = EXCLUDED.email,
         contact = EXCLUDED.contact,
         company = EXCLUDED.company,
+        password = COALESCE(EXCLUDED.password, ask_posts.password),
         content = EXCLUDED.content,
         updated_at = NOW()
     `
@@ -201,7 +215,7 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
     
     // 최신 50개만 조회 (정렬: 최신순)
     const result = await sql`
-      SELECT id, title, author, email, contact, company, content, date
+      SELECT id, title, author, email, contact, company, password, content, date
       FROM ask_posts
       ORDER BY date DESC
       LIMIT ${pageSize}
@@ -209,14 +223,15 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
     `
     
     const list: NotionData[] = result.rows.map(row => ({
-        id: row.id,
-        title: row.title,
-        author: row.author,
-        email: row.email,
-        contact: row.contact || '',
-        company: row.company || '',
-        content: row.content,
-        date: row.date,
+      id: row.id,
+      title: row.title,
+      author: row.author,
+      email: row.email,
+      contact: row.contact || '',
+      company: row.company || '',
+      password: row.password || '',
+      content: row.content,
+      date: row.date,
       }))
     
     const totalCount = await getTotalCount()
@@ -243,7 +258,7 @@ export async function getAskDetail(id: string): Promise<NotionData | null> {
   
   try {
     const result = await sql`
-      SELECT id, title, author, email, contact, company, content, date
+      SELECT id, title, author, email, contact, company, password, content, date
       FROM ask_posts
       WHERE id = ${id}
     `
@@ -261,6 +276,7 @@ export async function getAskDetail(id: string): Promise<NotionData | null> {
       email: row.email,
       contact: row.contact || '',
       company: row.company || '',
+      password: row.password || '',
       content: row.content,
       date: row.date,
     }

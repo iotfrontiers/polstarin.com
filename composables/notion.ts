@@ -76,6 +76,11 @@ interface NotionData {
    * 회사/소속
    */
   company?: string
+
+  /**
+   * 비밀번호
+   */
+  password?: string
 }
 
 /**
@@ -104,6 +109,7 @@ interface NotionAskReqeust {
   contact?: string
   company?: string
   content?: string
+  password?: string
 }
 
 export { type NotionData, type NotionListResponse, type NotionPageRequest, type NotionAskReqeust }

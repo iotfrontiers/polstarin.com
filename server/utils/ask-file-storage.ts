@@ -207,6 +207,11 @@ export async function saveToNotion(post: NotionData, body: any) {
       ? [{ text: { content: body.company } }]
       : []
     
+    // 비밀번호 처리
+    const passwordRichText = body.password && body.password.trim()
+      ? [{ text: { content: body.password } }]
+      : []
+    
     // 메세지(본문) 처리
     const messageRichText = post.content && post.content.trim()
       ? [{ text: { content: post.content || '' } }]
@@ -232,6 +237,10 @@ export async function saveToNotion(post: NotionData, body: any) {
       '회사/소속': {
         type: 'rich_text',
         rich_text: companyRichText,
+      },
+      비번: {
+        type: 'rich_text',
+        rich_text: passwordRichText,
       },
       메세지: {
         type: 'rich_text',

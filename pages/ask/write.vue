@@ -67,6 +67,35 @@
                 <td><VTextField variant="outlined" hideDetails="auto" density="compact" v-model="inputData.company"></VTextField></td>
               </tr>
               <tr>
+                <th>비밀번호</th>
+                <td>
+                  <VTextField
+                    variant="outlined"
+                    hideDetails="auto"
+                    density="compact"
+                    v-model="inputData.password"
+                    type="password"
+                    maxlength="4"
+                    placeholder="영문, 숫자 4자"
+                    :rules="[
+                      value => {
+                        if (!value) {
+                          return '비밀번호를 입력해주세요.'
+                        }
+                        if (value.length !== 4) {
+                          return '비밀번호는 4자리여야 합니다.'
+                        }
+                        if (!/^[A-Za-z0-9]{4}$/.test(value)) {
+                          return '영문과 숫자만 입력 가능합니다.'
+                        }
+                        return true
+                      },
+                    ]"
+                  ></VTextField>
+                  <div class="password-hint mt-1">글을 읽을 때 필요한 비밀번호입니다. (영문, 숫자 4자)</div>
+                </td>
+              </tr>
+              <tr>
                 <th>제목</th>
                 <td>
                   <VTextField
@@ -135,6 +164,7 @@ function init() {
     author: '',
     contact: '',
     company: '',
+    password: '',
     content: '',
     email: '',
     title: '',
@@ -231,5 +261,11 @@ onMounted(() => init())
     padding: 10px;
     border-bottom: 1px solid #ddd;
   }
+}
+
+.password-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
 }
 </style>

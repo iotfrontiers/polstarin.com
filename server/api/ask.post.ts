@@ -77,6 +77,7 @@ export default defineEventHandler(async event => {
       email: body.email,
       contact: body.contact || '',
       company: body.company || '',
+      password: body.password || '',
       content: body.content,
       date: nowKST,
     }

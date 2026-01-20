@@ -76,6 +76,7 @@ export default defineEventHandler(async event => {
                       email: row?.properties?.['이메일']?.email || '',
                       contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
                       company: row?.properties?.['회사/소속']?.rich_text?.[0]?.plain_text || '',
+                      password: row?.properties?.['비번']?.rich_text?.[0]?.plain_text || '',
                       content: content,
                       viewCnt: row?.properties?.['조회수']?.number || 0,
                       date: dateValue,
@@ -103,6 +104,7 @@ export default defineEventHandler(async event => {
                   email: row?.properties?.['이메일']?.email || '',
                   contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
                   company: row?.properties?.['회사/소속']?.rich_text?.[0]?.plain_text || '',
+                  password: row?.properties?.['비번']?.rich_text?.[0]?.plain_text || '',
                   viewCnt: row?.properties?.['조회수']?.number || 0,
                   date: dateValue,
                 }
@@ -187,6 +189,7 @@ export default defineEventHandler(async event => {
             email: row?.properties?.['이메일']?.email || '',
             contact: row?.properties?.['연락처']?.rich_text?.[0]?.plain_text || '',
             company: row?.properties?.['회사/소속']?.rich_text?.[0]?.plain_text || '',
+            password: row?.properties?.['비번']?.rich_text?.[0]?.plain_text || '',
             date: dateValue,
           }
         })
