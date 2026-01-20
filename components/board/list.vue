@@ -13,7 +13,7 @@
     <template #item.title="{ value, item }">
       <div class="d-flex align-center">
         <VIcon 
-          v-if="item.password && item.password.trim()" 
+          v-if="item.password" 
           icon="mdi-lock" 
           size="small" 
           class="mr-2"

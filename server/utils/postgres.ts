@@ -229,7 +229,8 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
       email: row.email,
       contact: row.contact || '',
       company: row.company || '',
-      password: row.password || '',
+      // 목록에서는 보안상 password 값 대신 존재 여부만 전달
+      password: row.password && row.password.trim() ? '***' : '',
       content: row.content,
       date: row.date,
       }))
