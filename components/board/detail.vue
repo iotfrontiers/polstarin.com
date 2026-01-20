@@ -79,11 +79,12 @@ function formatDate(dateString: string | undefined): string {
     
     if (isNaN(date.getTime())) return dateString
     
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
+    // UTC 기준으로 날짜 추출 (시간대 변환 없이 원본 날짜 유지)
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(date.getUTCDate()).padStart(2, '0')
+    const hours = String(date.getUTCHours()).padStart(2, '0')
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
     
     const formatted = `${year}-${month}-${day} ${hours}:${minutes}`
     
