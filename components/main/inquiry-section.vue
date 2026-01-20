@@ -29,7 +29,6 @@
             <tr 
               v-for="item in inquiryList" 
               :key="item.id"
-              @click="$router.push(`/ask/${item.id}`)"
               class="inquiry-row-item"
             >
               <td>{{ item.num }}</td>
@@ -228,12 +227,7 @@ onMounted(() => {
 
       tbody {
         tr.inquiry-row-item {
-          cursor: pointer;
           transition: background-color 0.2s ease;
-
-          &:hover {
-            background-color: #f9f9f9;
-          }
 
           td {
             padding: 12px 10px;
@@ -246,8 +240,7 @@ onMounted(() => {
             }
 
             &.title-cell {
-              color: #0066ff;
-              text-decoration: underline;
+              color: #333;
             }
 
             &:nth-child(3) {
