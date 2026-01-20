@@ -292,7 +292,7 @@ onMounted(() => loadDetail())
 .password-instruction {
   font-size: 14px;
   line-height: 1.6;
-  color: #333;
+  color: rgba(var(--v-theme-on-surface), 0.87) !important;
   
   div {
     margin-bottom: 4px;
