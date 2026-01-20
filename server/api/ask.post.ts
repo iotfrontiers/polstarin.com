@@ -54,26 +54,32 @@ export default defineEventHandler(async event => {
 
     errorDetails = { step: 'generate_id' }
     const newId = randomUUID()
-    const now = new Date().toISOString()
+    
+    // KST 시간 생성 (UTC+9)
+    const now = new Date()
+    const kstOffset = 9 * 60 * 60 * 1000 // 9 hours in milliseconds
+    const kstTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + kstOffset)
+    
+    // KST 시간을 ISO 문자열로 변환 (UTC offset 포함)
+    const year = kstTime.getUTCFullYear()
+    const month = String(kstTime.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(kstTime.getUTCDate()).padStart(2, '0')
+    const hours = String(kstTime.getUTCHours()).padStart(2, '0')
+    const minutes = String(kstTime.getUTCMinutes()).padStart(2, '0')
+    const seconds = String(kstTime.getUTCSeconds()).padStart(2, '0')
+    const milliseconds = String(kstTime.getUTCMilliseconds()).padStart(3, '0')
+    const nowKST = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+09:00`
     
     // 디버깅: 날짜 생성 확인
-    const serverDate = new Date()
-    console.log('[ask.post][DEBUG] 날짜 생성:', {
-      serverTimeISO: now,
-      serverTimeLocal: serverDate.toString(),
-      serverTimeUTC: serverDate.toUTCString(),
-      serverTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      serverUTCOffset: -serverDate.getTimezoneOffset() / 60, // UTC offset in hours
-      serverYear: serverDate.getFullYear(),
-      serverMonth: serverDate.getMonth() + 1,
-      serverDay: serverDate.getDate(),
-      serverHours: serverDate.getHours(),
-      serverMinutes: serverDate.getMinutes(),
-      utcYear: serverDate.getUTCFullYear(),
-      utcMonth: serverDate.getUTCMonth() + 1,
-      utcDay: serverDate.getUTCDate(),
-      utcHours: serverDate.getUTCHours(),
-      utcMinutes: serverDate.getUTCMinutes(),
+    console.log('[ask.post][DEBUG] 날짜 생성 (KST):', {
+      serverTimeUTC: now.toISOString(),
+      kstTimeISO: nowKST,
+      kstYear: kstTime.getUTCFullYear(),
+      kstMonth: kstTime.getUTCMonth() + 1,
+      kstDay: kstTime.getUTCDate(),
+      kstHours: kstTime.getUTCHours(),
+      kstMinutes: kstTime.getUTCMinutes(),
+      kstSeconds: kstTime.getUTCSeconds(),
     })
     
     const newPost = {
@@ -84,7 +90,7 @@ export default defineEventHandler(async event => {
       contact: body.contact || '',
       company: body.company || '',
       content: body.content,
-      date: now,
+      date: nowKST,
     }
     
     // 1. Postgres에 저장

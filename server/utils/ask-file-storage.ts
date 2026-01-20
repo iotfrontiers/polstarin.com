@@ -241,31 +241,40 @@ export async function saveToNotion(post: NotionData, body: any) {
     
     // 작성일 필드가 있으면 추가
     if (hasDateField && post.date) {
-      // 디버깅: Notion에 저장할 날짜 확인
+      // KST 시간을 Notion에 저장하기 위해 파싱
+      // post.date는 "+09:00" 형식의 ISO 문자열
       const dateToSave = post.date
       const parsedDate = new Date(dateToSave)
-      console.log('[ask-file-storage][DEBUG] Notion 날짜 저장:', {
+      
+      // KST 시간 추출 (UTC offset을 고려하여 로컬 시간으로 변환)
+      // "+09:00" 형식이면 자동으로 파싱되지만, Notion API는 time_zone을 명시하는 것이 더 정확함
+      const kstYear = parsedDate.getUTCFullYear()
+      const kstMonth = String(parsedDate.getUTCMonth() + 1).padStart(2, '0')
+      const kstDay = String(parsedDate.getUTCDate()).padStart(2, '0')
+      const kstHours = String(parsedDate.getUTCHours()).padStart(2, '0')
+      const kstMinutes = String(parsedDate.getUTCMinutes()).padStart(2, '0')
+      const kstSeconds = String(parsedDate.getUTCSeconds()).padStart(2, '0')
+      
+      // Notion API 형식: time_zone을 명시하면 UTC offset 없이 시간만 전달
+      const notionDateString = `${kstYear}-${kstMonth}-${kstDay}T${kstHours}:${kstMinutes}:${kstSeconds}`
+      
+      // 디버깅: Notion에 저장할 날짜 확인
+      console.log('[ask-file-storage][DEBUG] Notion 날짜 저장 (KST):', {
         postId: post.id,
-        dateString: dateToSave,
-        dateType: typeof dateToSave,
+        originalDateString: dateToSave,
         parsedDateISO: parsedDate.toISOString(),
-        parsedDateUTC: parsedDate.toUTCString(),
-        parsedDateLocal: parsedDate.toString(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        utcYear: parsedDate.getUTCFullYear(),
-        utcMonth: parsedDate.getUTCMonth() + 1,
-        utcDay: parsedDate.getUTCDate(),
-        utcHours: parsedDate.getUTCHours(),
-        utcMinutes: parsedDate.getUTCMinutes(),
-        localYear: parsedDate.getFullYear(),
-        localMonth: parsedDate.getMonth() + 1,
-        localDay: parsedDate.getDate(),
-        localHours: parsedDate.getHours(),
-        localMinutes: parsedDate.getMinutes(),
+        kstYear,
+        kstMonth,
+        kstDay,
+        kstHours,
+        kstMinutes,
+        kstSeconds,
+        notionDateString,
         notionPayload: {
           type: 'date',
           date: {
-            start: dateToSave,
+            start: notionDateString,
+            time_zone: 'Asia/Seoul',
           },
         },
       })
@@ -273,7 +282,8 @@ export async function saveToNotion(post: NotionData, body: any) {
       properties.작성일 = {
         type: 'date',
         date: {
-          start: post.date,
+          start: notionDateString,
+          time_zone: 'Asia/Seoul',
         },
       }
     }

@@ -70,12 +70,33 @@ function formatDate(dateString: string | undefined): string {
     
     if (isNaN(date.getTime())) return dateString
     
-    // UTC 기준으로 날짜 추출 (시간대 변환 없이 원본 날짜 유지)
-    const year = date.getUTCFullYear()
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-    const day = String(date.getUTCDate()).padStart(2, '0')
-    const hours = String(date.getUTCHours()).padStart(2, '0')
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+    // KST 시간 추출 (+09:00 offset 포함 ISO 문자열에서)
+    // "+09:00" 형식이면 자동으로 파싱되며, getUTC* 메서드로 원본 시간 추출 가능
+    // 또는 ISO 문자열에서 직접 파싱
+    let year, month, day, hours, minutes
+    
+    if (dateString.includes('+09:00')) {
+      // KST 시간이면 UTC 메서드로 원본 시간 추출
+      year = date.getUTCFullYear()
+      month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      day = String(date.getUTCDate()).padStart(2, '0')
+      hours = String(date.getUTCHours()).padStart(2, '0')
+      minutes = String(date.getUTCMinutes()).padStart(2, '0')
+    } else if (dateString.endsWith('Z')) {
+      // UTC 시간이면 (기존 데이터 호환성)
+      year = date.getUTCFullYear()
+      month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      day = String(date.getUTCDate()).padStart(2, '0')
+      hours = String(date.getUTCHours()).padStart(2, '0')
+      minutes = String(date.getUTCMinutes()).padStart(2, '0')
+    } else {
+      // 기타 형식은 로컬 시간대 사용
+      year = date.getFullYear()
+      month = String(date.getMonth() + 1).padStart(2, '0')
+      day = String(date.getDate()).padStart(2, '0')
+      hours = String(date.getHours()).padStart(2, '0')
+      minutes = String(date.getMinutes()).padStart(2, '0')
+    }
     
     const formatted = `${year}-${month}-${day} ${hours}:${minutes}`
     
