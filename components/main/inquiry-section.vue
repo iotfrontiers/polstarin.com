@@ -1,19 +1,15 @@
 <template>
   <VRow class="inquiry-row">
-    <VCol class="left-col">
-      <div class="section-title">제작의뢰</div>
-      <div class="desc">
-        <span class="text-grey-darken-2">최근 제작의뢰 현황을 확인하세요.</span>
+    <VCol cols="12" class="inquiry-header-col">
+      <div class="section-header">
+        <div class="section-title">제작의뢰</div>
+        <div class="info-text">
+          <VIcon icon="mdi-information-outline" size="small" class="info-icon" />
+          <span>폴스타인은 모든 문의 48시간(평일 기준) 내에 답변을 준수하고 있습니다.</span>
+        </div>
       </div>
-      <VRow class="buttons" align="center">
-        <VCol>
-          <VBtn @click="$router.push('/ask')" variant="outlined" class="inquiry-btn">
-            제작의뢰 바로가기 →
-          </VBtn>
-        </VCol>
-      </VRow>
     </VCol>
-    <VCol :cols="contentCols" class="inquiry-col">
+    <VCol cols="12" class="inquiry-col">
       <div v-if="loading" class="loading-text">로딩 중...</div>
       <div v-else-if="inquiryList && inquiryList.length > 0" class="inquiry-table-wrapper">
         <table class="inquiry-table">
@@ -38,8 +34,18 @@
             </tr>
           </tbody>
         </table>
+        <div class="button-wrapper">
+          <VBtn @click="$router.push('/ask')" variant="outlined" class="inquiry-btn">
+            제작의뢰 바로가기 →
+          </VBtn>
+        </div>
       </div>
-      <div v-else class="no-data-text">등록된 문의가 없습니다.</div>
+      <div v-else class="no-data-text">
+        <div>등록된 문의가 없습니다.</div>
+        <VBtn @click="$router.push('/ask')" variant="outlined" class="inquiry-btn mt-4">
+          제작의뢰 바로가기 →
+        </VBtn>
+      </div>
     </VCol>
   </VRow>
 </template>
@@ -147,41 +153,58 @@ onMounted(() => {
     color: #000;
     padding: min(70px, 5vw) 0 min(70px, 5vw) min(90px, 7vw);
 
-    .left-col {
-      margin-right: min(100px, 6vw);
-      min-width: 200px;
-      margin-bottom: 20px;
+    .inquiry-header-col {
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
 
       .section-title {
         font-size: 2rem;
-        padding: 20px 0;
-        border-bottom: 1px solid #000;
+        font-weight: 700;
+        margin: 0;
       }
 
-      .desc {
-        margin-top: 20px;
-        font-size: 15px;
-        line-height: 25px;
-      }
+      .info-text {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #666;
+        flex: 1;
+        min-width: 200px;
 
-      .buttons {
-        margin-top: 50px;
-      }
-
-      .inquiry-btn {
-        border-color: #0066ff;
-        color: #0066ff;
-        font-weight: 500;
-        
-        &:hover {
-          background-color: #0066ff;
-          color: #fff;
+        .info-icon {
+          color: #0066ff;
+          flex-shrink: 0;
         }
       }
     }
 
     .inquiry-col {
       width: 100%;
+    }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .inquiry-btn {
+      border-color: #0066ff;
+      color: #0066ff;
+      font-weight: 500;
+      padding: 10px 24px;
+      
+      &:hover {
+        background-color: #0066ff;
+        color: #fff;
+      }
     }
 
     .inquiry-table-wrapper {
@@ -257,12 +280,21 @@ onMounted(() => {
       }
     }
 
-    .loading-text,
+    .loading-text {
+      padding: 40px;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+    }
+
     .no-data-text {
       padding: 40px;
       text-align: center;
       color: #999;
       font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
   }
 }
