@@ -4,6 +4,7 @@
     <VCard>
       <VCardTitle>비밀번호 입력</VCardTitle>
       <VCardText>
+        <div class="mb-3">이 글은 비밀번호가 설정되어 있습니다. 비밀번호를 입력해주세요.</div>
         <VTextField
           v-model="inputPassword"
           type="password"
@@ -14,8 +15,9 @@
           density="compact"
           @keyup.enter="checkPassword"
           autofocus
+          :error="!!passwordError"
+          :error-messages="passwordError ? [passwordError] : []"
         />
-        <div v-if="passwordError" class="error-text mt-2">{{ passwordError }}</div>
       </VCardText>
       <VCardActions>
         <VSpacer />
@@ -214,8 +216,27 @@ async function loadDetail(password?: string) {
     } catch (error: any) {
       // 401 에러면 비밀번호가 필요한 경우
       if (error?.statusCode === 401 || error?.data?.statusCode === 401) {
-        passwordDialog.value = true
-        passwordError.value = error?.message || '비밀번호가 일치하지 않습니다.'
+        // 비밀번호를 입력한 경우 (재시도)
+        if (password) {
+          passwordError.value = error?.message || '비밀번호가 일치하지 않습니다.'
+          // 입력 필드 포커스 및 선택
+          await nextTick()
+          const input = document.querySelector('.v-text-field input[type="password"]') as HTMLInputElement
+          if (input) {
+            input.focus()
+            input.select()
+          }
+        } else {
+          // 첫 번째 호출 시 비밀번호 다이얼로그 열기
+          passwordDialog.value = true
+          passwordError.value = ''
+          inputPassword.value = ''
+          await nextTick()
+          const input = document.querySelector('.v-text-field input[type="password"]') as HTMLInputElement
+          if (input) {
+            input.focus()
+          }
+        }
       } else {
         alert(COMMON_MESSAGES.DATA_NOT_FOUND_ERROR)
         router.back()
@@ -224,7 +245,7 @@ async function loadDetail(password?: string) {
   })
 }
 
-function checkPassword() {
+async function checkPassword() {
   if (!inputPassword.value || inputPassword.value.length !== 4) {
     passwordError.value = '비밀번호는 4자리여야 합니다.'
     return
@@ -236,7 +257,7 @@ function checkPassword() {
   }
   
   passwordError.value = ''
-  loadDetail(inputPassword.value)
+  await loadDetail(inputPassword.value)
 }
 
 function cancelPassword() {
@@ -265,8 +286,4 @@ onMounted(() => loadDetail())
   }
 }
 
-.error-text {
-  color: #d32f2f;
-  font-size: 14px;
-}
 </style>
