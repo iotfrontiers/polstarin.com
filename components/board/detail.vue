@@ -289,4 +289,17 @@ onMounted(() => loadDetail())
   }
 }
 
+.password-instruction {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  
+  div {
+    margin-bottom: 4px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
 </style>
