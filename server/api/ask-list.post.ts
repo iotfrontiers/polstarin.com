@@ -61,13 +61,36 @@ export default defineEventHandler(async event => {
               Promise.all(
                 notionResult.results.map(async (row: any) => {
                   try {
-                    const dateValue = row?.properties?.['작성일']?.date?.start || row?.created_time
+                    const dateProperty = row?.properties?.['작성일']?.date
+                    const createdTime = row?.created_time
+                    const dateValue = dateProperty?.start || createdTime
+                    
                     // 메세지 필드가 있으면 우선 사용, 없으면 페이지 본문 가져오기
                     const messageField = row?.properties?.['메세지']?.rich_text?.[0]?.plain_text || ''
                     const content = messageField || await getNotionMarkdownContent(row.id)
                     
-                    const dateProperty = row?.properties?.['작성일']?.date
-                    const createdTime = row?.created_time
+                    // 날짜 값 파싱하여 타임존 분석
+                    let parsedDate = null
+                    let timezoneInfo = null
+                    if (dateValue) {
+                      parsedDate = new Date(dateValue)
+                      timezoneInfo = {
+                        isDateValid: !isNaN(parsedDate.getTime()),
+                        dateISO: parsedDate.toISOString(),
+                        dateUTC: parsedDate.toUTCString(),
+                        dateLocal: parsedDate.toString(),
+                        utcYear: parsedDate.getUTCFullYear(),
+                        utcMonth: parsedDate.getUTCMonth() + 1,
+                        utcDay: parsedDate.getUTCDate(),
+                        utcHours: parsedDate.getUTCHours(),
+                        utcMinutes: parsedDate.getUTCMinutes(),
+                        localYear: parsedDate.getFullYear(),
+                        localMonth: parsedDate.getMonth() + 1,
+                        localDay: parsedDate.getDate(),
+                        localHours: parsedDate.getHours(),
+                        localMinutes: parsedDate.getMinutes(),
+                      }
+                    }
                     
                     // 디버깅: Notion에서 가져온 날짜 값 확인 (마이그레이션용)
                     console.log('[ask-list][DEBUG] Notion 날짜 조회 (Postgres 저장용):', {
@@ -81,6 +104,10 @@ export default defineEventHandler(async event => {
                       createdTime,
                       finalDateValue: dateValue,
                       dateValueType: typeof dateValue,
+                      dateValueHasZ: dateValue?.includes('Z'),
+                      dateValueHasPlus09: dateValue?.includes('+09:00'),
+                      dateValueHasPlusOffset: dateValue?.match(/[+-]\d{2}:\d{2}/)?.[0],
+                      parsedDateInfo: timezoneInfo,
                     })
                     
                     const post = {
@@ -95,7 +122,29 @@ export default defineEventHandler(async event => {
                       date: dateValue,
                     }
                     
+                    // 디버깅: Postgres에 저장하기 직전 확인
+                    console.log('[ask-list][DEBUG] Postgres 저장 직전 날짜 확인:', {
+                      id: post.id,
+                      title: post.title,
+                      dateToSave: post.date,
+                      dateType: typeof post.date,
+                      dateLength: post.date?.length,
+                      dateFormat: {
+                        hasZ: post.date?.includes('Z'),
+                        hasPlus09: post.date?.includes('+09:00'),
+                        hasOffset: post.date?.match(/[+-]\d{2}:\d{2}/)?.[0],
+                        timezoneFromNotion: dateProperty?.time_zone,
+                      },
+                    })
+                    
                     await insertAskPost(post)
+                    
+                    // 디버깅: Postgres 저장 후 확인
+                    console.log('[ask-list][DEBUG] Postgres 저장 완료:', {
+                      id: post.id,
+                      title: post.title,
+                      savedDate: post.date,
+                    })
                   } catch (e) {
                     console.warn(`[ask-list] Notion 데이터 마이그레이션 실패 (${row.id}):`, e)
                   }
