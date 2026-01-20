@@ -4,7 +4,10 @@
     <VCard>
       <VCardTitle>비밀번호 입력</VCardTitle>
       <VCardText>
-        <div class="mb-3">이 글은 비밀번호가 설정되어 있습니다. 비밀번호를 입력해주세요.</div>
+        <div class="mb-3 password-instruction">
+          <div>이 글은 비밀번호가 설정되어 있습니다.</div>
+          <div>비밀번호를 입력해주세요.</div>
+        </div>
         <VTextField
           v-model="inputPassword"
           type="password"
