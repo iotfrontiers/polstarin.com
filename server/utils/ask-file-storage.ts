@@ -242,34 +242,40 @@ export async function saveToNotion(post: NotionData, body: any) {
     // 작성일 필드가 있으면 추가
     if (hasDateField && post.date) {
       // KST 시간을 Notion에 저장하기 위해 파싱
-      // post.date는 "+09:00" 형식의 ISO 문자열
+      // post.date는 "+09:00" 형식의 ISO 문자열 (예: "2026-01-19T19:23:12.494+09:00")
       const dateToSave = post.date
-      const parsedDate = new Date(dateToSave)
       
-      // KST 시간 추출 (UTC offset을 고려하여 로컬 시간으로 변환)
-      // "+09:00" 형식이면 자동으로 파싱되지만, Notion API는 time_zone을 명시하는 것이 더 정확함
-      const kstYear = parsedDate.getUTCFullYear()
-      const kstMonth = String(parsedDate.getUTCMonth() + 1).padStart(2, '0')
-      const kstDay = String(parsedDate.getUTCDate()).padStart(2, '0')
-      const kstHours = String(parsedDate.getUTCHours()).padStart(2, '0')
-      const kstMinutes = String(parsedDate.getUTCMinutes()).padStart(2, '0')
-      const kstSeconds = String(parsedDate.getUTCSeconds()).padStart(2, '0')
+      // ISO 문자열에서 직접 KST 시간 추출 (UTC 변환 없이)
+      // "+09:00" 형식이면 offset 앞부분이 KST 시간
+      let notionDateString = dateToSave
       
-      // Notion API 형식: time_zone을 명시하면 UTC offset 없이 시간만 전달
-      const notionDateString = `${kstYear}-${kstMonth}-${kstDay}T${kstHours}:${kstMinutes}:${kstSeconds}`
+      if (dateToSave.includes('+09:00')) {
+        // "+09:00" offset 제거하여 KST 시간만 추출
+        notionDateString = dateToSave.replace('+09:00', '')
+      } else if (dateToSave.endsWith('Z')) {
+        // UTC 형식이면 (기존 데이터 호환성)
+        const parsedDate = new Date(dateToSave)
+        // UTC를 KST로 변환 (UTC+9)
+        const kstTime = new Date(parsedDate.getTime() + (9 * 60 * 60 * 1000))
+        const year = kstTime.getUTCFullYear()
+        const month = String(kstTime.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(kstTime.getUTCDate()).padStart(2, '0')
+        const hours = String(kstTime.getUTCHours()).padStart(2, '0')
+        const minutes = String(kstTime.getUTCMinutes()).padStart(2, '0')
+        const seconds = String(kstTime.getUTCSeconds()).padStart(2, '0')
+        notionDateString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
+      } else if (dateToSave.match(/[+-]\d{2}:\d{2}/)) {
+        // 다른 offset이 있으면 제거
+        notionDateString = dateToSave.replace(/[+-]\d{2}:\d{2}$/, '')
+      }
       
       // 디버깅: Notion에 저장할 날짜 확인
       console.log('[ask-file-storage][DEBUG] Notion 날짜 저장 (KST):', {
         postId: post.id,
         originalDateString: dateToSave,
-        parsedDateISO: parsedDate.toISOString(),
-        kstYear,
-        kstMonth,
-        kstDay,
-        kstHours,
-        kstMinutes,
-        kstSeconds,
-        notionDateString,
+        extractedKSTString: notionDateString,
+        hasPlus09: dateToSave.includes('+09:00'),
+        hasZ: dateToSave.endsWith('Z'),
         notionPayload: {
           type: 'date',
           date: {
