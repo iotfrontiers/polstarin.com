@@ -13,6 +13,9 @@
     <template #item.title="{ value, item }">
       <NuxtLink :to="`${props.detailPageUrl}${item.id}`">{{ value }}</NuxtLink>
     </template>
+    <template #item.author="{ value }">
+      {{ maskName(value) }}
+    </template>
     <template #item.date="{ value }">
       {{ formatDate(value) }}
     </template>
@@ -36,6 +39,17 @@ const props = withDefaults(
 const currentPage = ref(1)
 const pageSize = ref(100)
 const noticeData = ref<NotionListResponse<NotionData>>()
+
+/**
+ * 이름 마스킹 (첫 글자만 보이고 나머지는 *)
+ * 예: "김현수" → "김**"
+ */
+function maskName(name: string | undefined): string {
+  if (!name) return ''
+  if (name.length <= 1) return name
+  if (name.length === 2) return name[0] + '*'
+  return name[0] + '*'.repeat(name.length - 1)
+}
 
 function formatDate(dateString: string | undefined): string {
   if (!dateString) return ''
