@@ -100,21 +100,6 @@ export async function insertAskPost(post: NotionData) {
   }
   
   try {
-    // 디버깅: Postgres 저장 전 날짜 값 확인
-    console.log('[postgres][DEBUG] insertAskPost 저장 전:', {
-      id: post.id,
-      title: post.title,
-      dateInput: post.date,
-      dateType: typeof post.date,
-      dateIsString: typeof post.date === 'string',
-      dateLength: typeof post.date === 'string' ? post.date.length : 0,
-      dateFormat: {
-        hasZ: typeof post.date === 'string' && post.date.includes('Z'),
-        hasPlus09: typeof post.date === 'string' && post.date.includes('+09:00'),
-        hasOffset: typeof post.date === 'string' ? post.date.match(/[+-]\d{2}:\d{2}/)?.[0] : null,
-      },
-    })
-    
     await sql`
       INSERT INTO ask_posts (id, title, author, email, contact, company, content, date)
       VALUES (${post.id}, ${post.title}, ${post.author}, ${post.email}, ${post.contact || ''}, ${post.company || ''}, ${post.content}, ${post.date})
@@ -127,44 +112,6 @@ export async function insertAskPost(post: NotionData) {
         content = EXCLUDED.content,
         updated_at = NOW()
     `
-    
-    // 디버깅: Postgres 저장 후 조회하여 확인
-    try {
-      const verifyResult = await sql`
-        SELECT id, title, date, date::text as date_text
-        FROM ask_posts
-        WHERE id = ${post.id}
-      `
-      if (verifyResult.rows.length > 0) {
-        const savedRow = verifyResult.rows[0]
-        const savedDate = savedRow.date
-        console.log('[postgres][DEBUG] insertAskPost 저장 후 확인:', {
-          id: savedRow.id,
-          title: savedRow.title,
-          savedDate: savedDate,
-          savedDateType: typeof savedDate,
-          savedDateText: savedRow.date_text,
-          isDateInstance: savedDate instanceof Date,
-          dateValue: savedDate instanceof Date ? {
-            isoString: savedDate.toISOString(),
-            utcString: savedDate.toUTCString(),
-            localString: savedDate.toString(),
-            utcYear: savedDate.getUTCFullYear(),
-            utcMonth: savedDate.getUTCMonth() + 1,
-            utcDay: savedDate.getUTCDate(),
-            utcHours: savedDate.getUTCHours(),
-            utcMinutes: savedDate.getUTCMinutes(),
-            localYear: savedDate.getFullYear(),
-            localMonth: savedDate.getMonth() + 1,
-            localDay: savedDate.getDate(),
-            localHours: savedDate.getHours(),
-            localMinutes: savedDate.getMinutes(),
-          } : null,
-        })
-      }
-    } catch (verifyError) {
-      console.warn('[postgres][DEBUG] 저장 후 확인 실패:', verifyError)
-    }
     
     // totalCount 증가
     await incrementTotalCount()
@@ -261,29 +208,7 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
       OFFSET ${offset}
     `
     
-    const list: NotionData[] = result.rows.map(row => {
-      // 디버깅: Postgres에서 가져온 날짜 값 확인
-      const rawDate = row.date
-      const dateType = typeof rawDate
-      const dateString = rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
-      console.log('[postgres][DEBUG] 날짜 조회:', {
-        id: row.id,
-        title: row.title,
-        rawDate,
-        dateType,
-        dateString,
-        isDateInstance: rawDate instanceof Date,
-        dateValue: rawDate instanceof Date ? {
-          year: rawDate.getFullYear(),
-          month: rawDate.getMonth() + 1,
-          day: rawDate.getDate(),
-          hours: rawDate.getHours(),
-          minutes: rawDate.getMinutes(),
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        } : null,
-      })
-      
-      return {
+    const list: NotionData[] = result.rows.map(row => ({
         id: row.id,
         title: row.title,
         author: row.author,
@@ -292,8 +217,7 @@ export async function getAskList(page: number = 1, pageSize: number = 10): Promi
         company: row.company || '',
         content: row.content,
         date: row.date,
-      }
-    })
+      }))
     
     const totalCount = await getTotalCount()
     const hasMore = offset + pageSize < totalCount
@@ -329,27 +253,6 @@ export async function getAskDetail(id: string): Promise<NotionData | null> {
     }
     
     const row = result.rows[0]
-    
-    // 디버깅: Postgres에서 가져온 날짜 값 확인 (상세 조회)
-    const rawDate = row.date
-    const dateType = typeof rawDate
-    const dateString = rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
-    console.log('[postgres][DEBUG] 날짜 조회 (상세):', {
-      id: row.id,
-      title: row.title,
-      rawDate,
-      dateType,
-      dateString,
-      isDateInstance: rawDate instanceof Date,
-      dateValue: rawDate instanceof Date ? {
-        year: rawDate.getFullYear(),
-        month: rawDate.getMonth() + 1,
-        day: rawDate.getDate(),
-        hours: rawDate.getHours(),
-        minutes: rawDate.getMinutes(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      } : null,
-    })
     
     return {
       id: row.id,

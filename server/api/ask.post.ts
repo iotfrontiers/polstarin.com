@@ -70,18 +70,6 @@ export default defineEventHandler(async event => {
     const milliseconds = String(kstTime.getUTCMilliseconds()).padStart(3, '0')
     const nowKST = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+09:00`
     
-    // 디버깅: 날짜 생성 확인
-    console.log('[ask.post][DEBUG] 날짜 생성 (KST):', {
-      serverTimeUTC: now.toISOString(),
-      kstTimeISO: nowKST,
-      kstYear: kstTime.getUTCFullYear(),
-      kstMonth: kstTime.getUTCMonth() + 1,
-      kstDay: kstTime.getUTCDate(),
-      kstHours: kstTime.getUTCHours(),
-      kstMinutes: kstTime.getUTCMinutes(),
-      kstSeconds: kstTime.getUTCSeconds(),
-    })
-    
     const newPost = {
       id: newId,
       title: body.title,

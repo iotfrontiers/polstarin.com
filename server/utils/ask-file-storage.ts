@@ -269,22 +269,6 @@ export async function saveToNotion(post: NotionData, body: any) {
         notionDateString = dateToSave.replace(/[+-]\d{2}:\d{2}$/, '')
       }
       
-      // 디버깅: Notion에 저장할 날짜 확인
-      console.log('[ask-file-storage][DEBUG] Notion 날짜 저장 (KST):', {
-        postId: post.id,
-        originalDateString: dateToSave,
-        extractedKSTString: notionDateString,
-        hasPlus09: dateToSave.includes('+09:00'),
-        hasZ: dateToSave.endsWith('Z'),
-        notionPayload: {
-          type: 'date',
-          date: {
-            start: notionDateString,
-            time_zone: 'Asia/Seoul',
-          },
-        },
-      })
-      
       properties.작성일 = {
         type: 'date',
         date: {
