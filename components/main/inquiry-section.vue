@@ -44,7 +44,7 @@
   </VRow>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useDisplay } from 'vuetify'
 import { ref, computed, onMounted } from 'vue'
 import type { NotionListResponse, NotionData } from '~/composables/notion'
