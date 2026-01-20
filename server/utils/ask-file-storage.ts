@@ -241,6 +241,35 @@ export async function saveToNotion(post: NotionData, body: any) {
     
     // 작성일 필드가 있으면 추가
     if (hasDateField && post.date) {
+      // 디버깅: Notion에 저장할 날짜 확인
+      const dateToSave = post.date
+      const parsedDate = new Date(dateToSave)
+      console.log('[ask-file-storage][DEBUG] Notion 날짜 저장:', {
+        postId: post.id,
+        dateString: dateToSave,
+        dateType: typeof dateToSave,
+        parsedDateISO: parsedDate.toISOString(),
+        parsedDateUTC: parsedDate.toUTCString(),
+        parsedDateLocal: parsedDate.toString(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        utcYear: parsedDate.getUTCFullYear(),
+        utcMonth: parsedDate.getUTCMonth() + 1,
+        utcDay: parsedDate.getUTCDate(),
+        utcHours: parsedDate.getUTCHours(),
+        utcMinutes: parsedDate.getUTCMinutes(),
+        localYear: parsedDate.getFullYear(),
+        localMonth: parsedDate.getMonth() + 1,
+        localDay: parsedDate.getDate(),
+        localHours: parsedDate.getHours(),
+        localMinutes: parsedDate.getMinutes(),
+        notionPayload: {
+          type: 'date',
+          date: {
+            start: dateToSave,
+          },
+        },
+      })
+      
       properties.작성일 = {
         type: 'date',
         date: {

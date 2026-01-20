@@ -56,6 +56,26 @@ export default defineEventHandler(async event => {
     const newId = randomUUID()
     const now = new Date().toISOString()
     
+    // 디버깅: 날짜 생성 확인
+    const serverDate = new Date()
+    console.log('[ask.post][DEBUG] 날짜 생성:', {
+      serverTimeISO: now,
+      serverTimeLocal: serverDate.toString(),
+      serverTimeUTC: serverDate.toUTCString(),
+      serverTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      serverUTCOffset: -serverDate.getTimezoneOffset() / 60, // UTC offset in hours
+      serverYear: serverDate.getFullYear(),
+      serverMonth: serverDate.getMonth() + 1,
+      serverDay: serverDate.getDate(),
+      serverHours: serverDate.getHours(),
+      serverMinutes: serverDate.getMinutes(),
+      utcYear: serverDate.getUTCFullYear(),
+      utcMonth: serverDate.getUTCMonth() + 1,
+      utcDay: serverDate.getUTCDate(),
+      utcHours: serverDate.getUTCHours(),
+      utcMinutes: serverDate.getUTCMinutes(),
+    })
+    
     const newPost = {
       id: newId,
       title: body.title,
