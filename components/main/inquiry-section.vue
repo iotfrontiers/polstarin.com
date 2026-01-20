@@ -28,7 +28,18 @@
               class="inquiry-row-item"
             >
               <td>{{ item.num }}</td>
-              <td class="title-cell">{{ item.title }}</td>
+              <td class="title-cell">
+                <div class="d-flex align-center">
+                  <VIcon 
+                    v-if="item.password && item.password.trim()" 
+                    icon="mdi-lock" 
+                    size="small" 
+                    class="mr-2"
+                    color="grey-darken-1"
+                  />
+                  <span>{{ item.title }}</span>
+                </div>
+              </td>
               <td>{{ maskName(item.author) }}</td>
               <td>{{ formatDate(item.date) }}</td>
             </tr>

@@ -11,7 +11,16 @@
   >
     <template #bottom></template>
     <template #item.title="{ value, item }">
-      <NuxtLink :to="`${props.detailPageUrl}${item.id}`">{{ value }}</NuxtLink>
+      <div class="d-flex align-center">
+        <VIcon 
+          v-if="item.password && item.password.trim()" 
+          icon="mdi-lock" 
+          size="small" 
+          class="mr-2"
+          color="grey-darken-1"
+        />
+        <NuxtLink :to="`${props.detailPageUrl}${item.id}`">{{ value }}</NuxtLink>
+      </div>
     </template>
     <template #item.author="{ value }">
       {{ maskName(value) }}

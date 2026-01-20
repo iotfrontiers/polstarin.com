@@ -26,7 +26,7 @@
                     hideDetails="auto"
                     :rules="[
                       value => {
-                        if (!value) {
+                        if (!value || !value.trim()) {
                           return '성함을 입력해주세요.'
                         }
                         return true
@@ -48,7 +48,7 @@
                     class="required"
                     :rules="[
                       value => {
-                        if (!value) {
+                        if (!value || !value.trim()) {
                           return '이메일을 입력해주세요.'
                         }
                         if (/.+@.+\..+/.test(value)) return true
@@ -60,11 +60,45 @@
               </tr>
               <tr>
                 <th>연락처</th>
-                <td><VTextField variant="outlined" hideDetails="auto" density="compact" v-model="inputData.contact"></VTextField></td>
+                <td>
+                  <VTextField
+                    variant="outlined"
+                    hideDetails="auto"
+                    density="compact"
+                    v-model="inputData.contact"
+                    required
+                    class="required"
+                    :rules="[
+                      value => {
+                        if (!value || !value.trim()) {
+                          return '연락처를 입력해주세요.'
+                        }
+                        return true
+                      },
+                    ]"
+                  ></VTextField>
+                </td>
               </tr>
               <tr>
                 <th>회사/소속</th>
-                <td><VTextField variant="outlined" hideDetails="auto" density="compact" v-model="inputData.company"></VTextField></td>
+                <td>
+                  <VTextField
+                    variant="outlined"
+                    hideDetails="auto"
+                    density="compact"
+                    v-model="inputData.company"
+                    required
+                    class="required"
+                    :rules="[
+                      value => {
+                        if (!value || !value.trim()) {
+                          return '회사/소속을 입력해주세요.'
+                        }
+                        return true
+                      },
+                    ]"
+                  ></VTextField>
+                </td>
               </tr>
               <tr>
                 <th>비밀번호</th>
@@ -77,9 +111,11 @@
                     type="password"
                     maxlength="4"
                     placeholder="영문, 숫자 4자"
+                    required
+                    class="required"
                     :rules="[
                       value => {
-                        if (!value) {
+                        if (!value || !value.trim()) {
                           return '비밀번호를 입력해주세요.'
                         }
                         if (value.length !== 4) {
@@ -107,7 +143,7 @@
                     required
                     :rules="[
                       value => {
-                        if (!value) {
+                        if (!value || !value.trim()) {
                           return '제목을 입력해주세요.'
                         }
                         return true
@@ -128,7 +164,7 @@
                     required
                     :rules="[
                       value => {
-                        if (!value) {
+                        if (!value || !value.trim()) {
                           return '메시지를 입력해주세요.'
                         }
                         return true
@@ -177,6 +213,34 @@ function init() {
 async function submit() {
   const validResult = await form.value.validate()
   if (!validResult.valid) {
+    // 누락된 필수 항목 확인
+    const missingFields: string[] = []
+    
+    if (!inputData.author || !inputData.author.trim()) {
+      missingFields.push('성함')
+    }
+    if (!inputData.email || !inputData.email.trim()) {
+      missingFields.push('이메일')
+    }
+    if (!inputData.contact || !inputData.contact.trim()) {
+      missingFields.push('연락처')
+    }
+    if (!inputData.company || !inputData.company.trim()) {
+      missingFields.push('회사/소속')
+    }
+    if (!inputData.password || !inputData.password.trim()) {
+      missingFields.push('비밀번호')
+    }
+    if (!inputData.title || !inputData.title.trim()) {
+      missingFields.push('제목')
+    }
+    if (!inputData.content || !inputData.content.trim()) {
+      missingFields.push('메시지')
+    }
+    
+    if (missingFields.length > 0) {
+      alert(`다음 항목을 입력해주세요:\n${missingFields.join(', ')}`)
+    }
     return
   }
 
