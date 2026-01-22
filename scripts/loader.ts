@@ -320,7 +320,6 @@ export class NotionDataLoader {
     }
 
     const shouldUpdate = !oldData || oldData.lastUpdateDate !== pageInfo['last_edited_time']
-    consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 업데이트 필요: ${shouldUpdate}`)
     
     // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분)
     const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS || ''
@@ -328,12 +327,16 @@ export class NotionDataLoader {
     const forceUpdateForTesting = forceUpdatePageIds.length > 0 && forceUpdatePageIds.includes(id)
     const willUpdate = shouldUpdate || forceUpdateForTesting
     
+    consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 업데이트 필요: ${shouldUpdate}, 강제 업데이트: ${forceUpdateForTesting}`)
+    
     if (forceUpdatePageIds.length > 0) {
       consola.info(`[${this.options.id}][loadPage] 강제 업데이트 대상 페이지 ID 목록: ${forceUpdatePageIds.join(', ')}`)
+    } else {
+      consola.info(`[${this.options.id}][loadPage] FORCE_UPDATE_PAGE_IDS 환경 변수 미설정`)
     }
     
     if (forceUpdateForTesting && !shouldUpdate) {
-      consola.info(`[${this.options.id}][loadPage] 테스트를 위해 강제 업데이트: ${id}`)
+      consola.info(`[${this.options.id}][loadPage] 테스트를 위해 강제 업데이트 실행: ${id}`)
     }
     
     const content = willUpdate ? await getNotionMarkdownContent(id) : oldData.content
