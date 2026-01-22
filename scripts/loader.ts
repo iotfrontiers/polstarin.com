@@ -126,6 +126,8 @@ export class NotionDataLoader {
                 // 실제 데이터베이스 ID로 다시 쿼리
                 queryOption.database_id = actualDatabaseId as string
                 result = await notion.databases.query(queryOption)
+                const resultCount = result?.results ? result.results.length : 0
+                consola.info(`[${this.options.id}] 데이터베이스 쿼리 성공 (child_database): ${resultCount}개 항목`)
               } else {
                 console.error(`[ERROR][${this.options.id}] 데이터베이스 ID를 추출할 수 없습니다.`)
                 console.error(`[ERROR][${this.options.id}] 블록 구조:`, JSON.stringify(databaseBlock, null, 2))
@@ -143,6 +145,9 @@ export class NotionDataLoader {
           throw error
         }
       }
+
+      const resultCount = result?.results ? result.results.length : 0
+      consola.info(`[${this.options.id}] 데이터베이스 쿼리 성공: ${resultCount}개 항목`)
 
       const dataFilePath = getDataFilePath(this.options.id)
       this.createDirectories(dataFilePath)
@@ -190,6 +195,8 @@ export class NotionDataLoader {
 
           const hasImageInList = this.options.hasImageInList
           const requiresUpdate = requireUpdatePage(row.id, row['last_edited_time'], hasImageInList)
+          const itemTitle = listData.title || '제목 없음'
+          consola.info(`[${this.options.id}] 항목 처리 중: ${row.id} - ${itemTitle} (업데이트 필요: ${requiresUpdate})`)
           const oldImgUrl = oldData?.list.find(r => r.id === row.id)?.imgUrl
           
           let imgUrl = null
@@ -217,11 +224,18 @@ export class NotionDataLoader {
       } as NotionListResponse<NotionData>
 
       writeFileSync(dataFilePath, JSON.stringify(r, null, 2))
-      consola.info(`[${this.options.id}] 데이터베이스 로드 완료`)
+      consola.info(`[${this.options.id}] 데이터베이스 로드 완료: 총 ${list.length}개 항목 저장`)
+      if (r.nextCursor) {
+        consola.info(`[${this.options.id}] 다음 커서 존재: ${r.nextCursor}`)
+      } else {
+        consola.info(`[${this.options.id}] 다음 커서 없음 (모든 데이터 로드 완료)`)
+      }
 
+      consola.info(`[${this.options.id}] ${list.length}개 페이지 컨텐츠 로드 시작...`)
       for (const item of list) {
         await this.loadPage(item.id)
       }
+      consola.info(`[${this.options.id}] 모든 페이지 컨텐츠 로드 완료`)
     } catch (e) {
       console.error(`[ERROR][${this.options.id}] 데이터베이스 로드 중 오류 발생:`)
       console.error(`[ERROR][${this.options.id}] 오류 타입:`, e?.constructor?.name || typeof e)
@@ -274,10 +288,17 @@ export class NotionDataLoader {
       data = (await this.options.customizePageResponse(<PageObjectResponse>pageInfo)) || {}
     }
 
+    const shouldUpdate = !oldData || oldData.lastUpdateDate !== pageInfo['last_edited_time']
+    consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 업데이트 필요: ${shouldUpdate}`)
+    
+    const content = shouldUpdate ? await getNotionMarkdownContent(id) : oldData.content
+    const contentLength = typeof content === 'string' ? content.length : 0
+    consola.info(`[${this.options.id}][loadPage] 컨텐츠 길이: ${contentLength} 문자`)
+
     data = useDeepMerge({}, data, {
       id: pageInfo.id as string,
       title: pageInfo['properties']?.title?.title[0]?.text?.content,
-      content: oldData && oldData.lastUpdateDate === pageInfo['last_edited_time'] ? oldData.content : await getNotionMarkdownContent(id),
+      content: content,
       lastUpdateDate: pageInfo['last_edited_time'],
       imgUrl: '',
     })
