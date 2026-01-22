@@ -196,7 +196,8 @@ const uploadCloudinaryImage = (imageUrl: string) => {
 export const getNotionMarkdownContent = async (id: string, downloadResource: boolean = true, useCloudinary = false) => {
   const notion = createNotionClient()
   const n2m = new NotionToMarkdown({ notionClient: notion })
-  const blocks = await n2m.pageToMarkdown(id, 1)
+  // totalPage 파라미터를 제거하여 모든 블록을 가져오도록 수정 (기존에는 1로 제한되어 최대 100개 블록만 가져왔음)
+  const blocks = await n2m.pageToMarkdown(id)
 
   if (downloadResource) {
     for (const block of blocks) {
