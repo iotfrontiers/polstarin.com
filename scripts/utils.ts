@@ -8,6 +8,7 @@ import { extname, resolve, dirname, join } from 'pathe'
 import { NotionToMarkdown } from 'notion-to-md'
 import axios from 'axios'
 import https from 'https'
+import consola from 'consola'
 
 /**
  * UUID 형식으로 변환 (하이픈 추가)
@@ -194,10 +195,16 @@ const uploadCloudinaryImage = (imageUrl: string) => {
 }
 
 export const getNotionMarkdownContent = async (id: string, downloadResource: boolean = true, useCloudinary = false) => {
+  consola.info(`[getNotionMarkdownContent] 페이지 ID: ${id}`)
+  consola.info(`[getNotionMarkdownContent] 블록 가져오기 시작...`)
+  
   const notion = createNotionClient()
   const n2m = new NotionToMarkdown({ notionClient: notion })
   // totalPage 파라미터를 제거하여 모든 블록을 가져오도록 수정 (기존에는 1로 제한되어 최대 100개 블록만 가져왔음)
   const blocks = await n2m.pageToMarkdown(id)
+  
+  const blockCount = Array.isArray(blocks) ? blocks.length : 0
+  consola.info(`[getNotionMarkdownContent] 가져온 블록 개수: ${blockCount}개`)
 
   if (downloadResource) {
     for (const block of blocks) {
@@ -248,7 +255,11 @@ export const getNotionMarkdownContent = async (id: string, downloadResource: boo
     }
   }
 
-  return n2m.toMarkdownString(blocks)?.parent || ''
+  const markdownContent = n2m.toMarkdownString(blocks)?.parent || ''
+  const contentLength = typeof markdownContent === 'string' ? markdownContent.length : 0
+  consola.info(`[getNotionMarkdownContent] 마크다운 변환 완료: ${contentLength} 문자`)
+  
+  return markdownContent
 }
 
 /**
