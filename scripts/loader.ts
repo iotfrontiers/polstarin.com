@@ -77,6 +77,12 @@ export class NotionDataLoader {
   async loadDatabase(databaseId: string, loadSubPages = true) {
     consola.info(`[${this.options.id}] 데이터베이스 로드 시작`)
     
+    // 환경 변수 확인 로그 (한 번만 출력)
+    // 환경 변수가 없으면 기본값으로 가스 센서 프로젝트 페이지 ID 사용
+    const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS || '2f0c88ac-8c29-8024-9435-d7b0d0ee156c'
+    const forceUpdatePageIds = forceUpdatePageIdsEnv.split(',').map(id => id.trim()).filter(id => id.length > 0)
+    consola.info(`[${this.options.id}] 강제 업데이트 대상 페이지 ID 목록: ${forceUpdatePageIds.join(', ')}`)
+    
     if (!databaseId) {
       const errorMsg = `${this.options.id} database ID가 설정되지 않았습니다.`
       console.error(`[ERROR][${this.options.id}]`, errorMsg)
@@ -322,18 +328,13 @@ export class NotionDataLoader {
     const shouldUpdate = !oldData || oldData.lastUpdateDate !== pageInfo['last_edited_time']
     
     // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분)
-    const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS || ''
-    const forceUpdatePageIds = forceUpdatePageIdsEnv ? forceUpdatePageIdsEnv.split(',').map(id => id.trim()).filter(id => id.length > 0) : []
-    const forceUpdateForTesting = forceUpdatePageIds.length > 0 && forceUpdatePageIds.includes(id)
+    // 환경 변수가 없으면 기본값으로 가스 센서 프로젝트 페이지 ID 사용
+    const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS || '2f0c88ac-8c29-8024-9435-d7b0d0ee156c'
+    const forceUpdatePageIds = forceUpdatePageIdsEnv.split(',').map(id => id.trim()).filter(id => id.length > 0)
+    const forceUpdateForTesting = forceUpdatePageIds.includes(id)
     const willUpdate = shouldUpdate || forceUpdateForTesting
     
     consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 업데이트 필요: ${shouldUpdate}, 강제 업데이트: ${forceUpdateForTesting}`)
-    
-    if (forceUpdatePageIds.length > 0) {
-      consola.info(`[${this.options.id}][loadPage] 강제 업데이트 대상 페이지 ID 목록: ${forceUpdatePageIds.join(', ')}`)
-    } else {
-      consola.info(`[${this.options.id}][loadPage] FORCE_UPDATE_PAGE_IDS 환경 변수 미설정`)
-    }
     
     if (forceUpdateForTesting && !shouldUpdate) {
       consola.info(`[${this.options.id}][loadPage] 테스트를 위해 강제 업데이트 실행: ${id}`)
