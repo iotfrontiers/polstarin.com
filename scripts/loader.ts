@@ -186,40 +186,71 @@ export class NotionDataLoader {
       }
 
       const list: NotionData[] = []
-      if (result.results) {
-        for (const row of result.results) {
-          let listData: NotionData = {}
-          if (this.options.customizeDatabaseResponse) {
-            listData = (await this.options.customizeDatabaseResponse(<DatabaseObjectResponse>row)) || {}
-          }
+      let currentCursor: string | null = null
+      let pageNumber = 1
+      let hasMore = true
 
-          const hasImageInList = this.options.hasImageInList
-          const requiresUpdate = requireUpdatePage(row.id, row['last_edited_time'], hasImageInList)
-          const itemTitle = listData.title || '제목 없음'
-          consola.info(`[${this.options.id}] 항목 처리 중: ${row.id} - ${itemTitle} (업데이트 필요: ${requiresUpdate})`)
-          const oldImgUrl = oldData?.list.find(r => r.id === row.id)?.imgUrl
-          
-          let imgUrl = null
-          if (hasImageInList) {
-            if (requiresUpdate) {
-              imgUrl = await getImageUrlInPage(row.id)
-            } else {
-              imgUrl = oldImgUrl
+      // 페이징 처리: next_cursor가 있을 때까지 모든 페이지를 가져옴
+      while (hasMore) {
+        // 첫 번째 페이지가 아닌 경우 다음 페이지 쿼리
+        if (currentCursor) {
+          queryOption.start_cursor = currentCursor
+          try {
+            result = await notion.databases.query(queryOption)
+            const pageResultCount = result?.results ? result.results.length : 0
+            consola.info(`[${this.options.id}] 데이터베이스 쿼리 성공 (페이지 ${pageNumber}): ${pageResultCount}개 항목`)
+          } catch (error: any) {
+            console.error(`[ERROR][${this.options.id}] 다음 페이지 쿼리 실패:`, error.message)
+            break
+          }
+        }
+
+        if (result.results) {
+          for (const row of result.results) {
+            let listData: NotionData = {}
+            if (this.options.customizeDatabaseResponse) {
+              listData = (await this.options.customizeDatabaseResponse(<DatabaseObjectResponse>row)) || {}
             }
+
+            const hasImageInList = this.options.hasImageInList
+            const requiresUpdate = requireUpdatePage(row.id, row['last_edited_time'], hasImageInList)
+            const itemTitle = listData.title || '제목 없음'
+            consola.info(`[${this.options.id}] 항목 처리 중 (페이지 ${pageNumber}): ${row.id} - ${itemTitle} (업데이트 필요: ${requiresUpdate})`)
+            const oldImgUrl = oldData?.list.find(r => r.id === row.id)?.imgUrl
+            
+            let imgUrl = null
+            if (hasImageInList) {
+              if (requiresUpdate) {
+                imgUrl = await getImageUrlInPage(row.id)
+              } else {
+                imgUrl = oldImgUrl
+              }
+            }
+
+            listData = useDeepMerge({}, listData, {
+              id: row.id as string,
+              imgUrl: imgUrl,
+              lastUpdateDate: row['last_edited_time'],
+            })
+
+            list.push(listData)
           }
+        }
 
-          listData = useDeepMerge({}, listData, {
-            id: row.id as string,
-            imgUrl: imgUrl,
-            lastUpdateDate: row['last_edited_time'],
-          })
-
-          list.push(listData)
+        // 다음 커서 확인
+        currentCursor = result['next_cursor'] || null
+        hasMore = !!currentCursor
+        
+        if (hasMore) {
+          consola.info(`[${this.options.id}] 다음 페이지 존재 (커서: ${currentCursor.substring(0, 20)}...), 계속 로드 중...`)
+          pageNumber++
+        } else {
+          consola.info(`[${this.options.id}] 모든 페이지 로드 완료 (총 ${pageNumber}페이지)`)
         }
       }
 
       const r = {
-        nextCursor: result['next_cursor'],
+        nextCursor: null, // 모든 페이지를 가져왔으므로 null
         list,
       } as NotionListResponse<NotionData>
 
