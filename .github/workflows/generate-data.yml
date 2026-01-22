@@ -26,12 +26,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+          cache: 'yarn'
 
       - name: Install Yarn
         run: npm install --global yarn
 
       - name: Install Modules
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Generate Data
         env:
