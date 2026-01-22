@@ -2,6 +2,21 @@
   "nextCursor": null,
   "list": [
     {
+      "title": "가스 센서 모니터링 LED 디스플레이 시스템",
+      "categories": [
+        "펌웨어",
+        "C/C++",
+        "Android",
+        "Git",
+        "OTA",
+        "Mqtt",
+        "RS485"
+      ],
+      "id": "2f0c88ac-8c29-8024-9435-d7b0d0ee156c",
+      "imgUrl": null,
+      "lastUpdateDate": "2026-01-22T00:50:00.000Z"
+    },
+    {
       "title": "학습용 LED 전광판 키트 ",
       "categories": [],
       "id": "2eac88ac-8c29-80a9-945b-f55768d5b9b3",
@@ -20,7 +35,7 @@
       "categories": [],
       "id": "2eac88ac-8c29-8028-982a-e4623f527b29",
       "imgUrl": "/notion-resources/2eac88ac-8c29-8028-982a-e4623f527b29/ddd7d71e711fa9fb590954d40633513a.png",
-      "lastUpdateDate": "2026-01-16T06:07:00.000Z"
+      "lastUpdateDate": "2026-01-22T00:26:00.000Z"
     },
     {
       "title": "물류 로봇 상태 모니터링 LED 시스템",
@@ -138,7 +153,7 @@
       ],
       "id": "19ec88ac-8c29-81fc-93aa-f5cb59bb6551",
       "imgUrl": "/notion-resources/19ec88ac-8c29-81fc-93aa-f5cb59bb6551/59821c8f97d08cff627aac52e7912baf.png",
-      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+      "lastUpdateDate": "2026-01-22T00:39:00.000Z"
     },
     {
       "title": "IOT 그늘막 제어 모바일 안드로이드 앱 개발",
@@ -283,7 +298,7 @@
       ],
       "id": "19ec88ac-8c29-8141-b195-f2014e950714",
       "imgUrl": "/notion-resources/19ec88ac-8c29-8141-b195-f2014e950714/8157fc5f9c441e264997113070b7274a.jpg",
-      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+      "lastUpdateDate": "2026-01-22T00:39:00.000Z"
     },
     {
       "title": "방광 헬스케어 펌웨어 개발(피에조디스크)",

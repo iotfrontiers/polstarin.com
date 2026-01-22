@@ -8,6 +8,6 @@
   ],
   "id": "19ec88ac-8c29-81fc-93aa-f5cb59bb6551",
   "content": "\n# **고양이 운동기구(Cat Wheel) 개발**\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81fc-93aa-f5cb59bb6551/59821c8f97d08cff627aac52e7912baf.png)\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81fc-93aa-f5cb59bb6551/0af5cfb70b655302de180d573077c239.png)\n\n\n## 프로젝트 내용\n\n\n• 반려 고양이 비만 방지 스마트 러닝 머신 개발\n\n\n## 기술 스택\n\n- 펌웨어: STM32CubeIDE, 9축 모션 자이로 센서, 블루투스(BLE)\n- 하드웨어: STM32F401RE, 회로 및 PCB\n\n## 주요 기\n\n- 고양이의 운동량 체크\n- 고양이 운동 유도 LED\n- 펌웨어 업데이트 지원\n- LED Strip 제어\n- 배터리 잔량 체크\n- 운동량 기록\n- 저전력 기능\n\n## **개발 내용**\n\n- **펌웨어 개발**\n\t- STM32CubeIDE를 사용하여 펌웨어를 개발\n\t- 9축 모션 자이로 센서를 통해 고양이의 운동량을 체크\n\t- 모션 센서 데이터를 사용하여 고양이 운동 유도 LED 위치 제어\n\t- 펌웨어 업데이트 기능 구현\n\t- LED Strip 제어 기능 구현\n\t- 배터리 잔량 체크 기능 구현\n\t- 운동량 기록 기능 구현\n\t- 저전력 기능 구현\n- **하드웨어 개발**\n\t- STM32F401RE를 사용하여 하드웨어를 개발\n\t- 회로 및 PCB 설계\n",
-  "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "lastUpdateDate": "2026-01-22T00:39:00.000Z",
   "imgUrl": ""
 }
