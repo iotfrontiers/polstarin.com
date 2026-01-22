@@ -76,9 +76,6 @@ export class NotionDataLoader {
    */
   async loadDatabase(databaseId: string, loadSubPages = true) {
     consola.info(`[${this.options.id}] 데이터베이스 로드 시작`)
-    console.log(`[DEBUG][${this.options.id}] 원본 databaseId:`, databaseId)
-    console.log(`[DEBUG][${this.options.id}] databaseId 타입:`, typeof databaseId)
-    console.log(`[DEBUG][${this.options.id}] databaseId 길이:`, databaseId ? databaseId.length : 0)
     
     if (!databaseId) {
       const errorMsg = `${this.options.id} database ID가 설정되지 않았습니다.`
@@ -88,54 +85,35 @@ export class NotionDataLoader {
 
     try {
       // 데이터베이스 ID를 하이픈 형식으로 변환
-      console.log(`[DEBUG][${this.options.id}] ID 변환 시작...`)
       const formattedDatabaseId = formatNotionId(databaseId)
-      console.log(`[DEBUG][${this.options.id}] 변환된 Database ID:`, formattedDatabaseId)
       consola.info(`[${this.options.id}] Database ID: ${formattedDatabaseId}`)
       
-      console.log(`[DEBUG][${this.options.id}] Notion Client 생성 시작...`)
       const notion = createNotionClient()
-      console.log(`[DEBUG][${this.options.id}] Notion Client 생성 완료`)
       
       const queryOption = <QueryDatabaseParameters>this.options.customizeDatabaseQuery({
         database_id: formattedDatabaseId,
         page_size: 100,
       })
-      console.log(`[DEBUG][${this.options.id}] Query 옵션:`, JSON.stringify({
-        database_id: formattedDatabaseId,
-        page_size: queryOption.page_size,
-        sorts: queryOption.sorts,
-      }, null, 2))
       
-      console.log(`[DEBUG][${this.options.id}] Notion API 호출 시작...`)
       let result
       try {
         result = await notion.databases.query(queryOption)
-        console.log(`[DEBUG][${this.options.id}] Notion API 호출 성공. 결과 개수:`, result.results?.length || 0)
       } catch (error: any) {
         // 페이지인 경우, 페이지의 자식 데이터베이스를 찾아서 사용
         if (error.code === 'validation_error' && error.message?.includes('is a page, not a database')) {
-          console.log(`[DEBUG][${this.options.id}] 페이지로 감지됨. 자식 데이터베이스를 찾는 중...`)
-          
           try {
             // 페이지를 가져와서 자식 블록 확인
             const page = await notion.pages.retrieve({ page_id: formattedDatabaseId })
-            console.log(`[DEBUG][${this.options.id}] 페이지 정보:`, page.id)
             
             // 페이지의 자식 블록 조회
             const blocks = await notion.blocks.children.list({ block_id: formattedDatabaseId })
-            console.log(`[DEBUG][${this.options.id}] 자식 블록 개수:`, blocks.results?.length || 0)
             
             // 데이터베이스 블록 찾기
-            console.log(`[DEBUG][${this.options.id}] 자식 블록 타입들:`, blocks.results.map((b: any) => b.type))
-            
             const databaseBlock = blocks.results.find((block: any) => block.type === 'child_database')
-            console.log(`[DEBUG][${this.options.id}] 데이터베이스 블록:`, databaseBlock ? JSON.stringify(databaseBlock, null, 2) : '없음')
             
             if (databaseBlock) {
               // child_database 블록의 구조 확인
               const childDatabase = (databaseBlock as any).child_database
-              console.log(`[DEBUG][${this.options.id}] child_database 객체:`, childDatabase ? JSON.stringify(childDatabase, null, 2) : '없음')
               
               // Notion API에서 child_database 블록의 경우:
               // 1. 블록 자체의 id가 데이터베이스 ID일 수 있음
@@ -143,16 +121,11 @@ export class NotionDataLoader {
               // 3. 블록의 id를 데이터베이스 ID로 사용 시도
               const blockId = (databaseBlock as any).id
               const actualDatabaseId = childDatabase?.database_id || blockId || childDatabase?.id
-              console.log(`[DEBUG][${this.options.id}] 블록 ID:`, blockId)
-              console.log(`[DEBUG][${this.options.id}] 추출된 데이터베이스 ID:`, actualDatabaseId)
               
               if (actualDatabaseId) {
-                console.log(`[DEBUG][${this.options.id}] 데이터베이스 발견! ID:`, actualDatabaseId)
-              
                 // 실제 데이터베이스 ID로 다시 쿼리
                 queryOption.database_id = actualDatabaseId as string
                 result = await notion.databases.query(queryOption)
-                console.log(`[DEBUG][${this.options.id}] 데이터베이스 쿼리 성공. 결과 개수:`, result.results?.length || 0)
               } else {
                 console.error(`[ERROR][${this.options.id}] 데이터베이스 ID를 추출할 수 없습니다.`)
                 console.error(`[ERROR][${this.options.id}] 블록 구조:`, JSON.stringify(databaseBlock, null, 2))
@@ -160,7 +133,6 @@ export class NotionDataLoader {
               }
             } else {
               // 자식 블록이 없거나 데이터베이스 블록이 없는 경우
-              console.log(`[DEBUG][${this.options.id}] 모든 자식 블록 정보:`, JSON.stringify(blocks.results, null, 2))
               throw new Error(`${this.options.id}: 페이지 내에 데이터베이스 블록을 찾을 수 없습니다. 페이지가 데이터베이스 페이지인지 확인하세요.`)
             }
           } catch (pageError: any) {
@@ -220,20 +192,13 @@ export class NotionDataLoader {
           const requiresUpdate = requireUpdatePage(row.id, row['last_edited_time'], hasImageInList)
           const oldImgUrl = oldData?.list.find(r => r.id === row.id)?.imgUrl
           
-          console.log(`[DEBUG][${this.options.id}][loader] ${row.id} - hasImageInList: ${hasImageInList}, requiresUpdate: ${requiresUpdate}, oldImgUrl: ${oldImgUrl || '없음'}`)
-          
           let imgUrl = null
           if (hasImageInList) {
             if (requiresUpdate) {
-              console.log(`[DEBUG][${this.options.id}][loader] ${row.id} - 이미지 URL 가져오기 시작...`)
               imgUrl = await getImageUrlInPage(row.id)
-              console.log(`[DEBUG][${this.options.id}][loader] ${row.id} - 이미지 URL 가져오기 완료: ${imgUrl || 'null'}`)
             } else {
               imgUrl = oldImgUrl
-              console.log(`[DEBUG][${this.options.id}][loader] ${row.id} - 기존 이미지 URL 사용: ${imgUrl || '없음'}`)
             }
-          } else {
-            console.log(`[DEBUG][${this.options.id}][loader] ${row.id} - hasImageInList=false, imgUrl=null`)
           }
 
           listData = useDeepMerge({}, listData, {
@@ -241,8 +206,6 @@ export class NotionDataLoader {
             imgUrl: imgUrl,
             lastUpdateDate: row['last_edited_time'],
           })
-          
-          console.log(`[DEBUG][${this.options.id}][loader] ${row.id} - 최종 imgUrl: ${listData.imgUrl || 'null/undefined'}`)
 
           list.push(listData)
         }
@@ -255,13 +218,10 @@ export class NotionDataLoader {
 
       writeFileSync(dataFilePath, JSON.stringify(r, null, 2))
       consola.info(`[${this.options.id}] 데이터베이스 로드 완료`)
-      console.log(`[DEBUG][${this.options.id}] 파일 저장 완료:`, dataFilePath)
 
-      console.log(`[DEBUG][${this.options.id}] 페이지 로드 시작...`)
       for (const item of list) {
         await this.loadPage(item.id)
       }
-      console.log(`[DEBUG][${this.options.id}] 모든 페이지 로드 완료`)
     } catch (e) {
       console.error(`[ERROR][${this.options.id}] 데이터베이스 로드 중 오류 발생:`)
       console.error(`[ERROR][${this.options.id}] 오류 타입:`, e?.constructor?.name || typeof e)
@@ -345,11 +305,6 @@ export class NotionDataLoader {
    * @param id 아이디
    */
   async loadPageHierarchy(id: string, depth: number = 0) {
-    console.log(`[DEBUG][${this.options.id}] loadPageHierarchy 시작 - depth: ${depth}`)
-    console.log(`[DEBUG][${this.options.id}] 원본 page ID:`, id)
-    console.log(`[DEBUG][${this.options.id}] page ID 타입:`, typeof id)
-    console.log(`[DEBUG][${this.options.id}] page ID 길이:`, id ? id.length : 0)
-    
     if (!id) {
       const errorMsg = 'id is empty'
       console.error(`[ERROR][${this.options.id}]`, errorMsg)
@@ -358,19 +313,14 @@ export class NotionDataLoader {
 
     // 페이지 ID도 하이픈 형식으로 변환
     const formattedPageId = formatNotionId(id)
-    console.log(`[DEBUG][${this.options.id}] 변환된 page ID:`, formattedPageId)
     
     consola.info(`load ${this.options.id} page hierarchy data : ` + formattedPageId)
 
-    console.log(`[DEBUG][${this.options.id}] Notion Client 생성 시작...`)
     const notion = createNotionClient()
-    console.log(`[DEBUG][${this.options.id}] Notion Client 생성 완료`)
     
-    console.log(`[DEBUG][${this.options.id}] pages.retrieve 호출 시작...`)
     const pageInfo = await notion.pages.retrieve({
       page_id: formattedPageId as string,
     })
-    console.log(`[DEBUG][${this.options.id}] pages.retrieve 호출 성공`)
 
     const page: NotionData = {
       id: pageInfo.id,
