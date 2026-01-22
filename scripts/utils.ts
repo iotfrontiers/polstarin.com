@@ -194,11 +194,14 @@ const uploadCloudinaryImage = (imageUrl: string) => {
   })
 }
 
-// 재귀적으로 모든 블록을 카운트하는 함수
-const countAllBlocksRecursive = async (notion: any, blockId: string, depth: number = 0): Promise<number> => {
-  let totalCount = 0
+// 재귀적으로 모든 블록을 가져오는 커스텀 함수 (중첩 구조 포함)
+const getAllBlocksRecursive = async (notion: any, blockId: string, depth: number = 0): Promise<any[]> => {
+  const allBlocks: any[] = []
   let cursor: string | null = null
   let hasMore = true
+  let pageNumber = 1
+  
+  consola.info(`[getAllBlocksRecursive] 블록 ID: ${blockId.substring(0, 20)}..., 깊이: ${depth}, 페이지네이션 시작...`)
   
   while (hasMore) {
     const response = await notion.blocks.children.list({
@@ -208,43 +211,66 @@ const countAllBlocksRecursive = async (notion: any, blockId: string, depth: numb
     })
     
     const currentBlocks = response.results || []
-    totalCount += currentBlocks.length
+    consola.info(`[getAllBlocksRecursive] 깊이 ${depth}, 페이지 ${pageNumber}: ${currentBlocks.length}개 블록 가져옴`)
     
-    // 각 블록의 자식 블록도 재귀적으로 카운트
+    // 각 블록 처리
     for (const block of currentBlocks) {
+      allBlocks.push(block)
+      
+      // 자식 블록이 있으면 재귀적으로 가져오기
+      // notion-to-md의 blocksToMarkdown은 자식 블록을 자동으로 가져오지 않으므로,
+      // 여기서 자식 블록을 가져와서 children 속성에 추가해야 함
       if (block.has_children) {
-        const childCount = await countAllBlocksRecursive(notion, block.id, depth + 1)
-        totalCount += childCount
+        consola.info(`[getAllBlocksRecursive] 블록 ${block.id.substring(0, 20)}... (타입: ${block.type})에 자식 블록 존재, 재귀 호출...`)
+        const childBlocks = await getAllBlocksRecursive(notion, block.id, depth + 1)
+        consola.info(`[getAllBlocksRecursive] 블록 ${block.id.substring(0, 20)}...의 자식 블록 ${childBlocks.length}개 가져옴`)
+        // 자식 블록을 현재 블록의 children 속성에 추가
+        // notion-to-md의 blocksToMarkdown이 children 속성을 처리할 수 있도록
+        block.children = childBlocks
       }
     }
     
     cursor = response.next_cursor || null
     hasMore = !!cursor
+    
+    if (hasMore) {
+      consola.info(`[getAllBlocksRecursive] 깊이 ${depth}, 다음 페이지 존재 (커서: ${cursor?.substring(0, 20)}...), 계속 로드 중...`)
+      pageNumber++
+    } else {
+      consola.info(`[getAllBlocksRecursive] 깊이 ${depth}, 모든 페이지 로드 완료 (총 ${pageNumber}페이지, ${allBlocks.length}개 블록)`)
+    }
   }
   
-  return totalCount
+  return allBlocks
 }
 
 export const getNotionMarkdownContent = async (id: string, downloadResource: boolean = true, useCloudinary = false) => {
   consola.info(`[getNotionMarkdownContent] 페이지 ID: ${id}`)
-  consola.info(`[getNotionMarkdownContent] 블록 가져오기 시작...`)
+  consola.info(`[getNotionMarkdownContent] 커스텀 함수로 모든 블록 가져오기 시작...`)
   
   const notion = createNotionClient()
-  
-  // 실제 Notion API로 전체 블록 수 확인
-  try {
-    const actualBlockCount = await countAllBlocksRecursive(notion, id)
-    consola.info(`[getNotionMarkdownContent] Notion API로 확인한 실제 블록 수: ${actualBlockCount}개`)
-  } catch (error) {
-    consola.warn(`[getNotionMarkdownContent] 실제 블록 수 확인 실패:`, error instanceof Error ? error.message : String(error))
-  }
-  
   const n2m = new NotionToMarkdown({ notionClient: notion })
-  // totalPage 파라미터를 제거하여 모든 블록을 가져오도록 수정 (기존에는 1로 제한되어 최대 100개 블록만 가져왔음)
-  const blocks = await n2m.pageToMarkdown(id)
+  
+  // Notion API로 직접 모든 블록 가져오기 (페이지네이션 및 중첩 블록 모두 처리)
+  consola.info(`[getNotionMarkdownContent] Notion API로 모든 블록 가져오는 중...`)
+  const allNotionBlocks = await getAllBlocksRecursive(notion, id)
+  consola.info(`[getNotionMarkdownContent] Notion API로 가져온 총 블록 수: ${allNotionBlocks.length}개`)
+  
+  // notion-to-md의 blocksToMarkdown을 사용하여 마크다운 변환
+  // blocksToMarkdown은 중첩 구조를 자동으로 처리하지만, 자식 블록을 자동으로 가져오지는 않음
+  // 따라서 이미 가져온 블록의 children 속성을 사용
+  consola.info(`[getNotionMarkdownContent] notion-to-md로 마크다운 변환 시작...`)
+  const blocks = await n2m.blocksToMarkdown(allNotionBlocks)
   
   const blockCount = Array.isArray(blocks) ? blocks.length : 0
-  consola.info(`[getNotionMarkdownContent] notion-to-md로 가져온 블록 개수: ${blockCount}개`)
+  consola.info(`[getNotionMarkdownContent] notion-to-md로 변환된 블록 개수: ${blockCount}개`)
+  
+  // 총 블록 수 비교 (디버깅)
+  if (allNotionBlocks.length !== blockCount) {
+    consola.warn(`[getNotionMarkdownContent] 경고: 가져온 블록 수(${allNotionBlocks.length})와 변환된 블록 수(${blockCount})가 다릅니다.`)
+  } else {
+    consola.info(`[getNotionMarkdownContent] 모든 블록이 정상적으로 변환되었습니다.`)
+  }
 
   if (downloadResource) {
     for (const block of blocks) {
