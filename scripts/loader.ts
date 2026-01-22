@@ -323,9 +323,14 @@ export class NotionDataLoader {
     consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 업데이트 필요: ${shouldUpdate}`)
     
     // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분)
-    const forceUpdatePageIds = process.env.FORCE_UPDATE_PAGE_IDS?.split(',').map(id => id.trim()) || []
-    const forceUpdateForTesting = forceUpdatePageIds.includes(id)
+    const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS || ''
+    const forceUpdatePageIds = forceUpdatePageIdsEnv ? forceUpdatePageIdsEnv.split(',').map(id => id.trim()).filter(id => id.length > 0) : []
+    const forceUpdateForTesting = forceUpdatePageIds.length > 0 && forceUpdatePageIds.includes(id)
     const willUpdate = shouldUpdate || forceUpdateForTesting
+    
+    if (forceUpdatePageIds.length > 0) {
+      consola.info(`[${this.options.id}][loadPage] 강제 업데이트 대상 페이지 ID 목록: ${forceUpdatePageIds.join(', ')}`)
+    }
     
     if (forceUpdateForTesting && !shouldUpdate) {
       consola.info(`[${this.options.id}][loadPage] 테스트를 위해 강제 업데이트: ${id}`)
