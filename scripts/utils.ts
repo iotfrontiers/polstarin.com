@@ -264,6 +264,14 @@ export const getNotionMarkdownContent = async (id: string, downloadResource: boo
   // notion-to-md의 blocksToMarkdown을 사용하여 마크다운 변환
   // blocksToMarkdown은 최상위 블록만 받아서 처리하고, 각 블록의 children 속성을 재귀적으로 처리
   consola.info(`[getNotionMarkdownContent] notion-to-md로 마크다운 변환 시작...`)
+  
+  // 자식 블록이 있는 블록 확인 (디버깅)
+  const blocksWithChildren = topLevelBlocks.filter(block => block.children && block.children.length > 0)
+  consola.info(`[getNotionMarkdownContent] 자식 블록을 가진 최상위 블록 수: ${blocksWithChildren.length}개`)
+  for (const block of blocksWithChildren) {
+    consola.info(`[getNotionMarkdownContent] 블록 ${block.id.substring(0, 20)}... (타입: ${block.type})에 ${block.children.length}개 자식 블록 포함`)
+  }
+  
   const blocks = await n2m.blocksToMarkdown(topLevelBlocks)
   
   const blockCount = Array.isArray(blocks) ? blocks.length : 0
@@ -276,6 +284,10 @@ export const getNotionMarkdownContent = async (id: string, downloadResource: boo
   } else {
     consola.info(`[getNotionMarkdownContent] 모든 최상위 블록이 정상적으로 변환되었습니다.`)
   }
+  
+  // 변환된 마크다운에서 자식 블록 내용 확인 (디버깅)
+  const markdownPreview = n2m.toMarkdownString(blocks)?.parent || ''
+  consola.info(`[getNotionMarkdownContent] 마크다운 미리보기 (처음 500자): ${markdownPreview.substring(0, 500)}...`)
 
   if (downloadResource) {
     for (const block of blocks) {
