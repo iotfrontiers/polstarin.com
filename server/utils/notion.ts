@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 import { dirname, resolve, extname, join } from 'pathe'
 import { existsSync, mkdirSync, createWriteStream } from 'node:fs'
-import { NotionConverter } from 'notion-to-md'
+import { NotionToMarkdown } from 'notion-to-md'
 import { NotionData, NotionListResponse, NotionPageRequest } from '~/composables/notion'
 import https from 'https'
 import { decryptString } from './crypt'
@@ -39,28 +39,43 @@ export const createNotionClient = () => {
 export const getNotionMarkdownContent = cachedFunction(
   async (id: string, downloadResource: boolean = true) => {
     const notion = createNotionClient()
-    const converter = new NotionConverter(notion)
-    
-    // Cloudinary 업로드 전략 설정
+    const n2m = new NotionToMarkdown({ notionClient: notion })
+    const blocks = await n2m.pageToMarkdown(id)
+
     if (downloadResource) {
-      converter.uploadMediaUsing({
-        uploadHandler: async (url: string, blockId: string, blockType: string) => {
-          if (url.includes('amazonaws.com')) {
-            const cloudinaryFileUrl = await uploadCloudinaryImage(url)
-            return cloudinaryFileUrl || url
+      for (const block of blocks) {
+        if (block.type === 'image') {
+          if (block.parent) {
+            const dataArr = block.parent.split('(')
+
+            if (dataArr.length > 1 && dataArr[1] && typeof dataArr[1] === 'string' && dataArr[1].includes('amazonaws.com')) {
+              // const imgPath = await saveFileFromImageUrl(id, dataArr[1].substring(0, dataArr[1].length - 1))
+              const cloudinaryFileUrl = await uploadCloudinaryImage(dataArr[1].substring(0, dataArr[1].length - 1))
+              if (cloudinaryFileUrl) {
+                block.parent = dataArr[0] + `(${cloudinaryFileUrl})`
+              }
+            }
           }
-          return url
-        },
-        transformPath: (uploadedUrl: string) => uploadedUrl,
-        preserveExternalUrls: true,
-      })
-    } else {
-      converter.useDirectStrategy()
+        }
+
+        if (block.type === 'file') {
+          if (block.parent) {
+            const dataArr = block.parent.split('(')
+
+            if (dataArr.length > 1 && dataArr[1] && typeof dataArr[1] === 'string' && dataArr[1].includes('amazonaws.com')) {
+              // const filePath = await saveFileFromImageUrl(id, dataArr[1].substring(0, dataArr[1].length - 1))
+              const cloudinaryFileUrl = await uploadCloudinaryImage(dataArr[1].substring(0, dataArr[1].length - 1))
+
+              if (cloudinaryFileUrl) {
+                block.parent = dataArr[0] + `(${cloudinaryFileUrl})`
+              }
+            }
+          }
+        }
+      }
     }
 
-    // v4 API: convert() 사용
-    const result = await converter.convert(id)
-    return result.content || ''
+    return n2m.toMarkdownString(blocks)?.parent || ''
   },
   {
     maxAge: 3600,
