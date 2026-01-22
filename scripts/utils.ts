@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { existsSync, mkdirSync, createWriteStream } from 'node:fs'
 import { decryptString } from '../server/utils/crypt.ts'
 import { extname, resolve, dirname, join } from 'pathe'
-import { NotionToMarkdown } from 'notion-to-md'
+import { NotionConverter } from 'notion-to-md'
 import axios from 'axios'
 import https from 'https'
 import consola from 'consola'
@@ -194,70 +194,95 @@ const uploadCloudinaryImage = (imageUrl: string) => {
   })
 }
 
+// 재귀적으로 모든 블록을 카운트하는 함수
+const countAllBlocksRecursive = async (notion: any, blockId: string, depth: number = 0): Promise<number> => {
+  let totalCount = 0
+  let cursor: string | null = null
+  let hasMore = true
+  
+  while (hasMore) {
+    const response = await notion.blocks.children.list({
+      block_id: blockId,
+      page_size: 100,
+      start_cursor: cursor || undefined,
+    })
+    
+    const currentBlocks = response.results || []
+    totalCount += currentBlocks.length
+    
+    // 각 블록의 자식 블록도 재귀적으로 카운트
+    for (const block of currentBlocks) {
+      if (block.has_children) {
+        const childCount = await countAllBlocksRecursive(notion, block.id, depth + 1)
+        totalCount += childCount
+      }
+    }
+    
+    cursor = response.next_cursor || null
+    hasMore = !!cursor
+  }
+  
+  return totalCount
+}
+
 export const getNotionMarkdownContent = async (id: string, downloadResource: boolean = true, useCloudinary = false) => {
   consola.info(`[getNotionMarkdownContent] 페이지 ID: ${id}`)
   consola.info(`[getNotionMarkdownContent] 블록 가져오기 시작...`)
   
   const notion = createNotionClient()
-  const n2m = new NotionToMarkdown({ notionClient: notion })
-  // totalPage 파라미터를 제거하여 모든 블록을 가져오도록 수정 (기존에는 1로 제한되어 최대 100개 블록만 가져왔음)
-  const blocks = await n2m.pageToMarkdown(id)
   
-  const blockCount = Array.isArray(blocks) ? blocks.length : 0
-  consola.info(`[getNotionMarkdownContent] 가져온 블록 개수: ${blockCount}개`)
-
+  // 실제 Notion API로 전체 블록 수 확인
+  try {
+    const actualBlockCount = await countAllBlocksRecursive(notion, id)
+    consola.info(`[getNotionMarkdownContent] Notion API로 확인한 실제 블록 수: ${actualBlockCount}개`)
+  } catch (error) {
+    consola.warn(`[getNotionMarkdownContent] 실제 블록 수 확인 실패:`, error instanceof Error ? error.message : String(error))
+  }
+  
+  // v4 API: NotionConverter 사용
+  const converter = new NotionConverter(notion)
+  
+  // 미디어 처리 전략 설정
   if (downloadResource) {
-    for (const block of blocks) {
-      if (block.type === 'image') {
-        if (block.parent) {
-          const dataArr = block.parent.split('(')
-
-          if (dataArr[1].includes('amazonaws.com')) {
-            // const imgPath = await saveFileFromImageUrl(id, dataArr[1].substring(0, dataArr[1].length - 1))
-
-            if (useCloudinary) {
-              const cloudinaryFileUrl = await uploadCloudinaryImage(dataArr[1].substring(0, dataArr[1].length - 1))
-              if (cloudinaryFileUrl) {
-                block.parent = decodeURIComponent(dataArr[0]) + `(${cloudinaryFileUrl})`
-              }
-            } else {
-              const localFileUrl = await saveFileFromImageUrl(id, dataArr[1].substring(0, dataArr[1].length - 1))
-              if (localFileUrl) {
-                block.parent = decodeURIComponent(dataArr[0]) + `(${localFileUrl})`
-              }
-            }
+    if (useCloudinary) {
+      // Cloudinary 업로드 전략
+      converter.uploadMediaUsing({
+        uploadHandler: async (url: string, blockId: string, blockType: string) => {
+          if (url.includes('amazonaws.com')) {
+            const cloudinaryFileUrl = await uploadCloudinaryImage(url)
+            return cloudinaryFileUrl || url
           }
-        }
-      }
-
-      if (block.type === 'file') {
-        if (block.parent) {
-          const dataArr = block.parent.split('(')
-
-          if (dataArr[1].includes('amazonaws.com')) {
-            // const filePath = await saveFileFromImageUrl(id, dataArr[1].substring(0, dataArr[1].length - 1))
-
-            if (useCloudinary) {
-              const cloudinaryFileUrl = await uploadCloudinaryImage(dataArr[1].substring(0, dataArr[1].length - 1))
-
-              if (cloudinaryFileUrl) {
-                block.parent = decodeURIComponent(dataArr[0]) + `(${cloudinaryFileUrl})`
-              }
-            } else {
-              const localFileUrl = await saveFileFromImageUrl(id, dataArr[1].substring(0, dataArr[1].length - 1))
-              if (localFileUrl) {
-                block.parent = decodeURIComponent(dataArr[0]) + `(${localFileUrl})`
-              }
-            }
-          }
-        }
-      }
+          return url
+        },
+        transformPath: (uploadedUrl: string) => uploadedUrl,
+        preserveExternalUrls: true,
+      })
+    } else {
+      // 로컬 다운로드 전략
+      const notionResourcePath = getNotionResourcePath()
+      converter.downloadMediaTo({
+        outputDir: notionResourcePath,
+        transformPath: (localPath: string) => {
+          // 상대 경로로 변환
+          const relativePath = localPath.replace(notionResourcePath, '/notion-resources')
+          return relativePath.replace(/\\/g, '/')
+        },
+        preserveExternalUrls: true,
+      })
     }
+  } else {
+    // Direct 전략 (URL 그대로 사용)
+    converter.useDirectStrategy()
   }
 
-  const markdownContent = n2m.toMarkdownString(blocks)?.parent || ''
-  const contentLength = typeof markdownContent === 'string' ? markdownContent.length : 0
-  consola.info(`[getNotionMarkdownContent] 마크다운 변환 완료: ${contentLength} 문자`)
+  // 페이지 변환 실행
+  const result = await converter.convert(id)
+  
+  // v4는 ConversionResult 객체를 반환
+  const markdownContent = result.content || ''
+  const blockCount = result.blocks ? (Array.isArray(result.blocks) ? result.blocks.length : 1) : 0
+  consola.info(`[getNotionMarkdownContent] notion-to-md v4로 가져온 블록 개수: ${blockCount}개`)
+  consola.info(`[getNotionMarkdownContent] 마크다운 변환 완료: ${markdownContent.length} 문자`)
   
   return markdownContent
 }
