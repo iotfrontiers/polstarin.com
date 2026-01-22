@@ -201,9 +201,6 @@ const getAllBlocksRecursive = async (notion: any, blockId: string, depth: number
   const allBlocksFlat: any[] = []
   let cursor: string | null = null
   let hasMore = true
-  let pageNumber = 1
-  
-  consola.info(`[getAllBlocksRecursive] 블록 ID: ${blockId.substring(0, 20)}..., 깊이: ${depth}, 페이지네이션 시작...`)
   
   while (hasMore) {
     const response = await notion.blocks.children.list({
@@ -213,7 +210,6 @@ const getAllBlocksRecursive = async (notion: any, blockId: string, depth: number
     })
     
     const currentBlocks = response.results || []
-    consola.info(`[getAllBlocksRecursive] 깊이 ${depth}, 페이지 ${pageNumber}: ${currentBlocks.length}개 블록 가져옴`)
     
     // 각 블록 처리
     for (const block of currentBlocks) {
@@ -222,9 +218,7 @@ const getAllBlocksRecursive = async (notion: any, blockId: string, depth: number
       
       // 자식 블록이 있으면 재귀적으로 가져오기
       if (block.has_children) {
-        consola.info(`[getAllBlocksRecursive] 블록 ${block.id.substring(0, 20)}... (타입: ${block.type})에 자식 블록 존재, 재귀 호출...`)
         const childResult = await getAllBlocksRecursive(notion, block.id, depth + 1)
-        consola.info(`[getAllBlocksRecursive] 블록 ${block.id.substring(0, 20)}...의 자식 블록 ${childResult.topLevelBlocks.length}개 가져옴 (총 ${childResult.allBlocksFlat.length}개 포함)`)
         // 자식 블록을 현재 블록의 children 속성에 추가
         block.children = childResult.topLevelBlocks
         // 모든 자식 블록도 평면 배열에 추가 (총 블록 수 확인용)
@@ -234,13 +228,6 @@ const getAllBlocksRecursive = async (notion: any, blockId: string, depth: number
     
     cursor = response.next_cursor || null
     hasMore = !!cursor
-    
-    if (hasMore) {
-      consola.info(`[getAllBlocksRecursive] 깊이 ${depth}, 다음 페이지 존재 (커서: ${cursor?.substring(0, 20)}...), 계속 로드 중...`)
-      pageNumber++
-    } else {
-      consola.info(`[getAllBlocksRecursive] 깊이 ${depth}, 모든 페이지 로드 완료 (총 ${pageNumber}페이지, 최상위 ${topLevelBlocks.length}개, 전체 ${allBlocksFlat.length}개 블록)`)
-    }
   }
   
   return { topLevelBlocks, allBlocksFlat }
@@ -258,47 +245,23 @@ export const getNotionBlockCount = async (id: string): Promise<number> => {
 }
 
 export const getNotionMarkdownContent = async (id: string, downloadResource: boolean = true, useCloudinary = false) => {
-  consola.info(`[getNotionMarkdownContent] 페이지 ID: ${id}`)
-  consola.info(`[getNotionMarkdownContent] 커스텀 함수로 모든 블록 가져오기 시작...`)
-  
   const notion = createNotionClient()
   const n2m = new NotionToMarkdown({ notionClient: notion })
   
   // Notion API로 직접 모든 블록 가져오기 (페이지네이션 및 중첩 블록 모두 처리)
-  consola.info(`[getNotionMarkdownContent] Notion API로 모든 블록 가져오는 중...`)
   const blockResult = await getAllBlocksRecursive(notion, id)
   const topLevelBlocks = blockResult.topLevelBlocks
-  const allBlocksFlat = blockResult.allBlocksFlat
-  consola.info(`[getNotionMarkdownContent] Notion API로 가져온 최상위 블록 수: ${topLevelBlocks.length}개`)
-  consola.info(`[getNotionMarkdownContent] Notion API로 가져온 총 블록 수 (중첩 포함): ${allBlocksFlat.length}개`)
   
   // notion-to-md의 blocksToMarkdown을 사용하여 마크다운 변환
   // blocksToMarkdown은 최상위 블록만 받아서 처리하고, 각 블록의 children 속성을 재귀적으로 처리
-  consola.info(`[getNotionMarkdownContent] notion-to-md로 마크다운 변환 시작...`)
-  
-  // 자식 블록이 있는 블록 확인 (디버깅)
-  const blocksWithChildren = topLevelBlocks.filter(block => block.children && block.children.length > 0)
-  consola.info(`[getNotionMarkdownContent] 자식 블록을 가진 최상위 블록 수: ${blocksWithChildren.length}개`)
-  for (const block of blocksWithChildren) {
-    consola.info(`[getNotionMarkdownContent] 블록 ${block.id.substring(0, 20)}... (타입: ${block.type})에 ${block.children.length}개 자식 블록 포함`)
-  }
-  
   const blocks = await n2m.blocksToMarkdown(topLevelBlocks)
   
   const blockCount = Array.isArray(blocks) ? blocks.length : 0
-  consola.info(`[getNotionMarkdownContent] notion-to-md로 변환된 블록 개수: ${blockCount}개`)
   
-  // 총 블록 수 비교 (디버깅)
   // blocksToMarkdown은 최상위 블록만 반환하므로, topLevelBlocks.length와 비교
   if (topLevelBlocks.length !== blockCount) {
     consola.warn(`[getNotionMarkdownContent] 경고: 최상위 블록 수(${topLevelBlocks.length})와 변환된 블록 수(${blockCount})가 다릅니다.`)
-  } else {
-    consola.info(`[getNotionMarkdownContent] 모든 최상위 블록이 정상적으로 변환되었습니다.`)
   }
-  
-  // 변환된 마크다운에서 자식 블록 내용 확인 (디버깅)
-  const markdownPreview = n2m.toMarkdownString(blocks)?.parent || ''
-  consola.info(`[getNotionMarkdownContent] 마크다운 미리보기 (처음 500자): ${markdownPreview.substring(0, 500)}...`)
 
   if (downloadResource) {
     for (const block of blocks) {
@@ -350,8 +313,6 @@ export const getNotionMarkdownContent = async (id: string, downloadResource: boo
   }
 
   const markdownContent = n2m.toMarkdownString(blocks)?.parent || ''
-  const contentLength = typeof markdownContent === 'string' ? markdownContent.length : 0
-  consola.info(`[getNotionMarkdownContent] 마크다운 변환 완료: ${contentLength} 문자`)
   
   return markdownContent
 }

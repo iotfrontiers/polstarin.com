@@ -336,35 +336,25 @@ export class NotionDataLoader {
     
     if (oldData) {
       // 저장된 데이터가 있으면 Notion에서 블록 수를 가져와서 비교
-      consola.info(`[${this.options.id}][loadPage] 블록 수 비교 시작...`)
       notionBlockCount = await getNotionBlockCount(id)
-      consola.info(`[${this.options.id}][loadPage] Notion 블록 수: ${notionBlockCount}개, 저장된 블록 수: ${savedBlockCount}개`)
       
       if (notionBlockCount !== savedBlockCount) {
         shouldUpdateByBlockCount = true
-        consola.info(`[${this.options.id}][loadPage] 블록 수가 다릅니다 (차이: ${notionBlockCount - savedBlockCount}개). 업데이트가 필요합니다.`)
-      } else {
-        consola.info(`[${this.options.id}][loadPage] 블록 수가 동일합니다.`)
+        consola.info(`[${this.options.id}][loadPage] 블록 수 불일치 (Notion: ${notionBlockCount}개, 저장: ${savedBlockCount}개) - 업데이트 필요`)
       }
-    } else {
-      // 저장된 데이터가 없으면 블록 수를 가져올 필요 없음 (무조건 업데이트)
-      shouldUpdateByBlockCount = false
-      consola.info(`[${this.options.id}][loadPage] 저장된 데이터가 없습니다. 업데이트가 필요합니다.`)
     }
     
     // 3. 최종 업데이트 필요 여부 결정
     const shouldUpdate = shouldUpdateByTime || shouldUpdateByBlockCount
     
-    // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분) - 임시 디버깅용
+    // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분)
     const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS
     const forceUpdatePageIds = forceUpdatePageIdsEnv ? forceUpdatePageIdsEnv.split(',').map(id => id.trim()).filter(id => id.length > 0) : []
     const forceUpdateForTesting = forceUpdatePageIds.includes(id)
     const willUpdate = shouldUpdate || forceUpdateForTesting
     
-    consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 시간 기반 업데이트: ${shouldUpdateByTime}, 블록 수 기반 업데이트: ${shouldUpdateByBlockCount}, 강제 업데이트: ${forceUpdateForTesting}`)
-    
     if (forceUpdateForTesting && !shouldUpdate) {
-      consola.info(`[${this.options.id}][loadPage] 테스트를 위해 강제 업데이트 실행: ${id}`)
+      consola.info(`[${this.options.id}][loadPage] 강제 업데이트 실행: ${id}`)
     }
     
     // 업데이트가 필요하면 컨텐츠 가져오기
@@ -381,8 +371,6 @@ export class NotionDataLoader {
         blockCount = notionBlockCount
       }
     }
-    const contentLength = typeof content === 'string' ? content.length : 0
-    consola.info(`[${this.options.id}][loadPage] 컨텐츠 길이: ${contentLength} 문자`)
 
     data = useDeepMerge({}, data, {
       id: pageInfo.id as string,
