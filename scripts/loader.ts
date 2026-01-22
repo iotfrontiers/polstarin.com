@@ -1,6 +1,6 @@
 import { type NotionData, type NotionListResponse } from '~/composables/notion'
 import { useDeepMerge } from '../utils/core'
-import { createNotionClient, getNotionMarkdownContent, getImageUrlInPage, getDataFilePath, getPageDataFilePath, formatNotionId } from './utils'
+import { createNotionClient, getNotionMarkdownContent, getNotionBlockCount, getImageUrlInPage, getDataFilePath, getPageDataFilePath, formatNotionId } from './utils'
 import { writeFileSync, existsSync, readFileSync, mkdirSync } from 'node:fs'
 import { dirname } from 'pathe'
 import consola from 'consola'
@@ -326,21 +326,61 @@ export class NotionDataLoader {
       data = (await this.options.customizePageResponse(<PageObjectResponse>pageInfo)) || {}
     }
 
-    const shouldUpdate = !oldData || oldData.lastUpdateDate !== pageInfo['last_edited_time']
+    // 1. 일반 업데이트 필요 여부 (last_edited_time 비교)
+    const shouldUpdateByTime = !oldData || oldData.lastUpdateDate !== pageInfo['last_edited_time']
     
-    // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분)
+    // 2. 블록 수 비교를 통한 업데이트 필요 여부
+    let shouldUpdateByBlockCount = false
+    let notionBlockCount = 0
+    let savedBlockCount = oldData?.blockCount || 0
+    
+    if (oldData) {
+      // 저장된 데이터가 있으면 Notion에서 블록 수를 가져와서 비교
+      consola.info(`[${this.options.id}][loadPage] 블록 수 비교 시작...`)
+      notionBlockCount = await getNotionBlockCount(id)
+      consola.info(`[${this.options.id}][loadPage] Notion 블록 수: ${notionBlockCount}개, 저장된 블록 수: ${savedBlockCount}개`)
+      
+      if (notionBlockCount !== savedBlockCount) {
+        shouldUpdateByBlockCount = true
+        consola.info(`[${this.options.id}][loadPage] 블록 수가 다릅니다 (차이: ${notionBlockCount - savedBlockCount}개). 업데이트가 필요합니다.`)
+      } else {
+        consola.info(`[${this.options.id}][loadPage] 블록 수가 동일합니다.`)
+      }
+    } else {
+      // 저장된 데이터가 없으면 블록 수를 가져올 필요 없음 (무조건 업데이트)
+      shouldUpdateByBlockCount = false
+      consola.info(`[${this.options.id}][loadPage] 저장된 데이터가 없습니다. 업데이트가 필요합니다.`)
+    }
+    
+    // 3. 최종 업데이트 필요 여부 결정
+    const shouldUpdate = shouldUpdateByTime || shouldUpdateByBlockCount
+    
+    // 환경 변수로 강제 업데이트할 페이지 ID 지정 가능 (쉼표로 구분) - 임시 디버깅용
     const forceUpdatePageIdsEnv = process.env.FORCE_UPDATE_PAGE_IDS
     const forceUpdatePageIds = forceUpdatePageIdsEnv ? forceUpdatePageIdsEnv.split(',').map(id => id.trim()).filter(id => id.length > 0) : []
     const forceUpdateForTesting = forceUpdatePageIds.includes(id)
     const willUpdate = shouldUpdate || forceUpdateForTesting
     
-    consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 업데이트 필요: ${shouldUpdate}, 강제 업데이트: ${forceUpdateForTesting}`)
+    consola.info(`[${this.options.id}][loadPage] 페이지 ID: ${id}, 시간 기반 업데이트: ${shouldUpdateByTime}, 블록 수 기반 업데이트: ${shouldUpdateByBlockCount}, 강제 업데이트: ${forceUpdateForTesting}`)
     
     if (forceUpdateForTesting && !shouldUpdate) {
       consola.info(`[${this.options.id}][loadPage] 테스트를 위해 강제 업데이트 실행: ${id}`)
     }
     
-    const content = willUpdate ? await getNotionMarkdownContent(id) : oldData.content
+    // 업데이트가 필요하면 컨텐츠 가져오기
+    let content = oldData?.content
+    let blockCount = savedBlockCount
+    
+    if (willUpdate) {
+      content = await getNotionMarkdownContent(id)
+      // 업데이트 시 Notion에서 가져온 블록 수 저장
+      if (notionBlockCount === 0) {
+        // 아직 블록 수를 가져오지 않았다면 다시 가져오기
+        blockCount = await getNotionBlockCount(id)
+      } else {
+        blockCount = notionBlockCount
+      }
+    }
     const contentLength = typeof content === 'string' ? content.length : 0
     consola.info(`[${this.options.id}][loadPage] 컨텐츠 길이: ${contentLength} 문자`)
 
@@ -349,6 +389,7 @@ export class NotionDataLoader {
       title: pageInfo['properties']?.title?.title[0]?.text?.content,
       content: content,
       lastUpdateDate: pageInfo['last_edited_time'],
+      blockCount: blockCount,
       imgUrl: '',
     })
 

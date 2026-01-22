@@ -246,6 +246,17 @@ const getAllBlocksRecursive = async (notion: any, blockId: string, depth: number
   return { topLevelBlocks, allBlocksFlat }
 }
 
+/**
+ * Notion 페이지의 총 블록 수만 가져오는 함수 (가벼운 버전)
+ * @param id 페이지 ID
+ * @returns 총 블록 수 (중첩 포함)
+ */
+export const getNotionBlockCount = async (id: string): Promise<number> => {
+  const notion = createNotionClient()
+  const blockResult = await getAllBlocksRecursive(notion, id)
+  return blockResult.allBlocksFlat.length
+}
+
 export const getNotionMarkdownContent = async (id: string, downloadResource: boolean = true, useCloudinary = false) => {
   consola.info(`[getNotionMarkdownContent] 페이지 ID: ${id}`)
   consola.info(`[getNotionMarkdownContent] 커스텀 함수로 모든 블록 가져오기 시작...`)

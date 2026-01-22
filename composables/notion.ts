@@ -53,6 +53,11 @@ interface NotionData {
   lastUpdateDate?: string
 
   /**
+   * Notion에서 가져온 총 블록 수 (중첩 포함)
+   */
+  blockCount?: number
+
+  /**
    * 하위 값 목록
    */
   children?: NotionData[]
