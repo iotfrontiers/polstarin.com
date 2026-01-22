@@ -8,5 +8,6 @@
   "id": "19ec88ac-8c29-81a5-af2b-caecbcd0e40e",
   "content": "\n### 누에 사육 및 관리 Window App 및 Esp32 제어 보드 개발\n\n\n![Untitled.jpeg](/notion-resources/19ec88ac-8c29-81a5-af2b-caecbcd0e40e/8bf4afcafd49f6bbb6f81421a34b9009.jpeg)\n\n\n### 프로젝트 내용\n\n\n사육장에 설치된 센서에 대한 정보를 수집하고 이 정보를 바탕으로 사육실의 환경을 조정한다.\n\n\n### 개발 언어 \n\n\nWindow App - c#, 펌웨어 - C/C++\n\n\n### 기술 스택\n\n- WinForm (c#)\n- Aurdino - ESP32 (C/C++)\n- RS232 통신\n- Afroge.NET\n\n### 주요 기능\n\n- 공기질 센서 데이터 수집 및 저장\n- 실시간 데이터에 따른 살균 LED 밝기 및 사육장 환경 조절\n- 카메라 실시간 녹화\n- Wifi Socket 통신을 통한 메인 보드 원격 제어\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81a5-af2b-caecbcd0e40e/a7bef50e304b2266ba890212e097a8f7.png)\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81a5-af2b-caecbcd0e40e/3e9d92fe40350cc62afd62c5e3dc85f2.png)\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-81a5-af2b-caecbcd0e40e/d8d3013d19d574d860dd43f053a76596.png)\n\n",
   "lastUpdateDate": "2026-01-22T00:56:00.000Z",
+  "blockCount": 20,
   "imgUrl": ""
 }

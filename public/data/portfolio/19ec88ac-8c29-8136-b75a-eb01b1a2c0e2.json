@@ -9,5 +9,6 @@
   "id": "19ec88ac-8c29-8136-b75a-eb01b1a2c0e2",
   "content": "\n[스마트 디스플레이 스틱 PC 및 제어 모바일 앱 개발]\n\n\n![Untitled.jpeg](/notion-resources/19ec88ac-8c29-8136-b75a-eb01b1a2c0e2/f017eabfb13f4f12ea7119186728caab.jpeg)\n\n\n## 프로젝트 내용\n\n\n일반 모니터에 스틱 PC를 연결 후 내장 되어있는 OS에 해당 어플리케이션을 설치하여 광고 메뉴판 및 컨텐츠를 광고 한다\n\n\n## 개발 언어\n\n\nJava \n\n\n## 기술 스택\n\n- Android Stuido SDK (Java)\n- Bluetooth Classic 및 Wifi Socket\n\n## 주요 기능\n\n- 모니터 컨텐츠 표시 (메뉴판, 사진 및 동영상 수정  )\n- 블루투스 및 Socket 통신을 통한 모니터 실시간 수정\n- 스틱 PC 안드로이드 포팅\n\n![Untitled.jpeg](/notion-resources/19ec88ac-8c29-8136-b75a-eb01b1a2c0e2/98954da33c803ed3e4f719c90b917f82.jpeg)\n\n\n## 모니터(스틱 PC)\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-8136-b75a-eb01b1a2c0e2/144ad1435b1767e005bcb684cc9e3919.png)\n\n\n## 제어 모바일 앱\n\n\n![Untitled.png](/notion-resources/19ec88ac-8c29-8136-b75a-eb01b1a2c0e2/190454cb6a68913b8fb95493a19fec08.png)\n\n",
   "lastUpdateDate": "2025-02-18T07:53:00.000Z",
+  "blockCount": 22,
   "imgUrl": ""
 }
