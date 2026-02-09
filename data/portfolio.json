@@ -2,6 +2,18 @@
   "nextCursor": null,
   "list": [
     {
+      "title": "음성 출력 투명 LED 디스플레이 시스템 개발",
+      "categories": [
+        "임베디드 시스템",
+        "웹어플리케이션",
+        "통신프로토콜",
+        "PCB"
+      ],
+      "id": "302c88ac-8c29-804c-8aa9-c8799dc49902",
+      "imgUrl": "/notion-resources/302c88ac-8c29-804c-8aa9-c8799dc49902/1d078484428548f70edf26d2f554edd0.png",
+      "lastUpdateDate": "2026-02-09T04:58:00.000Z"
+    },
+    {
       "title": "가스 센서 모니터링 LED 디스플레이 시스템",
       "categories": [
         "펌웨어",
@@ -226,7 +238,7 @@
       ],
       "id": "19ec88ac-8c29-8177-9f33-c078ec3f8225",
       "imgUrl": "/notion-resources/19ec88ac-8c29-8177-9f33-c078ec3f8225/37526e5692879fa160cf1dd219786372.jpg",
-      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
+      "lastUpdateDate": "2026-02-09T05:14:00.000Z"
     },
     {
       "title": "누에 사육 및 관리 프로젝트",
