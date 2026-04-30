@@ -2,6 +2,37 @@
   "nextCursor": null,
   "list": [
     {
+      "title": "스마트 피트니스 센터 무인 게이트 BLE 출입 제어 시스템",
+      "categories": [
+        "BLE Firmware C/C++ MCU PCB Design 3D Housing Design Next.js React TypeScript Node.js API Routes MySQL Prisma Linux Nginx"
+      ],
+      "id": "34bc88ac-8c29-8095-ab36-df9b5802260b",
+      "imgUrl": "/notion-resources/34bc88ac-8c29-8095-ab36-df9b5802260b/478f781bf5094c133da514a74b8f4724.png",
+      "lastUpdateDate": "2026-04-23T05:47:00.000Z"
+    },
+    {
+      "title": "사내 복지시설 이용 이력 관리 시스템",
+      "categories": [
+        "HTML",
+        "HTML CSS JavaScript Bootstrap Node.js Express MySQL Linux Nginx"
+      ],
+      "id": "34bc88ac-8c29-8053-bbc3-d26ebdf305c9",
+      "imgUrl": "/notion-resources/34bc88ac-8c29-8053-bbc3-d26ebdf305c9/47444d0ebbe9b6298295e6ce082f924e.png",
+      "lastUpdateDate": "2026-04-23T05:21:00.000Z"
+    },
+    {
+      "title": "교육용 DIY LED 디스플레이(버튼에 따른 동작 변경)",
+      "categories": [
+        "Arudino",
+        "ESP32",
+        "C/C++",
+        "펌웨어"
+      ],
+      "id": "341c88ac-8c29-8081-87e6-cf8960554a66",
+      "imgUrl": "/notion-resources/341c88ac-8c29-8081-87e6-cf8960554a66/94fecca61fb4a42b260996a2616b0c5e.jpg",
+      "lastUpdateDate": "2026-04-14T06:50:00.000Z"
+    },
+    {
       "title": "음성 출력 투명 LED 디스플레이 시스템 개발",
       "categories": [
         "임베디드 시스템",
@@ -11,7 +42,7 @@
       ],
       "id": "302c88ac-8c29-804c-8aa9-c8799dc49902",
       "imgUrl": "/notion-resources/302c88ac-8c29-804c-8aa9-c8799dc49902/1d078484428548f70edf26d2f554edd0.png",
-      "lastUpdateDate": "2026-02-09T04:58:00.000Z"
+      "lastUpdateDate": "2026-04-13T08:31:00.000Z"
     },
     {
       "title": "가스 센서 모니터링 LED 디스플레이 시스템",
@@ -46,8 +77,8 @@
       "title": "학습용 LED 전광판 키트 개발 프로젝트",
       "categories": [],
       "id": "2eac88ac-8c29-8028-982a-e4623f527b29",
-      "imgUrl": "/notion-resources/2eac88ac-8c29-8028-982a-e4623f527b29/ddd7d71e711fa9fb590954d40633513a.png",
-      "lastUpdateDate": "2026-01-22T00:26:00.000Z"
+      "imgUrl": "/notion-resources/2eac88ac-8c29-8028-982a-e4623f527b29/11218bc793b6b2804ff257d5b368efec.png",
+      "lastUpdateDate": "2026-04-23T06:04:00.000Z"
     },
     {
       "title": "물류 로봇 상태 모니터링 LED 시스템",

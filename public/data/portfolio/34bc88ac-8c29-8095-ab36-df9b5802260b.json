@@ -1,0 +1,11 @@
+{
+  "title": "스마트 피트니스 센터 무인 게이트 BLE 출입 제어 시스템",
+  "categories": [
+    "BLE Firmware C/C++ MCU PCB Design 3D Housing Design Next.js React TypeScript Node.js API Routes MySQL Prisma Linux Nginx"
+  ],
+  "id": "34bc88ac-8c29-8095-ab36-df9b5802260b",
+  "content": "\n![image.png](/notion-resources/34bc88ac-8c29-8095-ab36-df9b5802260b/478f781bf5094c133da514a74b8f4724.png)\n\n\n**프로젝트 개요**\n\n\n회원 전용 피트니스 센터에서 출입카드나 별도 조작 없이 스마트폰만으로 자동 입장이 가능하도록 구축한 BLE 기반 무인 출입 제어 시스템입니다. 출입문 인근에 설치된 전용 단말기가 등록된 회원의 스마트폰 신호를 감지하고, 인증 완료 시 전자도어락으로 개방 신호를 전달하도록 설계했습니다. \n\n\n단말기 하드웨어 설계, PCB 제작, 기구 검토, 펌웨어 개발까지 일체형으로 진행했으며, 운영 측면에서는 회원 등록 관리, 단말 상태 확인, 출입 로그 확인 기능을 함께 구성했습니다. 안드로이드와 iOS 환경을 함께 고려해 실제 사용 흐름에 맞는 자동 인식 범위와 반응 속도를 조정했습니다.\n\n\n![image.png](/notion-resources/34bc88ac-8c29-8095-ab36-df9b5802260b/3e2ce6615f9c401e4cd33f76a385b235.png)\n\n\n**주요 기능**\n\n- BLE 기반 스마트폰 자동 감지 및 근접 인증 처리\n- 등록 회원 식별 후 전자도어락 개방 신호 전달\n- Android / iOS 동시 대응 출입 인증 구조 설계\n- 회원 등록, 삭제, 권한 변경 관리 기능 제공\n- 단말 온라인 상태, 신호 수신, 오류 여부 모니터링\n- 출입 시각, 인증 결과, 예외 상황 로그 기록 및 조회\n\n![image.png](/notion-resources/34bc88ac-8c29-8095-ab36-df9b5802260b/ff434a02b253ddd374eb70e78a634d74.png)\n\n\n**개발 포인트**\n\n- 출입문 앞에서 별도 앱 조작 없이 자연스럽게 인식되도록 BLE 감지 거리와 응답 속도를 반복 튜닝\n- 오인식과 중복 개방을 줄이기 위해 인증 조건, 재시도 간격, 예외 처리 로직을 펌웨어 레벨에서 정교하게 구성\n- 제어 보드와 도어락 연동부를 분리 설계해 현장 설치 환경에 따라 유연하게 적용 가능하도록 구현\n- 관리자 화면은 회원 관리와 로그 조회 중심으로 단순하게 구성해 운영 부담을 낮춤\n- 보안 통신, 이벤트 기록, 장치 상태 추적 구조를 문서화 가능한 형태로 정리\n\n![image.png](/notion-resources/34bc88ac-8c29-8095-ab36-df9b5802260b/4e5a6925f0f5c026acef3473e38f5e80.png)\n\n\n**기술 스택**\n\n\nC/C++, MCU, PCB Design, 3D Housing Design,\n\n\n**Next.js, React, TypeScript, Node.js, API Routes, MySQL, Prisma, Linux, Nginx**\n\n\n**시스템 구성**\n\n\nNFC 리더기에서 인식된 태그 정보가 웹 애플리케이션을 통해 서버로 전달되며, 서버에서는 임직원 정보와 시설 구역 정보를 매핑해 이용 이력을 데이터베이스에 저장하도록 구성했습니다.\n\n\n관리자는 웹 관리자 페이지에서 이용 현황을 조회하고, 사용자별 이력 검색과 기간별 데이터 확인, 엑셀 추출 작업을 수행할 수 있도록 설계했습니다.\n\n",
+  "lastUpdateDate": "2026-04-23T05:47:00.000Z",
+  "blockCount": 37,
+  "imgUrl": ""
+}
