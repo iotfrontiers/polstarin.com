@@ -2,6 +2,18 @@
   "nextCursor": null,
   "list": [
     {
+      "title": "ESP32 기반 온습도 LED 매트릭스 전광판",
+      "categories": [
+        "ESP32",
+        "LED전광판",
+        "온습도센서",
+        "Arudino"
+      ],
+      "id": "382c88ac-8c29-806f-895c-e6e741761173",
+      "imgUrl": "/notion-resources/382c88ac-8c29-806f-895c-e6e741761173/f892a5510eefd23c8d29ec24a89f8a38.jpg",
+      "lastUpdateDate": "2026-06-17T03:40:00.000Z"
+    },
+    {
       "title": "스마트 피트니스 센터 무인 게이트 BLE 출입 제어 시스템",
       "categories": [
         "BLE Firmware C/C++ MCU PCB Design 3D Housing Design Next.js React TypeScript Node.js API Routes MySQL Prisma Linux Nginx"
