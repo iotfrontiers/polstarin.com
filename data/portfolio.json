@@ -148,17 +148,6 @@
       "lastUpdateDate": "2026-01-16T01:49:00.000Z"
     },
     {
-      "title": "산업용 HMI(IOT 제품) 개발 및 양산",
-      "categories": [
-        "C/C++",
-        "Linux",
-        "QT"
-      ],
-      "id": "19ec88ac-8c29-81c0-9da9-cafb96d3a26f",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-81c0-9da9-cafb96d3a26f/c36f427ef351df369590254cf2c1f54c.png",
-      "lastUpdateDate": "2026-01-16T02:18:00.000Z"
-    },
-    {
       "title": "IoT 기능을 이용한 그늘막 개발",
       "categories": [
         "Android",
@@ -183,20 +172,6 @@
       "id": "19ec88ac-8c29-81d2-b54c-ce943164f8b5",
       "imgUrl": "/notion-resources/19ec88ac-8c29-81d2-b54c-ce943164f8b5/9414ca3af00e7b89f3dde0602473f348.png",
       "lastUpdateDate": "2026-01-15T09:00:00.000Z"
-    },
-    {
-      "title": "창고 관리용 전자표시기 / 게이트웨이",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "19ec88ac-8c29-81f2-8383-f4cebdb4f5fb",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-81f2-8383-f4cebdb4f5fb/22a9cdb9790a39e79e8cbedc5921470b.png",
-      "lastUpdateDate": "2026-01-16T01:41:00.000Z"
     },
     {
       "title": "고양이 운동기구(Cat Wheel)",
@@ -241,32 +216,6 @@
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
-      "title": "분산형 IoT 환경 센서",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "19ec88ac-8c29-8161-a817-f23b775e6e1d",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-8161-a817-f23b775e6e1d/d211deba122419176a4a6c48ec3ff940.png",
-      "lastUpdateDate": "2026-01-16T01:44:00.000Z"
-    },
-    {
-      "title": "Modbus RS485 Multiplexer",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RS485",
-        "Modbus"
-      ],
-      "id": "19ec88ac-8c29-816e-9c2a-e6e60dcd0038",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-816e-9c2a-e6e60dcd0038/d59ea313b52b1ab967fb3bbecbf6964c.jpg",
-      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
-    },
-    {
       "title": "기계식 주차장 디스플레이",
       "categories": [
         "C/C++",
@@ -295,20 +244,6 @@
       "lastUpdateDate": "2026-01-22T00:56:00.000Z"
     },
     {
-      "title": "청소 차량 Tracer 펌웨어 개발",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "19ec88ac-8c29-81c1-92be-fff123c7421f",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-81c1-92be-fff123c7421f/d58dc9bf22dedb1eaf674681a2600eb9.png",
-      "lastUpdateDate": "2026-01-16T01:50:00.000Z"
-    },
-    {
       "title": "바닥신호등 글자표시 DISPLAY",
       "categories": [
         "C/C++",
@@ -323,19 +258,6 @@
       "id": "19ec88ac-8c29-81ed-9881-c6a0e9c5ff8a",
       "imgUrl": "/notion-resources/19ec88ac-8c29-81ed-9881-c6a0e9c5ff8a/cd7fada610682e77ceabbac4607c4d99.png",
       "lastUpdateDate": "2025-02-18T07:53:00.000Z"
-    },
-    {
-      "title": "일체형 IoT 환경 센서",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi"
-      ],
-      "id": "19ec88ac-8c29-81fa-b054-de75370b670d",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-81fa-b054-de75370b670d/942ebb52383faa5a0f9402412daf9574.png",
-      "lastUpdateDate": "2026-01-16T01:38:00.000Z"
     },
     {
       "title": "IOT LED 전광판 및 모바일 어플리케이션 개발",
@@ -408,20 +330,6 @@
       "id": "19ec88ac-8c29-81b4-8cc7-c4368706896f",
       "imgUrl": "/notion-resources/19ec88ac-8c29-81b4-8cc7-c4368706896f/9dac0ac5e3248f57a651dc90251667cb.png",
       "lastUpdateDate": "2026-01-22T01:43:00.000Z"
-    },
-    {
-      "title": "창고 관리용 제품 위치 표시기",
-      "categories": [
-        "Arudino",
-        "C/C++",
-        "RestAPI",
-        "Mqtt",
-        "Wifi",
-        "ESP-Now"
-      ],
-      "id": "19ec88ac-8c29-81b9-aa64-f127806c9a0d",
-      "imgUrl": "/notion-resources/19ec88ac-8c29-81b9-aa64-f127806c9a0d/7ba6ce4e9b8d8c30269c14490130f38a.jpg",
-      "lastUpdateDate": "2025-02-18T07:53:00.000Z"
     },
     {
       "title": "실시간 검색어, 코로나, 뉴스 데이터 제공 모바일 앱 개발 [취미 프로젝트]",
